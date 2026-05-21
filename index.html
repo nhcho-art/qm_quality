@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JMW Quality Dashboard v1.8</title>
+<title>JMW Quality Dashboard v2.2</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -63,9 +63,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .tbtn{padding:7px 14px;border-radius:8px;border:1.5px solid var(--border);background:var(--card2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s}
 .tbtn:hover{background:var(--bg)}
 
-.page-wrap{padding:20px 24px}
-.pg{display:none;animation:fadeIn .2s ease}
-.pg.on{display:block}
+.page-wrap{padding:20px 24px;position:relative;overflow:hidden}
+.pg{visibility:hidden;position:absolute;width:calc(100% - 220px);pointer-events:none;animation:fadeIn .2s ease}
+.pg.on{visibility:visible;position:relative;width:100%;pointer-events:auto}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── 카드 ── */
@@ -235,7 +235,7 @@ tbody tr:hover td{background:#F8FAFC}
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="brand"><span class="brand-dot"></span>JMW Quality</div>
-    <div class="brand-sub">v1.8 · Q.T.S 품질 모니터링</div>
+    <div class="brand-sub">v2.2 · Q.T.S 품질 모니터링</div>
   </div>
 
   <nav class="sb-nav">
@@ -309,11 +309,11 @@ tbody tr:hover td{background:#F8FAFC}
     <div class="g3 mb14">
       <div class="card">
         <div class="ch"><div class="ct">월별 불량 접수 추이 <span class="cs">2026년 · 라인차트</span></div><span class="badge b-red" id="bdgMonths">—</span></div>
-        <div class="h240"><canvas id="cMonthLine"></canvas></div>
+        <div class="h280"><canvas id="cMonthLine"></canvas></div>
       </div>
       <div class="card">
         <div class="ch"><div class="ct">품목별 불량 비중</div><span class="badge b-blue" id="bdgTotal2">—건</span></div>
-        <div class="h200"><canvas id="cCategory"></canvas></div>
+        <div class="h160"><canvas id="cCategory"></canvas></div>
         <div id="catBars" style="margin-top:10px"></div>
       </div>
     </div>
@@ -322,10 +322,10 @@ tbody tr:hover td{background:#F8FAFC}
     <div class="g3b mb14">
       <div class="card">
         <div class="ch"><div class="ct">발생 시점 분포</div><span class="badge b-amber">구매 후 경과</span></div>
-        <div class="timing-wrap" style="margin-top:6px">
-          <div style="position:relative;height:140px"><canvas id="cTiming"></canvas></div>
-          <div class="timing-legend" id="timingLegend"></div>
+        <div style="margin-top:6px;position:relative;height:150px">
+          <canvas id="cTiming"></canvas>
         </div>
+        <div id="timingLegend"></div>
       </div>
       <div class="card">
         <div class="ch"><div class="ct">생산분류별</div><span class="badge b-gray">JMW / 소싱</span></div>
@@ -427,7 +427,7 @@ tbody tr:hover td{background:#F8FAFC}
       </div>
       <div class="card">
         <div class="ch"><div class="ct">불량유형 분포</div></div>
-        <div class="h280"><canvas id="cDefectDoughnut"></canvas></div>
+        <div class="h340"><canvas id="cDefectDoughnut"></canvas></div>
       </div>
     </div>
 
@@ -505,9 +505,10 @@ function showPg(name,el){
   document.getElementById('pg-'+name).classList.add('on');
   el.classList.add('on');
   document.getElementById('topTitle').textContent=PG_TITLES[name]||name;
-  // 탭 전환 후 차트 레이아웃 재계산 (쏠림 방지)
-  setTimeout(()=>{ Object.values(charts).forEach(c=>{ try{if(c)c.resize();}catch(e){} }); },100);
-  setTimeout(()=>{ Object.values(charts).forEach(c=>{ try{if(c)c.resize();}catch(e){} }); },300);
+}
+
+function destroyCharts(ids){
+  ids.forEach(id=>{ if(charts[id]){ try{charts[id].destroy();}catch(e){} delete charts[id]; } });
 }
 
 async function loadData(){
@@ -624,21 +625,26 @@ function renderOverview(s){
   document.getElementById('bdgMonths').textContent='2026년 '+months2026.length+'개월';
 
   // 월별 추이: 불량건수(바) + 불량률%(라인) 콤보 - 겹침 없이
+  const maxV2026=Math.max(...mV2026,1);
   mkChart('cMonthLine','bar',{
     labels:mL2026,
     datasets:[
       {type:'bar',label:'불량건수',data:mV2026,
-       backgroundColor:mV2026.map((v,i)=>v===Math.max(...mV2026)?'rgba(220,38,38,0.85)':'rgba(37,99,235,0.65)'),
+       backgroundColor:mV2026.map(v=>v===Math.max(...mV2026)?'rgba(220,38,38,0.85)':'rgba(37,99,235,0.65)'),
        borderRadius:6,yAxisID:'y',order:2,
-       datalabels:{anchor:'end',align:'end',clamp:true,color:(ctx)=>ctx.dataIndex===mV2026.indexOf(Math.max(...mV2026))?P.red:P.blue,
-                  font:{family:'JetBrains Mono',weight:'700',size:12},formatter:v=>v>0?fmt(v):''}},
+       datalabels:{display:false}},
       {type:'line',label:'불량률%',data:mR2026,
-       borderColor:P.amber,backgroundColor:'rgba(217,119,6,0.1)',
-       pointBackgroundColor:P.amber,pointRadius:5,pointHoverRadius:7,
+       borderColor:P.amber,backgroundColor:'rgba(217,119,6,0.08)',
+       pointBackgroundColor:'#fff',pointBorderColor:P.amber,pointBorderWidth:2,
+       pointRadius:5,pointHoverRadius:7,
        borderWidth:2.5,tension:0.35,yAxisID:'y2',spanGaps:true,order:1,
-       datalabels:{anchor:'top',align:'top',offset:8,color:P.amber,
-                  font:{family:'JetBrains Mono',weight:'600',size:11},
-                  formatter:v=>v!=null?v.toFixed(2)+'%':''}},
+       datalabels:{
+         anchor:'bottom',align:'bottom',clip:false,offset:6,
+         backgroundColor:'rgba(255,255,255,0.85)',borderRadius:3,
+         padding:{top:2,bottom:2,left:4,right:4},
+         color:P.amber,font:{family:'JetBrains Mono',weight:'700',size:10},
+         formatter:v=>v!=null?v.toFixed(2)+'%':''
+       }},
     ]
   },{
     plugins:{
@@ -647,48 +653,51 @@ function renderOverview(s){
     },
     scales:{
       y:{beginAtZero:true,position:'left',grid:{color:'#E2E8F0'},
-         ticks:{font:{family:'JetBrains Mono',size:10}},title:{display:true,text:'불량건수',font:{size:10},color:'var(--text3)'}},
+         ticks:{font:{family:'JetBrains Mono',size:10}},
+         title:{display:false}},
       y2:{beginAtZero:true,position:'right',grid:{display:false},
-          ticks:{font:{family:'JetBrains Mono',size:10},callback:v=>v+'%'},
-          title:{display:true,text:'불량률',font:{size:10},color:P.amber}},
-      x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}
+          ticks:{font:{family:'JetBrains Mono',size:10},callback:v=>v.toFixed(2)+'%'},
+          title:{display:false}},
+      x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11},
+           callback:(val,idx)=>{
+             const label=mL2026[idx]||'';
+             const cnt=mV2026[idx]||0;
+             return [label, fmt(cnt)+'건'];
+           }}}
     },
-    layout:{padding:{top:20}}
+    layout:{padding:{top:28,right:10,bottom:10}}
   });
 
-  // 품목별 도넛 - datalabels on
+  // 품목별 - 수평 막대 (도넛 대체)
   const cats=Object.keys(s.byCategory),catV=Object.values(s.byCategory);
-  mkChart('cCategory','doughnut',{
+  const total=s.totalDefects;
+  mkChart('cCategory','bar',{
     labels:cats,
-    datasets:[{data:catV,backgroundColor:PAL,borderWidth:2,borderColor:'#fff',
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:11},formatter:(v,ctx)=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return pct(v,t)+'%';}}}]
-  },{plugins:{legend:{position:'bottom',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},cutout:'55%'});
+    datasets:[{data:catV,backgroundColor:PAL,borderRadius:5,borderSkipped:false,
+      datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,
+        color:(ctx)=>PAL[ctx.dataIndex],
+        font:{family:'JetBrains Mono',weight:'700',size:11},
+        formatter:(v)=>fmt(v)+' ('+pct(v,total)+'%)'}}]
+  },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
+    scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
+            y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}},
+    layout:{padding:{right:120,top:4}}});
+  document.getElementById('catBars').innerHTML='';
 
-  // 품목 인라인 바
-  const total=s.totalDefects,maxCat=Math.max(...catV);
-  document.getElementById('catBars').innerHTML=cats.map((c,i)=>`
-    <div style="display:flex;align-items:center;gap:7px;padding:3px 0">
-      <div style="width:10px;height:10px;border-radius:50%;background:${PAL[i]};flex-shrink:0"></div>
-      <div style="font-size:11px;color:var(--text2);width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c}</div>
-      <div class="itrack" style="flex:1"><div class="ifill" style="width:${(catV[i]/maxCat*100).toFixed(1)}%;background:${PAL[i]}"></div></div>
-      <div class="mono" style="font-size:11px;min-width:26px;text-align:right;color:var(--text)">${catV[i]}</div>
-      <div style="font-size:10.5px;color:var(--text4);min-width:34px;text-align:right">${pct(catV[i],total)}%</div>
-    </div>`).join('');
-
-  // 발생 시점 도넛 - datalabels on
+  // 발생 시점 - 수평 막대
   const tV=TK.map(k=>s.byTiming[k]||0),tT=tV.reduce((a,b)=>a+b,0);
-  mkChart('cTiming','doughnut',{
+  mkChart('cTiming','bar',{
     labels:TK,
-    datasets:[{data:tV,backgroundColor:TC,borderWidth:2,borderColor:'#fff',
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:11},formatter:(v,ctx)=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return pct(v,t)+'%';}}}]
-  },{plugins:{legend:{display:false},datalabels:{}},cutout:'50%'});
+    datasets:[{data:tV,backgroundColor:TC,borderRadius:5,borderSkipped:false,
+      datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,
+        color:(ctx)=>TC[ctx.dataIndex],font:{family:'JetBrains Mono',weight:'700',size:11},
+        formatter:(v)=>v+' ('+pct(v,tT)+'%)'}}]
+  },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
+    scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
+            y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}},
+    layout:{padding:{right:100,top:4}}});
 
-  document.getElementById('timingLegend').innerHTML=TK.map((k,i)=>`
-    <div class="timing-item">
-      <div class="timing-dot" style="background:${TC[i]}"></div>
-      <div class="timing-lbl">${k}</div>
-      <div class="timing-val">${tV[i]}<span class="timing-pct">(${pct(tV[i],tT)}%)</span></div>
-    </div>`).join('');
+  document.getElementById('timingLegend').innerHTML='';
 
   // 생산분류 - datalabels on
   const mfgK=Object.keys(s.byMfgType),mfgV=Object.values(s.byMfgType);
@@ -699,13 +708,20 @@ function renderOverview(s){
   },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
     scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}},y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}}});
 
-  // 채널 파이 - datalabels on
+  // 채널별 - 수평 막대
   const chK=Object.keys(s.byChannel),chV=Object.values(s.byChannel);
-  mkChart('cChannelPie','doughnut',{
+  const chTotal=chV.reduce((a,b)=>a+b,0);
+  mkChart('cChannelPie','bar',{
     labels:chK,
-    datasets:[{data:chV,backgroundColor:[P.blue,P.amber,P.green,P.purple,P.teal],borderWidth:2,borderColor:'#fff',
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:11},formatter:(v,ctx)=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return pct(v,t)+'%';}}}]
-  },{plugins:{legend:{position:'bottom',labels:{font:{family:'Noto Sans KR',size:11},padding:8,boxWidth:10}},datalabels:{}},cutout:'50%'});
+    datasets:[{data:chV,backgroundColor:[P.blue,P.amber,P.green,P.purple,P.teal],borderRadius:5,borderSkipped:false,
+      datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,
+        color:(ctx)=>[P.blue,P.amber,P.green,P.purple,P.teal][ctx.dataIndex],
+        font:{family:'JetBrains Mono',weight:'700',size:11},
+        formatter:(v)=>fmt(v)+' ('+pct(v,chTotal)+'%)'}}]
+  },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
+    scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
+            y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}},
+    layout:{padding:{right:110,top:4}}});
 
   renderPareto('paretoShort',s,10,false);
 
@@ -853,11 +869,18 @@ function renderSKU(s){
 function renderDefect(s){
   renderPareto('paretoFull',s,999,true);
   const types=Object.keys(s.byDefectDetail),counts=Object.values(s.byDefectDetail);
-  mkChart('cDefectDoughnut','doughnut',{
+  const defTotal=counts.reduce((a,b)=>a+b,0);
+  mkChart('cDefectDoughnut','bar',{
     labels:types.slice(0,12),
-    datasets:[{data:counts.slice(0,12),backgroundColor:PAL.concat(['#78350f','#065f46']),borderWidth:2,borderColor:'#fff',
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:10},formatter:(v,ctx)=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return v/t>0.04?pct(v,t)+'%':'';}}}]
-  },{plugins:{legend:{position:'right',labels:{font:{family:'Noto Sans KR',size:11},padding:7,boxWidth:10}},datalabels:{}},cutout:'45%'});
+    datasets:[{data:counts.slice(0,12),backgroundColor:PAL.concat(['#78350f','#065f46']),borderRadius:5,borderSkipped:false,
+      datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,
+        color:(ctx)=>(PAL.concat(['#78350f','#065f46']))[ctx.dataIndex],
+        font:{family:'JetBrains Mono',weight:'700',size:10},
+        formatter:(v)=>fmt(v)+' ('+pct(v,defTotal)+'%)'}}]
+  },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
+    scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
+            y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}}},
+    layout:{padding:{right:110,top:4}}});
 
   const cats=Object.keys(s.categoryDefectMatrix),topT=types.slice(0,10);
   const maxC=Math.max(...cats.flatMap(c=>topT.map(t=>s.categoryDefectMatrix[c][t]||0)),1);
