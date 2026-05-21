@@ -231,7 +231,6 @@ tbody tr:hover td{background:#F8FAFC}
 
 <div style="display:flex">
 
-<!-- ── 사이드바 ── -->
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="brand"><span class="brand-dot"></span>JMW Quality</div>
@@ -283,7 +282,6 @@ tbody tr:hover td{background:#F8FAFC}
   </div>
 </aside>
 
-<!-- ── 콘텐츠 ── -->
 <div class="main">
   <div class="topbar">
     <div class="topbar-title" id="topTitle">종합 현황 <span id="topSub">2026년 누적</span></div>
@@ -293,7 +291,6 @@ tbody tr:hover td{background:#F8FAFC}
 
   <div class="page-wrap">
 
-  <!-- ① 종합 현황 -->
   <div class="pg on" id="pg-overview">
 
     <div class="kpi-grid">
@@ -350,7 +347,6 @@ tbody tr:hover td{background:#F8FAFC}
     </div>
   </div>
 
-  <!-- ② 월별 트렌드 -->
   <div class="pg" id="pg-trend">
     <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
       <div class="kpi-card"><div class="kpi-accent acc-red"></div><div class="kpi-lbl">최다 불량 월</div><div class="kpi-val sm" id="t-peak">—</div><div class="kpi-sub" id="t-peak-cnt">—</div></div>
@@ -384,7 +380,6 @@ tbody tr:hover td{background:#F8FAFC}
     </div>
   </div>
 
-  <!-- ③ SKU 분석 -->
   <div class="pg" id="pg-sku">
     <div class="section-divider"><div class="sd-line"></div><span class="sd-label">모델별 불량</span><div class="sd-line"></div></div>
     <div class="g4 mb14">
@@ -417,7 +412,6 @@ tbody tr:hover td{background:#F8FAFC}
     </div>
   </div>
 
-  <!-- ④ 불량유형 -->
   <div class="pg" id="pg-defect">
     <div class="section-divider"><div class="sd-line"></div><span class="sd-label">파레토 분석</span><div class="sd-line"></div></div>
     <div class="g2 mb14">
@@ -449,7 +443,6 @@ tbody tr:hover td{background:#F8FAFC}
     </div>
   </div>
 
-  <!-- ⑤ 채널 분석 -->
   <div class="pg" id="pg-channel">
     <div class="channel-cards" id="channelCards"></div>
 
@@ -478,11 +471,7 @@ tbody tr:hover td{background:#F8FAFC}
     </div>
   </div>
 
-  </div><!-- /page-wrap -->
-</div><!-- /main -->
-</div><!-- /flex -->
-
-<script>
+  </div></div></div><script>
 // Chart.js datalabels 전역 등록
 Chart.register(ChartDataLabels);
 
@@ -955,7 +944,6 @@ function fmt(n){return Number(n).toLocaleString('ko-KR');}
 function pct(n,t){return t>0?(n/t*100).toFixed(1):'0.0';}
 
 // ── 필터 ──
-const FILTER={year:'all',quarter:'all',month:'all'};
 function initFilter(){
   const allMs=Object.keys(G.summary.byReceiptMonth).sort();
   buildMonthBtns(allMs);
