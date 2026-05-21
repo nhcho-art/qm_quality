@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JMW Quality Dashboard v1.1</title>
+<title>JMW Quality Dashboard v1.3</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -316,44 +316,27 @@ tbody tr:hover td { background: var(--surface2); }
   <div class="loading-txt">품질 데이터 로딩 중...</div>
 </div>
 
-<!-- 사이드바 + 콘텐츠 래퍼 -->
 <div class="app">
 
 <!-- 사이드바 -->
 <aside class="sidebar">
-  <!-- 로고 -->
   <div class="sidebar-logo">
     <div class="logo">QT</div>
     <div class="logo-text">
       <div class="logo-title">JMW Quality<br>Dashboard</div>
-      <div class="logo-sub">v1.2 · 품질 모니터링</div>
+      <div class="logo-sub">v1.3 · 품질 모니터링</div>
     </div>
   </div>
-
-  <!-- 메뉴 -->
   <div class="sidebar-section">
     <div class="sidebar-section-label">메뉴</div>
-    <div class="nav-item active" onclick="showPage('overview',this)">
-      <span class="nav-icon">📊</span> 종합 현황
-    </div>
-    <div class="nav-item" onclick="showPage('trend',this)">
-      <span class="nav-icon">📈</span> 월별 트렌드
-    </div>
-    <div class="nav-item" onclick="showPage('sku',this)">
-      <span class="nav-icon">🔍</span> SKU 분석
-    </div>
-    <div class="nav-item" onclick="showPage('defect',this)">
-      <span class="nav-icon">⚠️</span> 불량유형
-    </div>
-    <div class="nav-item" onclick="showPage('channel',this)">
-      <span class="nav-icon">📦</span> 채널 분석
-    </div>
+    <div class="nav-item active" onclick="showPage('overview',this)"><span class="nav-icon">📊</span> 종합 현황</div>
+    <div class="nav-item" onclick="showPage('trend',this)"><span class="nav-icon">📈</span> 월별 트렌드</div>
+    <div class="nav-item" onclick="showPage('sku',this)"><span class="nav-icon">🔍</span> SKU 분석</div>
+    <div class="nav-item" onclick="showPage('defect',this)"><span class="nav-icon">⚠️</span> 불량유형</div>
+    <div class="nav-item" onclick="showPage('channel',this)"><span class="nav-icon">📦</span> 채널 분석</div>
   </div>
-
-  <!-- 필터 -->
   <div class="sidebar-filter">
     <div class="sf-label">필터</div>
-
     <div class="sf-group">
       <div class="sf-group-label">연도</div>
       <div class="sf-btns" id="yearBtns">
@@ -362,7 +345,6 @@ tbody tr:hover td { background: var(--surface2); }
         <button class="sfbtn" onclick="setFilter('year','2026',this)">2026</button>
       </div>
     </div>
-
     <div class="sf-group">
       <div class="sf-group-label">분기</div>
       <div class="sf-btns" id="quarterBtns">
@@ -373,14 +355,11 @@ tbody tr:hover td { background: var(--surface2); }
         <button class="sfbtn" onclick="setFilter('quarter','Q4',this)">4Q</button>
       </div>
     </div>
-
     <div class="sf-group">
       <div class="sf-group-label">월</div>
       <div class="sf-month-wrap" id="monthBtns"></div>
     </div>
   </div>
-
-  <!-- 하단: 업데이트 + 새로고침 -->
   <div class="sidebar-bottom">
     <div class="live-row">
       <div class="live-dot"></div>
@@ -392,7 +371,6 @@ tbody tr:hover td { background: var(--surface2); }
 
 <!-- 콘텐츠 -->
 <div class="content">
-  <!-- 콘텐츠 상단 바 -->
   <div class="content-header">
     <div>
       <div class="content-title" id="contentTitle">종합 현황</div>
@@ -401,655 +379,96 @@ tbody tr:hover td { background: var(--surface2); }
     <div class="filter-summary-top" id="filterSummary">—</div>
   </div>
 
-<main class="main">
+  <main class="main">
 
-<!-- ①  종합 현황 -->ng="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JMW Quality Dashboard v1.1</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #f0f2f5;
-  --surface: #ffffff;
-  --surface2: #f7f8fa;
-  --border: #e4e7ec;
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
-  --blue: #1a56db;
-  --blue-light: #e8effe;
-  --blue-mid: #3b82f6;
-  --red: #e02424;
-  --red-light: #fde8e8;
-  --orange: #d97706;
-  --orange-light: #fef3c7;
-  --green: #057a55;
-  --green-light: #def7ec;
-  --yellow: #e3a008;
-  --yellow-light: #fdf6b2;
-  --purple: #7e3af2;
-  --purple-light: #edebfe;
-  --radius: 12px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; }
-
-/* ── 전체 레이아웃 ── */
-.app { display: flex; min-height: 100vh; }
-
-/* ── 사이드바 ── */
-.sidebar {
-  width: 220px; flex-shrink: 0;
-  background: #0f172a;
-  display: flex; flex-direction: column;
-  position: fixed; top: 0; left: 0; bottom: 0;
-  z-index: 100; overflow-y: auto;
-}
-.sidebar-logo {
-  display: flex; align-items: center; gap: 10px;
-  padding: 20px 16px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-.logo { width: 34px; height: 34px; background: var(--red); border-radius: 8px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 700; color: white; }
-.logo-text { }
-.logo-title { font-size: 13px; font-weight: 700; color: white; line-height: 1.2; }
-.logo-sub   { font-size: 10px; color: #64748b; margin-top: 2px; }
-
-/* 사이드바 메뉴 */
-.sidebar-section { padding: 16px 10px 8px; }
-.sidebar-section-label {
-  font-size: 9.5px; font-weight: 700; color: #475569;
-  text-transform: uppercase; letter-spacing: .8px;
-  padding: 0 8px; margin-bottom: 6px;
-}
-.nav-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 9px 10px; border-radius: 8px;
-  font-size: 13px; font-weight: 500; color: #94a3b8;
-  cursor: pointer; transition: all .15s; margin-bottom: 2px;
-  white-space: nowrap;
-}
-.nav-item:hover  { background: rgba(255,255,255,0.06); color: #e2e8f0; }
-.nav-item.active { background: rgba(26,86,219,0.25); color: #93c5fd; font-weight: 600; }
-.nav-item.active .nav-icon { color: var(--blue); }
-.nav-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
-
-/* 사이드바 필터 */
-.sidebar-filter { padding: 12px 10px; border-top: 1px solid rgba(255,255,255,0.06); margin-top: auto; }
-.sf-label { font-size: 9.5px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: .8px; padding: 0 6px; margin-bottom: 8px; }
-.sf-group { margin-bottom: 10px; }
-.sf-group-label { font-size: 10px; color: #64748b; padding: 0 6px; margin-bottom: 5px; }
-.sf-btns { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 2px; }
-.sfbtn {
-  padding: 4px 9px; border-radius: 5px; font-size: 11px; font-weight: 500;
-  cursor: pointer; border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.05); color: #94a3b8;
-  transition: all .12s; font-family: 'Noto Sans KR', sans-serif;
-}
-.sfbtn:hover  { background: rgba(255,255,255,0.1); color: #e2e8f0; }
-.sfbtn.active { background: var(--blue); color: white; border-color: var(--blue); }
-.sf-month-wrap { display: flex; flex-wrap: wrap; gap: 3px; padding: 0 2px; }
-
-/* 사이드바 하단 */
-.sidebar-bottom {
-  padding: 12px 10px;
-  border-top: 1px solid rgba(255,255,255,0.06);
-}
-.live-row { display: flex; align-items: center; gap: 6px; padding: 0 4px; margin-bottom: 8px; }
-.live-dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; flex-shrink: 0;
-  animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 50%{box-shadow:0 0 0 4px rgba(34,197,94,0)} }
-.updated-time { font-size: 10px; color: #64748b; font-family: 'DM Mono', monospace; flex: 1; }
-.btn-refresh {
-  width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;
-  background: rgba(255,255,255,0.07); color: #94a3b8;
-  border: 1px solid rgba(255,255,255,0.1); border-radius: 7px;
-  padding: 8px 12px; font-size: 12px; cursor: pointer; transition: all .15s;
-  font-family: 'Noto Sans KR', sans-serif;
-}
-.btn-refresh:hover { background: rgba(255,255,255,0.13); color: #e2e8f0; }
-
-/* ── 콘텐츠 영역 ── */
-.content { margin-left: 220px; flex: 1; min-width: 0; }
-.content-header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 14px 28px;
-  display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 50;
-}
-.content-title { font-size: 15px; font-weight: 700; }
-.content-sub   { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-.filter-summary-top { font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
-
-/* ── 메인 ── */
-.main { padding: 20px 24px; }
-.page { display: none; animation: fadeIn .2s ease; }
-.page.active { display: block; }
-@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
-
-/* ── KPI 그리드 ── */
-.kpi-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 16px; }
-.kpi-card {
-  background: var(--surface); border-radius: var(--radius);
-  padding: 16px 18px; border: 1px solid var(--border); box-shadow: var(--shadow);
-  position: relative; overflow: hidden; transition: transform .15s;
-}
-.kpi-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
-.kpi-accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: var(--radius) var(--radius) 0 0; background: var(--blue); }
-.kpi-accent.red    { background: var(--red); }
-.kpi-accent.orange { background: var(--orange); }
-.kpi-accent.green  { background: var(--green); }
-.kpi-accent.yellow { background: var(--yellow); }
-.kpi-accent.purple { background: var(--purple); }
-.kpi-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
-.kpi-value { font-size: 26px; font-weight: 700; color: var(--text-primary); font-family: 'DM Mono', monospace; line-height: 1; }
-.kpi-value.small { font-size: 18px; }
-.kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 6px; display: flex; align-items: center; gap: 4px; }
-.kpi-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px; }
-.kpi-badge.up   { background: var(--red-light);   color: var(--red); }
-.kpi-badge.down { background: var(--green-light);  color: var(--green); }
-.kpi-badge.neu  { background: var(--blue-light);   color: var(--blue); }
-
-/* ── 게이지 ── */
-.gauge-wrap { margin-top: 6px; }
-.gauge-bar { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 4px; }
-.gauge-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
-.gauge-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-top: 2px; font-family: 'DM Mono', monospace; }
-
-/* ── 카드 ── */
-.card { background: var(--surface); border-radius: var(--radius); padding: 18px 20px; border: 1px solid var(--border); box-shadow: var(--shadow); }
-.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.card-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
-.card-title-sub { font-size: 11px; color: var(--text-muted); font-weight: 400; margin-left: 6px; }
-.card-badge { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; background: var(--blue-light); color: var(--blue); }
-.card-badge.red    { background: var(--red-light);    color: var(--red); }
-.card-badge.green  { background: var(--green-light);  color: var(--green); }
-.card-badge.orange { background: var(--orange-light); color: var(--orange); }
-
-/* ── 그리드 레이아웃 ── */
-.grid-2   { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.grid-3   { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 14px; }
-.grid-3b  { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.grid-4   { display: grid; grid-template-columns: 3fr 2fr; gap: 14px; margin-bottom: 14px; }
-.col-full { grid-column: 1 / -1; }
-
-/* ── 차트 높이 ── */
-.h180 { position: relative; height: 180px; }
-.h220 { position: relative; height: 220px; }
-.h260 { position: relative; height: 260px; }
-.h300 { position: relative; height: 300px; }
-.h340 { position: relative; height: 340px; }
-
-/* ── 테이블 ── */
-.tbl-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-thead th {
-  background: var(--surface2); padding: 9px 12px;
-  text-align: left; font-size: 10.5px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: .4px;
-  color: var(--text-secondary); border-bottom: 1px solid var(--border);
-  white-space: nowrap;
-}
-tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-tbody tr:last-child td { border-bottom: none; }
-tbody tr:hover td { background: var(--surface2); }
-.td-mono { font-family: 'DM Mono', monospace; font-size: 12px; }
-.td-right { text-align: right; }
-.td-center { text-align: center; }
-
-/* ── 인라인 바 ── */
-.inline-bar { display: flex; align-items: center; gap: 7px; }
-.inline-track { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; min-width: 60px; }
-.inline-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
-.fill-blue   { background: var(--blue); }
-.fill-red    { background: var(--red); }
-.fill-orange { background: var(--orange); }
-.fill-green  { background: var(--green); }
-
-/* ── 태그 ── */
-.tag { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 500; }
-.tag-blue   { background: var(--blue-light);   color: var(--blue); }
-.tag-red    { background: var(--red-light);     color: var(--red); }
-.tag-orange { background: var(--orange-light);  color: var(--orange); }
-.tag-green  { background: var(--green-light);   color: var(--green); }
-.tag-purple { background: var(--purple-light);  color: var(--purple); }
-.tag-gray   { background: #f3f4f6; color: #6b7280; }
-
-/* ── 신호등 배지 ── */
-.signal { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; }
-.signal-dot { width: 8px; height: 8px; border-radius: 50%; }
-.sig-red    { color: var(--red);    } .sig-red .signal-dot    { background: var(--red); }
-.sig-orange { color: var(--orange); } .sig-orange .signal-dot { background: var(--orange); }
-.sig-green  { color: var(--green);  } .sig-green .signal-dot  { background: var(--green); }
-
-/* ── 순위 배지 ── */
-.rank { display: inline-flex; align-items: center; justify-content: center;
-  width: 20px; height: 20px; border-radius: 50%; font-size: 11px; font-weight: 700; }
-.rank-1 { background: #fef3c7; color: #d97706; }
-.rank-2 { background: #f3f4f6; color: #374151; }
-.rank-3 { background: #fde8e8; color: #e02424; }
-.rank-n { background: var(--surface2); color: var(--text-muted); }
-
-/* ── 파레토 리스트 ── */
-.pareto-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
-.pareto-item:last-child { border-bottom: none; }
-.pareto-name { font-size: 12.5px; font-weight: 500; flex: 1; }
-.pareto-bar  { flex: 1.2; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
-.pareto-fill { height: 100%; background: var(--red); border-radius: 3px; }
-.pareto-cnt  { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 600; min-width: 30px; text-align: right; }
-.pareto-pct  { font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; min-width: 38px; text-align: right; }
-.pareto-cum  { font-size: 11px; color: var(--blue); font-family: 'DM Mono', monospace; min-width: 38px; text-align: right; }
-
-/* ── 타이밍 도넛 ── */
-.timing-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
-.timing-legend { display: flex; flex-direction: column; gap: 7px; }
-.timing-item { display: flex; align-items: center; gap: 8px; }
-.timing-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-.timing-label { font-size: 12px; flex: 1; }
-.timing-val { font-family: 'DM Mono', monospace; font-size: 12.5px; font-weight: 600; }
-.timing-pct { font-size: 11px; color: var(--text-muted); margin-left: 3px; }
-
-/* ── MoM 변화율 바 ── */
-.mom-item { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); }
-.mom-item:last-child { border-bottom: none; }
-.mom-month { font-family: 'DM Mono', monospace; font-size: 11.5px; color: var(--text-secondary); min-width: 52px; }
-.mom-cnt   { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 600; min-width: 36px; text-align: right; }
-.mom-bar-wrap { flex: 1; position: relative; height: 6px; background: var(--border); border-radius: 3px; }
-.mom-bar-pos  { position: absolute; top: 0; height: 100%; background: var(--red);   border-radius: 3px; }
-.mom-bar-neg  { position: absolute; top: 0; height: 100%; background: var(--green); border-radius: 3px; }
-.mom-change { font-size: 11px; font-weight: 600; min-width: 44px; text-align: right; font-family: 'DM Mono', monospace; }
-.mom-change.up   { color: var(--red); }
-.mom-change.down { color: var(--green); }
-
-/* ── 채널 카드 ── */
-.channel-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
-.ch-card { background: var(--surface2); border-radius: 10px; padding: 14px; text-align: center; border: 1px solid var(--border); }
-.ch-name { font-size: 11px; color: var(--text-secondary); font-weight: 500; margin-bottom: 6px; }
-.ch-num  { font-size: 26px; font-weight: 700; font-family: 'DM Mono', monospace; }
-.ch-pct  { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
-.ch-bar  { height: 4px; border-radius: 2px; margin-top: 8px; }
-
-/* ── 섹션 구분선 ── */
-.section-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 10px; margin-top: 4px; }
-
-/* ── 히트맵 셀 ── */
-.heatmap-cell { text-align: center; font-size: 12px; font-family: 'DM Mono', monospace; font-weight: 600; }
-
-/* ── 로딩 ── */
-.loading-overlay { position: fixed; inset: 0; background: rgba(15,23,42,.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; }
-.spinner { width: 38px; height: 38px; border: 3px solid rgba(255,255,255,.15); border-top-color: var(--red); border-radius: 50%; animation: spin .7s linear infinite; margin-bottom: 14px; }
-.loading-txt { font-size: 13px; color: #94a3b8; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── 반응형 ── */
-@media(max-width:1100px) { .kpi-row { grid-template-columns: repeat(3,1fr); } }
-@media(max-width:900px)  {
-  .kpi-row { grid-template-columns: repeat(2,1fr); }
-  .grid-2,.grid-3,.grid-3b,.grid-4 { grid-template-columns: 1fr; }
-  .main,.header,.nav { padding-left: 14px; padding-right: 14px; }
-}
-
-/* ── 필터 바 ── */
-/* filter-bar moved to sidebar */
-.filter-group { display: flex; align-items: center; gap: 6px; }
-.filter-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px; white-space: nowrap; }
-.filter-btns  { display: flex; gap: 4px; }
-.fbtn {
-  padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;
-  cursor: pointer; border: 1px solid var(--border); background: var(--surface2);
-  color: var(--text-secondary); transition: all .12s; white-space: nowrap;
-  font-family: 'Noto Sans KR', sans-serif;
-}
-.fbtn:hover  { border-color: var(--blue); color: var(--blue); }
-.fbtn.active { background: var(--blue); color: white; border-color: var(--blue); }
-.filter-divider { width: 1px; height: 20px; background: var(--border); }
-</style>
-</head>
-<body>
-
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="spinner"></div>
-  <div class="loading-txt">품질 데이터 로딩 중...</div>
-</div>
-
-<!-- 헤더 -->
-<header class="header">
-  <div class="header-left">
-    <div class="logo">QT</div>
-    <div>
-      <div class="header-title">JMW Quality Dashboard <span style="font-size:11px;color:#64748b;font-weight:400;margin-left:6px;">v1.1</span></div>
-      <div class="header-sub">품질 현황 실시간 모니터링 · 26년 누적 기준</div>
+  <!-- ① 종합 현황 -->
+  <div class="page active" id="page-overview">
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-accent red"></div><div class="kpi-label">총 불량 건수</div><div class="kpi-value" id="k-total">—</div><div class="kpi-sub">누적 접수 기준</div></div>
+      <div class="kpi-card"><div class="kpi-accent orange"></div><div class="kpi-label">전체 불량률</div><div class="kpi-value" id="k-rate">—</div><div class="kpi-sub" id="k-rate-sub">판매수량 대비</div><div class="gauge-wrap"><div class="gauge-bar"><div class="gauge-fill" id="gaugeFill" style="width:0%"></div></div><div class="gauge-labels"><span>0%</span><span>목표 1%</span><span>3%</span></div></div></div>
+      <div class="kpi-card"><div class="kpi-accent"></div><div class="kpi-label">관리 SKU 수</div><div class="kpi-value" id="k-skus">—</div><div class="kpi-sub">불량 발생 모델</div></div>
+      <div class="kpi-card"><div class="kpi-accent yellow"></div><div class="kpi-label">당월 불량</div><div class="kpi-value" id="k-monthly">—</div><div class="kpi-sub" id="k-monthly-sub">전월 대비 —</div></div>
+      <div class="kpi-card"><div class="kpi-accent purple"></div><div class="kpi-label">1위 불량유형</div><div class="kpi-value small" id="k-top-type">—</div><div class="kpi-sub" id="k-top-type-cnt">건수 —</div></div>
+      <div class="kpi-card"><div class="kpi-accent green"></div><div class="kpi-label">유통 채널</div><div class="kpi-value" id="k-channels">—</div><div class="kpi-sub">접수 경로 수</div></div>
     </div>
-  </div>
-  <div class="header-right">
-    <div class="live-dot"></div>
-    <span class="updated-time" id="updatedTime">—</span>
-    <button class="btn-refresh" id="btnRefresh" onclick="loadData()">↺ 새로고침</button>
-  </div>
-</header>
-
-<!-- 탭 -->
-<nav class="nav">
-  <div class="nav-tab active" onclick="showPage('overview',this)">📊 종합 현황</div>
-  <div class="nav-tab" onclick="showPage('trend',this)">📈 월별 트렌드</div>
-  <div class="nav-tab" onclick="showPage('sku',this)">🔍 SKU 분석</div>
-  <div class="nav-tab" onclick="showPage('defect',this)">⚠️ 불량유형</div>
-  <div class="nav-tab" onclick="showPage('channel',this)">📦 채널 분석</div>
-
-<main class="main">
-<!-- 필터 바 -->
-<div class="filter-bar" id="filterBar">
-  <div class="filter-group">
-    <span class="filter-label">연도</span>
-    <div class="filter-btns" id="yearBtns">
-      <button class="fbtn active" onclick="setFilter('year','all',this)">전체</button>
-      <button class="fbtn" onclick="setFilter('year','2025',this)">2025</button>
-      <button class="fbtn" onclick="setFilter('year','2026',this)">2026</button>
+    <div class="grid-3">
+      <div class="card"><div class="card-header"><div class="card-title">월별 불량 접수 추이 <span class="card-title-sub">건수(바) + 불량률%(라인)</span></div><span class="card-badge" id="bdgMonths">—</span></div><div class="h260"><canvas id="cMonthlyCombo"></canvas></div></div>
+      <div class="card"><div class="card-header"><div class="card-title">품목별 불량 비중</div><span class="card-badge" id="bdgTotal2">—건</span></div><div class="h220"><canvas id="cCategory"></canvas></div><div id="categoryBars" style="margin-top:12px"></div></div>
     </div>
-  </div>
-  <div class="filter-divider"></div>
-  <div class="filter-group">
-    <span class="filter-label">분기</span>
-    <div class="filter-btns" id="quarterBtns">
-      <button class="fbtn active" onclick="setFilter('quarter','all',this)">전체</button>
-      <button class="fbtn" onclick="setFilter('quarter','Q1',this)">1Q</button>
-      <button class="fbtn" onclick="setFilter('quarter','Q2',this)">2Q</button>
-      <button class="fbtn" onclick="setFilter('quarter','Q3',this)">3Q</button>
-      <button class="fbtn" onclick="setFilter('quarter','Q4',this)">4Q</button>
+    <div class="grid-3b">
+      <div class="card"><div class="card-header"><div class="card-title">불량 발생 시점 분포</div><span class="card-badge">구매 후 경과 개월</span></div><div class="timing-wrap" style="margin-top:6px"><div style="position:relative;height:150px"><canvas id="cTiming"></canvas></div><div class="timing-legend" id="timingLegend"></div></div></div>
+      <div class="card"><div class="card-header"><div class="card-title">생산분류별 불량</div><span class="card-badge">JMW / 소싱</span></div><div class="h180"><canvas id="cMfgType"></canvas></div></div>
+      <div class="card"><div class="card-header"><div class="card-title">유통 채널별 비중</div></div><div class="h180"><canvas id="cChannelPie"></canvas></div></div>
     </div>
-  </div>
-  <div class="filter-divider"></div>
-  <div class="filter-group">
-    <span class="filter-label">월</span>
-    <div class="filter-btns" id="monthBtns" style="flex-wrap:wrap;max-width:420px"></div>
-  </div>
-  <div style="margin-left:auto;font-size:11px;color:var(--text-muted)" id="filterSummary"></div>
-</div>
-
-
-<!-- ①  종합 현황 -->
-<div class="page active" id="page-overview">
-
-  <!-- KPI 6칸 -->
-  <div class="kpi-row" id="kpiRow">
-    <div class="kpi-card">
-      <div class="kpi-accent red"></div>
-      <div class="kpi-label">총 불량 건수</div>
-      <div class="kpi-value" id="k-total">—</div>
-      <div class="kpi-sub">누적 접수 기준</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-accent orange"></div>
-      <div class="kpi-label">전체 불량률</div>
-      <div class="kpi-value" id="k-rate">—</div>
-      <div class="kpi-sub" id="k-rate-sub">판매수량 대비</div>
-      <div class="gauge-wrap" id="gaugeWrap">
-        <div class="gauge-bar"><div class="gauge-fill" id="gaugeFill" style="width:0%;background:var(--orange)"></div></div>
-        <div class="gauge-labels"><span>0%</span><span>목표 1%</span><span>3%</span></div>
-      </div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-accent"></div>
-      <div class="kpi-label">관리 SKU 수</div>
-      <div class="kpi-value" id="k-skus">—</div>
-      <div class="kpi-sub">불량 발생 모델</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-accent yellow"></div>
-      <div class="kpi-label">당월 불량</div>
-      <div class="kpi-value" id="k-monthly">—</div>
-      <div class="kpi-sub" id="k-monthly-sub">전월 대비 —</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-accent purple"></div>
-      <div class="kpi-label">1위 불량유형</div>
-      <div class="kpi-value small" id="k-top-type">—</div>
-      <div class="kpi-sub" id="k-top-type-cnt">건수 —</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-accent green"></div>
-      <div class="kpi-label">유통 채널</div>
-      <div class="kpi-value" id="k-channels">—</div>
-      <div class="kpi-sub">접수 경로 수</div>
+    <div class="grid-2">
+      <div class="card"><div class="card-header"><div class="card-title">불량유형 파레토 (Top 10)</div><span class="card-badge red">누적 비율 포함</span></div><div id="paretoShort"></div></div>
+      <div class="card"><div class="card-header"><div class="card-title">불량 건수 Top 8 SKU</div><span class="card-badge">신호등 등급</span></div><div id="skuSignal"></div></div>
     </div>
   </div>
 
-  <!-- 월별 콤보 + 품목별 -->
-  <div class="grid-3">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">월별 불량 접수 추이 <span class="card-title-sub">건수(바) + 불량률%(라인)</span></div>
-        <span class="card-badge" id="bdgMonths">—</span>
-      </div>
-      <div class="h260"><canvas id="cMonthlyCombo"></canvas></div>
+  <!-- ② 월별 트렌드 -->
+  <div class="page" id="page-trend">
+    <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="kpi-card"><div class="kpi-accent red"></div><div class="kpi-label">최다 불량 월</div><div class="kpi-value small" id="t-peak-month">—</div><div class="kpi-sub" id="t-peak-cnt">—건</div></div>
+      <div class="kpi-card"><div class="kpi-accent orange"></div><div class="kpi-label">월 평균 불량</div><div class="kpi-value" id="t-avg">—</div><div class="kpi-sub">건/월</div></div>
+      <div class="kpi-card"><div class="kpi-accent"></div><div class="kpi-label">최근 월 불량</div><div class="kpi-value" id="t-latest">—</div><div class="kpi-sub" id="t-latest-sub">—</div></div>
+      <div class="kpi-card"><div class="kpi-accent green"></div><div class="kpi-label">전월 대비</div><div class="kpi-value" id="t-mom">—</div><div class="kpi-sub" id="t-mom-sub">전월 —건</div></div>
     </div>
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">품목별 불량 비중</div>
-        <span class="card-badge" id="bdgTotal2">—건</span>
-      </div>
-      <div class="h220"><canvas id="cCategory"></canvas></div>
-      <div id="categoryBars" style="margin-top:12px"></div>
+    <div class="grid-2">
+      <div class="card"><div class="card-header"><div class="card-title">월별 불량건수 + 누적 추이</div></div><div class="h300"><canvas id="cTrendCumul"></canvas></div></div>
+      <div class="card"><div class="card-header"><div class="card-title">월별 MoM 변화율</div><span class="card-badge">전월 대비 증감</span></div><div id="momList" style="margin-top:4px"></div></div>
     </div>
-  </div>
-
-  <!-- 발생 시점 + 생산분류 + 채널 파이 -->
-  <div class="grid-3b">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">불량 발생 시점 분포</div>
-        <span class="card-badge">구매 후 경과 개월</span>
-      </div>
-      <div class="timing-wrap" style="margin-top:6px">
-        <div style="position:relative;height:150px"><canvas id="cTiming"></canvas></div>
-        <div class="timing-legend" id="timingLegend"></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">생산분류별 불량</div>
-        <span class="card-badge">JMW / 소싱</span>
-      </div>
-      <div class="h180"><canvas id="cMfgType"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">유통 채널별 비중</div>
-      </div>
-      <div class="h180"><canvas id="cChannelPie"></canvas></div>
+    <div class="grid-2">
+      <div class="card"><div class="card-header"><div class="card-title">품목별 × 월별 불량 추이</div><span class="card-badge">스택 바</span></div><div class="h260"><canvas id="cMonthCategory"></canvas></div></div>
+      <div class="card"><div class="card-header"><div class="card-title">불량유형 × 월별 추이</div><span class="card-badge">Top 5 유형</span></div><div class="h260"><canvas id="cMonthDefectType"></canvas></div></div>
     </div>
   </div>
 
-  <!-- 불량유형 Top10 파레토 요약 -->
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">불량유형 파레토 (Top 10)</div>
-        <span class="card-badge red">누적 비율 포함</span>
-      </div>
-      <div id="paretoShort"></div>
+  <!-- ③ SKU 분석 -->
+  <div class="page" id="page-sku">
+    <div class="grid-4">
+      <div class="card"><div class="card-header"><div class="card-title">모델별 불량 건수 Top 15</div><span class="card-badge red">상위 3개 강조</span></div><div class="h340"><canvas id="cSkuBar"></canvas></div></div>
+      <div class="card"><div class="card-header"><div class="card-title">불량률 상위 모델</div><span class="card-badge orange">판매수량 있는 모델</span></div><div class="h340"><canvas id="cDefectRate"></canvas></div></div>
     </div>
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">불량 건수 Top 8 SKU</div>
-        <span class="card-badge">신호등 등급</span>
-      </div>
-      <div id="skuSignal"></div>
+    <div class="card" style="margin-bottom:14px"><div class="card-header"><div class="card-title">모델별 불량 상세 현황</div><span class="card-badge">🔴 ≥3% · 🟡 1~3% · 🟢 &lt;1%</span></div><div class="tbl-wrap"><table><thead><tr><th>순위</th><th>모델명</th><th>품목</th><th>생산분류</th><th class="td-right">불량건수</th><th class="td-right">판매수량</th><th class="td-right">불량률</th><th>등급</th><th>전체 비중</th></tr></thead><tbody id="skuBody"></tbody></table></div></div>
+    <div class="grid-2">
+      <div class="card"><div class="card-header"><div class="card-title">불량률 버블 차트</div><span class="card-badge">버블 크기 = 불량건수</span></div><div class="h260"><canvas id="cBubble"></canvas></div></div>
+      <div class="card"><div class="card-header"><div class="card-title">모델별 불량 시점 분포</div><span class="card-badge">Top 8 모델</span></div><div class="h260"><canvas id="cSkuTiming"></canvas></div></div>
     </div>
   </div>
 
-</div>
-
-<!-- ② 월별 트렌드 -->
-<div class="page" id="page-trend">
-
-  <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
-    <div class="kpi-card">
-      <div class="kpi-accent red"></div>
-      <div class="kpi-label">최다 불량 월</div>
-      <div class="kpi-value small" id="t-peak-month">—</div>
-      <div class="kpi-sub" id="t-peak-cnt">—건</div>
+  <!-- ④ 불량유형 -->
+  <div class="page" id="page-defect">
+    <div class="grid-2">
+      <div class="card"><div class="card-header"><div class="card-title">불량유형 파레토 (전체)</div><span class="card-badge red">누적 80% 기준선</span></div><div id="paretoFull"></div></div>
+      <div class="card"><div class="card-header"><div class="card-title">불량유형 도넛</div></div><div class="h300"><canvas id="cDefectDoughnut"></canvas></div></div>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-accent orange"></div>
-      <div class="kpi-label">월 평균 불량</div>
-      <div class="kpi-value" id="t-avg">—</div>
-      <div class="kpi-sub">건/월</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-accent"></div>
-      <div class="kpi-label">최근 월 불량</div>
-      <div class="kpi-value" id="t-latest">—</div>
-      <div class="kpi-sub" id="t-latest-sub">—</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-accent green"></div>
-      <div class="kpi-label">전월 대비</div>
-      <div class="kpi-value" id="t-mom">—</div>
-      <div class="kpi-sub" id="t-mom-sub">전월 —건</div>
+    <div class="card" style="margin-bottom:14px"><div class="card-header"><div class="card-title">품목 × 불량유형 매트릭스</div><span class="card-badge">셀 색상 = 건수 강도</span></div><div class="tbl-wrap" id="matrixWrap"></div></div>
+    <div class="grid-2">
+      <div class="card"><div class="card-header"><div class="card-title">불량유형별 발생 시점 분포</div><span class="card-badge">Top 8 유형</span></div><div class="h300"><canvas id="cDefectTiming"></canvas></div></div>
+      <div class="card"><div class="card-header"><div class="card-title">불량유형 × 채널 분포</div></div><div class="h300"><canvas id="cDefectChannel"></canvas></div></div>
     </div>
   </div>
 
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-header"><div class="card-title">월별 불량건수 + 누적 추이</div></div>
-      <div class="h300"><canvas id="cTrendCumul"></canvas></div>
+  <!-- ⑤ 채널 분석 -->
+  <div class="page" id="page-channel">
+    <div class="channel-cards" id="channelCards"></div>
+    <div class="grid-2">
+      <div class="card"><div class="card-header"><div class="card-title">채널별 월별 불량 추이</div><span class="card-badge">스택 바</span></div><div class="h260"><canvas id="cChannelMonthly"></canvas></div></div>
+      <div class="card"><div class="card-header"><div class="card-title">채널 × 불량유형 분포</div><span class="card-badge">Top 6 유형</span></div><div class="h260"><canvas id="cChannelType"></canvas></div></div>
     </div>
-    <div class="card">
-      <div class="card-header"><div class="card-title">월별 MoM 변화율</div><span class="card-badge">전월 대비 증감</span></div>
-      <div id="momList" style="margin-top:4px"></div>
-    </div>
-  </div>
-
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-header"><div class="card-title">품목별 × 월별 불량 추이</div><span class="card-badge">스택 바</span></div>
-      <div class="h260"><canvas id="cMonthCategory"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><div class="card-title">불량유형 × 월별 추이</div><span class="card-badge">Top 5 유형</span></div>
-      <div class="h260"><canvas id="cMonthDefectType"></canvas></div>
+    <div class="grid-2">
+      <div class="card"><div class="card-header"><div class="card-title">채널별 품목 분포</div></div><div class="h260"><canvas id="cChannelCategory"></canvas></div></div>
+      <div class="card"><div class="card-header"><div class="card-title">채널별 발생 시점 분포</div></div><div class="h260"><canvas id="cChannelTiming"></canvas></div></div>
     </div>
   </div>
 
-</div>
-
-<!-- ③ SKU 분석 -->
-<div class="page" id="page-sku">
-
-  <div class="grid-4">
-    <div class="card">
-      <div class="card-header"><div class="card-title">모델별 불량 건수 Top 15</div><span class="card-badge red">상위 3개 강조</span></div>
-      <div class="h340"><canvas id="cSkuBar"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><div class="card-title">불량률 상위 모델</div><span class="card-badge orange">판매수량 있는 모델</span></div>
-      <div class="h340"><canvas id="cDefectRate"></canvas></div>
-    </div>
-  </div>
-
-  <div class="card" style="margin-bottom:14px">
-    <div class="card-header"><div class="card-title">모델별 불량 상세 현황</div><span class="card-badge">신호등 기준: 🔴 ≥3% · 🟡 1~3% · 🟢 &lt;1%</span></div>
-    <div class="tbl-wrap">
-      <table id="skuTable">
-        <thead><tr>
-          <th>순위</th><th>모델명</th><th>품목</th><th>생산분류</th>
-          <th class="td-right">불량건수</th><th class="td-right">판매수량</th>
-          <th class="td-right">불량률</th><th>등급</th>
-          <th>전체 비중</th>
-        </tr></thead>
-        <tbody id="skuBody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-header"><div class="card-title">불량률 버블 차트</div><span class="card-badge">버블 크기 = 불량건수</span></div>
-      <div class="h260"><canvas id="cBubble"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><div class="card-title">모델별 불량 시점 분포</div><span class="card-badge">Top 8 모델</span></div>
-      <div class="h260"><canvas id="cSkuTiming"></canvas></div>
-    </div>
-  </div>
-
-</div>
-
-<!-- ④ 불량유형 -->
-<div class="page" id="page-defect">
-
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-header"><div class="card-title">불량유형 파레토 (전체)</div><span class="card-badge red">누적 80% 기준선</span></div>
-      <div id="paretoFull"></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><div class="card-title">불량유형 도넛</div></div>
-      <div class="h300"><canvas id="cDefectDoughnut"></canvas></div>
-    </div>
-  </div>
-
-  <div class="card" style="margin-bottom:14px">
-    <div class="card-header"><div class="card-title">품목 × 불량유형 매트릭스</div><span class="card-badge">셀 색상 = 건수 강도</span></div>
-    <div class="tbl-wrap" id="matrixWrap"></div>
-  </div>
-
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-header"><div class="card-title">불량유형별 발생 시점 분포</div><span class="card-badge">Top 8 유형</span></div>
-      <div class="h300"><canvas id="cDefectTiming"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><div class="card-title">불량유형 × 채널 분포</div></div>
-      <div class="h300"><canvas id="cDefectChannel"></canvas></div>
-    </div>
-  </div>
-
-</div>
-
-<!-- ⑤ 채널 분석 -->
-<div class="page" id="page-channel">
-
-  <div class="channel-cards" id="channelCards"></div>
-
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-header"><div class="card-title">채널별 월별 불량 추이</div><span class="card-badge">스택 바</span></div>
-      <div class="h260"><canvas id="cChannelMonthly"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><div class="card-title">채널 × 불량유형 분포</div><span class="card-badge">Top 6 유형</span></div>
-      <div class="h260"><canvas id="cChannelType"></canvas></div>
-    </div>
-  </div>
-
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-header"><div class="card-title">채널별 품목 분포</div></div>
-      <div class="h240"><canvas id="cChannelCategory"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><div class="card-title">채널별 발생 시점 분포</div></div>
-      <div class="h240"><canvas id="cChannelTiming"></canvas></div>
-    </div>
-  </div>
-
-</div>
-
-</main>
+  </main>
 </div><!-- /.content -->
 </div><!-- /.app -->
 
 <script>
+
 // ============================================================
 // 설정
 // ============================================================
@@ -1915,6 +1334,7 @@ function buildFilteredSummary(defects, monthlySales, includedMonths) {
 
 setInterval(loadData, REFRESH_MIN*60*1000);
 window.addEventListener('DOMContentLoaded', loadData);
+
 </script>
 </body>
 </html>
