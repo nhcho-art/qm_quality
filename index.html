@@ -231,6 +231,7 @@ tbody tr:hover td{background:#F8FAFC}
 
 <div style="display:flex">
 
+<!-- ── 사이드바 ── -->
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="brand"><span class="brand-dot"></span>JMW Quality</div>
@@ -282,6 +283,7 @@ tbody tr:hover td{background:#F8FAFC}
   </div>
 </aside>
 
+<!-- ── 콘텐츠 ── -->
 <div class="main">
   <div class="topbar">
     <div class="topbar-title" id="topTitle">종합 현황 <span id="topSub">2026년 누적</span></div>
@@ -291,6 +293,7 @@ tbody tr:hover td{background:#F8FAFC}
 
   <div class="page-wrap">
 
+  <!-- ① 종합 현황 -->
   <div class="pg on" id="pg-overview">
 
     <div class="kpi-grid">
@@ -310,7 +313,7 @@ tbody tr:hover td{background:#F8FAFC}
       </div>
       <div class="card">
         <div class="ch"><div class="ct">품목별 불량 비중</div><span class="badge b-blue" id="bdgTotal2">—건</span></div>
-        <div class="h280"><canvas id="cCategory"></canvas></div>
+        <div class="h160"><canvas id="cCategory"></canvas></div>
         <div id="catBars" style="margin-top:10px"></div>
       </div>
     </div>
@@ -347,6 +350,7 @@ tbody tr:hover td{background:#F8FAFC}
     </div>
   </div>
 
+  <!-- ② 월별 트렌드 -->
   <div class="pg" id="pg-trend">
     <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
       <div class="kpi-card"><div class="kpi-accent acc-red"></div><div class="kpi-lbl">최다 불량 월</div><div class="kpi-val sm" id="t-peak">—</div><div class="kpi-sub" id="t-peak-cnt">—</div></div>
@@ -380,6 +384,7 @@ tbody tr:hover td{background:#F8FAFC}
     </div>
   </div>
 
+  <!-- ③ SKU 분석 -->
   <div class="pg" id="pg-sku">
     <div class="section-divider"><div class="sd-line"></div><span class="sd-label">모델별 불량</span><div class="sd-line"></div></div>
     <div class="g4 mb14">
@@ -412,6 +417,7 @@ tbody tr:hover td{background:#F8FAFC}
     </div>
   </div>
 
+  <!-- ④ 불량유형 -->
   <div class="pg" id="pg-defect">
     <div class="section-divider"><div class="sd-line"></div><span class="sd-label">파레토 분석</span><div class="sd-line"></div></div>
     <div class="g2 mb14">
@@ -443,6 +449,7 @@ tbody tr:hover td{background:#F8FAFC}
     </div>
   </div>
 
+  <!-- ⑤ 채널 분석 -->
   <div class="pg" id="pg-channel">
     <div class="channel-cards" id="channelCards"></div>
 
@@ -471,7 +478,11 @@ tbody tr:hover td{background:#F8FAFC}
     </div>
   </div>
 
-  </div></div></div><script>
+  </div><!-- /page-wrap -->
+</div><!-- /main -->
+</div><!-- /flex -->
+
+<script>
 // Chart.js datalabels 전역 등록
 Chart.register(ChartDataLabels);
 
@@ -552,15 +563,6 @@ function renderAll(){
   renderSKU(s);
   renderDefect(s);
   renderChannel(s);
-}
-
-// ── 공통 포맷터 ──
-function fmt(n){return Number(n).toLocaleString('ko-KR');}
-function pct(n,t){return t>0?(n/t*100).toFixed(1):'0.0';}
-function stackLblFmt(v, ctx) {
-  if (!v || v <= 0) return '';
-  const total = ctx.chart.data.datasets.reduce((sum, ds) => sum + (Number(ds.data[ctx.dataIndex]) || 0), 0);
-  return (v / total) > 0.06 ? fmt(v) : '';
 }
 
 // ── KPI ──
@@ -666,7 +668,7 @@ function renderOverview(s){
     layout:{padding:{top:28,right:10,bottom:10}}
   });
 
-  // 품목별 - 수평 막대
+  // 품목별 - 수평 막대 (도넛 대체)
   const cats=Object.keys(s.byCategory),catV=Object.values(s.byCategory);
   const total=s.totalDefects;
   mkChart('cCategory','bar',{
@@ -679,7 +681,7 @@ function renderOverview(s){
   },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
     scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
             y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}},
-    layout:{padding:{right:70,top:4}}});
+    layout:{padding:{right:120,top:4}}});
   document.getElementById('catBars').innerHTML='';
 
   // 발생 시점 - 수평 막대
@@ -761,24 +763,20 @@ function renderTrend(s){
             y2:{beginAtZero:true,position:'right',grid:{display:false},ticks:{font:{family:'JetBrains Mono',size:10}}},
             x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}}}});
 
-  const maxAbs = Math.max(...mV.map((v, i) => i === 0 ? v : Math.abs(v - mV[i-1])), 1);
-  document.getElementById('momList').innerHTML = months.map((m, i) => {
-    const curr = mV[i];
-    const prev = i === 0 ? 0 : mV[i-1];
-    const diff = curr - prev;
-    const isFirst = i === 0;
-
-    const pctStr = (!isFirst && prev > 0) ? (diff / prev * 100).toFixed(1) + '%' : '—';
-    const barPct = (Math.abs(isFirst ? curr : diff) / maxAbs * 100).toFixed(1);
-
-    return `<div class="mom-item">
+  const maxAbs=Math.max(...mV.map((v,i)=>i===0?0:Math.abs(v-mV[i-1])),1);
+  document.getElementById('momList').innerHTML=months.map((m,i)=>{
+    if(i===0)return'';
+    const curr=mV[i],prev=mV[i-1],diff=curr-prev;
+    const pctStr=prev>0?(diff/prev*100).toFixed(1)+'%':'—';
+    const barPct=(Math.abs(diff)/maxAbs*100).toFixed(1);
+    return`<div class="mom-item">
       <div class="mom-month">${m.slice(0,4)+'.'+m.slice(4)}</div>
       <div class="mom-cnt mono">${fmt(curr)}</div>
       <div class="mom-bar-wrap">
-        <div class="${(isFirst || diff >= 0) ? 'mom-bar-pos' : 'mom-bar-neg'}" style="width:${barPct}%; ${(isFirst || diff >= 0) ? 'left:0' : 'right:0'}"></div>
+        <div class="${diff>=0?'mom-bar-pos':'mom-bar-neg'}" style="width:${barPct}%;${diff<0?'right:0':'left:0'}"></div>
       </div>
-      <div class="mom-change ${isFirst ? '' : (diff >= 0 ? 'up' : 'dn')}">${isFirst ? '기준월' : (diff >= 0 ? '+' : '') + fmt(diff)}</div>
-      <div style="font-size:10px;color:var(--text4);min-width:40px;text-align:right;font-family:'JetBrains Mono'">${isFirst ? '' : (diff >= 0 ? '+' : '') + pctStr}</div>
+      <div class="mom-change ${diff>=0?'up':'dn'}">${diff>=0?'+':''}${fmt(diff)}</div>
+      <div style="font-size:10px;color:var(--text4);min-width:40px;text-align:right;font-family:'JetBrains Mono'">${diff>=0?'+':''}${pctStr}</div>
     </div>`;
   }).join('');
 
@@ -789,7 +787,7 @@ function renderTrend(s){
   mkChart('cMonthCat','bar',{
     labels:mL,
     datasets:cats.map((c,i)=>({label:c,data:months.map(m=>catMD[c][m]||0),backgroundColor:PAL[i],borderRadius:2,
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:stackLblFmt}}))
+      datalabels:{display:false}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
@@ -799,7 +797,7 @@ function renderTrend(s){
   mkChart('cMonthType','line',{
     labels:mL,
     datasets:topTypes.map((t,i)=>({label:t,data:months.map(m=>typeMD[t][m]||0),borderColor:PAL[i],backgroundColor:'transparent',pointRadius:4,borderWidth:2,tension:0.3,
-      datalabels:{display:false}}))
+      datalabels:{anchor:'top',align:'top',color:PAL[i],font:{family:'JetBrains Mono',weight:'600',size:9},formatter:(v,ctx)=>ctx.dataIndex===ctx.dataset.data.length-1&&v>0?v:''}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},
     scales:{x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}},y:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 }
@@ -862,7 +860,7 @@ function renderSKU(s){
   mkChart('cSkuTiming','bar',{
     labels:top8,
     datasets:TK.map((k,i)=>({label:k,data:top8.map(m=>mTD[m][[1,2,3,12,99][i]]||0),backgroundColor:TC[i],borderRadius:2,
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:stackLblFmt}}))
+      datalabels:{display:false}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:10},padding:8,boxWidth:8}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 }
@@ -875,14 +873,14 @@ function renderDefect(s){
   mkChart('cDefectDoughnut','bar',{
     labels:types.slice(0,12),
     datasets:[{data:counts.slice(0,12),backgroundColor:PAL.concat(['#78350f','#065f46']),borderRadius:5,borderSkipped:false,
-      datalabels:{anchor:'end',align:'top',clamp:true,clip:false,offset:4,
+      datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,
         color:(ctx)=>(PAL.concat(['#78350f','#065f46']))[ctx.dataIndex],
         font:{family:'JetBrains Mono',weight:'700',size:10},
-        formatter:(v)=>fmt(v)}}]
-  },{plugins:{legend:{display:false},datalabels:{}},
-    scales:{x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}},
-            y:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}},
-    layout:{padding:{top:20}}});
+        formatter:(v)=>fmt(v)+' ('+pct(v,defTotal)+'%)'}}]
+  },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
+    scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
+            y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}}},
+    layout:{padding:{right:110,top:4}}});
 
   const cats=Object.keys(s.categoryDefectMatrix),topT=types.slice(0,10);
   const maxC=Math.max(...cats.flatMap(c=>topT.map(t=>s.categoryDefectMatrix[c][t]||0)),1);
@@ -900,7 +898,7 @@ function renderDefect(s){
   mkChart('cDefectTiming','bar',{
     labels:top8t.map(t=>t.length>7?t.slice(0,7)+'…':t),
     datasets:TK.map((k,i)=>({label:k,data:top8t.map(t=>dtTD[t][[1,2,3,12,99][i]]||0),backgroundColor:TC[i],borderRadius:2,
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:stackLblFmt}}))
+      datalabels:{display:false}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:10},padding:8,boxWidth:8}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
@@ -910,7 +908,7 @@ function renderDefect(s){
   mkChart('cDefectChannel','bar',{
     labels:chK,
     datasets:top6t.map((t,i)=>({label:t,data:chK.map(ch=>dtChD[ch][t]||0),backgroundColor:PAL[i],borderRadius:2,
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:10},formatter:stackLblFmt}}))
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v>0?v:''}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:10},padding:8,boxWidth:8}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 }
@@ -933,7 +931,7 @@ function renderChannel(s){
   mkChart('cChMonthly','bar',{
     labels:mL,
     datasets:chK.map((ch,i)=>({label:ch,data:months.map(m=>chMD[ch][m]||0),backgroundColor:cols[i%cols.length],borderRadius:2,
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:10},formatter:stackLblFmt}}))
+      datalabels:{display:false}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
@@ -943,7 +941,7 @@ function renderChannel(s){
   mkChart('cChType','bar',{
     labels:chK,
     datasets:top6t.map((t,i)=>({label:t,data:chK.map(ch=>ctD[ch][t]||0),backgroundColor:PAL[i],borderRadius:2,
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:10},formatter:stackLblFmt}}))
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v>0?v:''}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:10},padding:8,boxWidth:8}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
@@ -953,7 +951,7 @@ function renderChannel(s){
   mkChart('cChCat','bar',{
     labels:chK,
     datasets:cats.map((c,i)=>({label:c,data:chK.map(ch=>ccD[ch][c]||0),backgroundColor:PAL[i],borderRadius:2,
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:10},formatter:stackLblFmt}}))
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v>0?v:''}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
@@ -962,7 +960,7 @@ function renderChannel(s){
   mkChart('cChTiming','bar',{
     labels:chK,
     datasets:TK.map((k,i)=>({label:k,data:chK.map(ch=>chTiD[ch][[1,2,3,12,99][i]]||0),backgroundColor:TC[i],borderRadius:2,
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:10},formatter:stackLblFmt}}))
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v>0?v:''}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 }
@@ -1003,6 +1001,9 @@ function mkChart(id,type,data,opts={}){
     layout:{padding:{top:18,right:30}},...opts
   }});
 }
+
+function fmt(n){return Number(n).toLocaleString('ko-KR');}
+function pct(n,t){return t>0?(n/t*100).toFixed(1):'0.0';}
 
 // ── 필터 ──
 function initFilter(){
