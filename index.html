@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JMW Quality Dashboard v1.4</title>
+<title>JMW Quality Dashboard v1.5</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -231,10 +231,11 @@ tbody tr:hover td{background:#F8FAFC}
 
 <div style="display:flex">
 
+<!-- ── 사이드바 ── -->
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="brand"><span class="brand-dot"></span>JMW Quality</div>
-    <div class="brand-sub">v1.4 · Q.T.S 품질 모니터링</div>
+    <div class="brand-sub">v1.5 · Q.T.S 품질 모니터링</div>
   </div>
 
   <nav class="sb-nav">
@@ -282,6 +283,7 @@ tbody tr:hover td{background:#F8FAFC}
   </div>
 </aside>
 
+<!-- ── 콘텐츠 ── -->
 <div class="main">
   <div class="topbar">
     <div class="topbar-title" id="topTitle">종합 현황 <span id="topSub">2026년 누적</span></div>
@@ -291,6 +293,7 @@ tbody tr:hover td{background:#F8FAFC}
 
   <div class="page-wrap">
 
+  <!-- ① 종합 현황 -->
   <div class="pg on" id="pg-overview">
 
     <div class="kpi-grid">
@@ -347,6 +350,7 @@ tbody tr:hover td{background:#F8FAFC}
     </div>
   </div>
 
+  <!-- ② 월별 트렌드 -->
   <div class="pg" id="pg-trend">
     <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
       <div class="kpi-card"><div class="kpi-accent acc-red"></div><div class="kpi-lbl">최다 불량 월</div><div class="kpi-val sm" id="t-peak">—</div><div class="kpi-sub" id="t-peak-cnt">—</div></div>
@@ -380,6 +384,7 @@ tbody tr:hover td{background:#F8FAFC}
     </div>
   </div>
 
+  <!-- ③ SKU 분석 -->
   <div class="pg" id="pg-sku">
     <div class="section-divider"><div class="sd-line"></div><span class="sd-label">모델별 불량</span><div class="sd-line"></div></div>
     <div class="g4 mb14">
@@ -412,6 +417,7 @@ tbody tr:hover td{background:#F8FAFC}
     </div>
   </div>
 
+  <!-- ④ 불량유형 -->
   <div class="pg" id="pg-defect">
     <div class="section-divider"><div class="sd-line"></div><span class="sd-label">파레토 분석</span><div class="sd-line"></div></div>
     <div class="g2 mb14">
@@ -443,6 +449,7 @@ tbody tr:hover td{background:#F8FAFC}
     </div>
   </div>
 
+  <!-- ⑤ 채널 분석 -->
   <div class="pg" id="pg-channel">
     <div class="channel-cards" id="channelCards"></div>
 
@@ -471,7 +478,11 @@ tbody tr:hover td{background:#F8FAFC}
     </div>
   </div>
 
-  </div></div></div><script>
+  </div><!-- /page-wrap -->
+</div><!-- /main -->
+</div><!-- /flex -->
+
+<script>
 // Chart.js datalabels 전역 등록
 Chart.register(ChartDataLabels);
 
@@ -494,6 +505,8 @@ function showPg(name,el){
   document.getElementById('pg-'+name).classList.add('on');
   el.classList.add('on');
   document.getElementById('topTitle').textContent=PG_TITLES[name]||name;
+  // 탭 전환 후 차트 레이아웃 재계산 (쏠림 방지)
+  setTimeout(()=>{ Object.values(charts).forEach(c=>{ if(c&&c.canvas&&c.canvas.closest('.pg.on')) c.resize(); }); },50);
 }
 
 async function loadData(){
@@ -592,8 +605,12 @@ function renderKPIs(s){
 
 // ── 종합 현황 ──
 function renderOverview(s){
-  // 2026년 월별만 필터
-  const months2026=Object.keys(s.byReceiptMonth).filter(m=>m.startsWith('2026')).sort();
+  // 2026년 1월부터 데이터 있는 최근 월까지 고정 (0건도 표시)
+  const allReceiptMonths=Object.keys(s.byReceiptMonth).sort();
+  const lastMonth=allReceiptMonths.filter(m=>m.startsWith('2026')).slice(-1)[0]||'202604';
+  const lastMNum=parseInt(lastMonth.slice(4));
+  const months2026=[];
+  for(let i=1;i<=lastMNum;i++) months2026.push('2026'+String(i).padStart(2,'0'));
   const mL2026=months2026.map(m=>m.slice(4)+'월');
   const mV2026=months2026.map(m=>s.byReceiptMonth[m]||0);
   const mR2026=months2026.map(m=>{const v=s.byReceiptMonth[m]||0,sv=s.monthlySalesTotals[m]||0;return sv>0?+(v/sv*100).toFixed(2):null;});
@@ -605,9 +622,9 @@ function renderOverview(s){
     labels:mL2026,
     datasets:[
       {label:'불량건수',data:mV2026,borderColor:P.red,backgroundColor:'rgba(220,38,38,0.08)',pointBackgroundColor:P.red,pointRadius:6,pointHoverRadius:8,borderWidth:2.5,tension:0.3,fill:true,
-       datalabels:{anchor:'top',align:'top',color:P.red,font:{family:'JetBrains Mono',weight:'700',size:12},formatter:v=>fmt(v)}},
+       datalabels:{anchor:'top',align:'top',offset:4,color:P.red,font:{family:'JetBrains Mono',weight:'700',size:11},formatter:v=>fmt(v)}},
       {label:'불량률%',data:mR2026,borderColor:P.amber,backgroundColor:'transparent',pointBackgroundColor:P.amber,pointRadius:5,borderWidth:2,tension:0.3,yAxisID:'y2',spanGaps:true,
-       datalabels:{anchor:'bottom',align:'bottom',color:P.amber,font:{family:'JetBrains Mono',weight:'600',size:10},formatter:v=>v!=null?v.toFixed(2)+'%':''}},
+       datalabels:{anchor:'bottom',align:'bottom',offset:4,color:P.amber,font:{family:'JetBrains Mono',weight:'600',size:10},formatter:v=>v!=null?v.toFixed(2)+'%':''}},
     ]
   },{
     plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:12}},datalabels:{}},
@@ -700,9 +717,9 @@ function renderTrend(s){
     labels:mL,
     datasets:[
       {type:'bar',label:'월별 불량',data:mV,backgroundColor:'rgba(37,99,235,0.65)',borderRadius:4,yAxisID:'y',order:2,
-       datalabels:{anchor:'end',align:'end',color:P.blue,font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v>0?fmt(v):''}},
+       datalabels:{anchor:'end',align:'end',clamp:true,color:P.blue,font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v>0?fmt(v):''}},
       {type:'line',label:'누적 불량',data:cumV,borderColor:P.red,backgroundColor:'rgba(220,38,38,0.06)',pointRadius:3,borderWidth:2.5,tension:0.3,yAxisID:'y2',order:1,
-       datalabels:{anchor:'top',align:'top',color:P.red,font:{family:'JetBrains Mono',weight:'600',size:9},formatter:v=>fmt(v)}}
+       datalabels:{anchor:'top',align:'top',color:P.red,font:{family:'JetBrains Mono',weight:'600',size:9},formatter:(v,ctx)=>ctx.dataIndex===ctx.dataset.data.length-1?fmt(v):''}}
     ]
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:12}},datalabels:{}},
     scales:{y:{beginAtZero:true,position:'left',grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}},
@@ -733,7 +750,7 @@ function renderTrend(s){
   mkChart('cMonthCat','bar',{
     labels:mL,
     datasets:cats.map((c,i)=>({label:c,data:months.map(m=>catMD[c][m]||0),backgroundColor:PAL[i],borderRadius:2,
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:v=>v>0?v:''}}))
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:(v,ctx)=>{const total=ctx.dataset.data.reduce((a,b)=>a+(b||0),0);return v>=Math.max(5,total*0.05)?v:'';},display:(ctx)=>ctx.dataset.data[ctx.dataIndex]>=5}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
@@ -743,7 +760,7 @@ function renderTrend(s){
   mkChart('cMonthType','line',{
     labels:mL,
     datasets:topTypes.map((t,i)=>({label:t,data:months.map(m=>typeMD[t][m]||0),borderColor:PAL[i],backgroundColor:'transparent',pointRadius:4,borderWidth:2,tension:0.3,
-      datalabels:{anchor:'top',align:'top',color:PAL[i],font:{family:'JetBrains Mono',weight:'600',size:9},formatter:v=>v>0?v:''}}))
+      datalabels:{anchor:'top',align:'top',color:PAL[i],font:{family:'JetBrains Mono',weight:'600',size:9},formatter:(v,ctx)=>ctx.dataIndex===ctx.dataset.data.length-1&&v>0?v:''}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},
     scales:{x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}},y:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 }
@@ -806,7 +823,7 @@ function renderSKU(s){
   mkChart('cSkuTiming','bar',{
     labels:top8,
     datasets:TK.map((k,i)=>({label:k,data:top8.map(m=>mTD[m][[1,2,3,12,99][i]]||0),backgroundColor:TC[i],borderRadius:2,
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:v=>v>0?v:''}}))
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:(v,ctx)=>{const total=ctx.dataset.data.reduce((a,b)=>a+(b||0),0);return v>=Math.max(5,total*0.05)?v:'';},display:(ctx)=>ctx.dataset.data[ctx.dataIndex]>=5}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:10},padding:8,boxWidth:8}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 }
@@ -837,7 +854,7 @@ function renderDefect(s){
   mkChart('cDefectTiming','bar',{
     labels:top8t.map(t=>t.length>7?t.slice(0,7)+'…':t),
     datasets:TK.map((k,i)=>({label:k,data:top8t.map(t=>dtTD[t][[1,2,3,12,99][i]]||0),backgroundColor:TC[i],borderRadius:2,
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:v=>v>0?v:''}}))
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:(v,ctx)=>{const total=ctx.dataset.data.reduce((a,b)=>a+(b||0),0);return v>=Math.max(5,total*0.05)?v:'';},display:(ctx)=>ctx.dataset.data[ctx.dataIndex]>=5}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:10},padding:8,boxWidth:8}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
@@ -870,7 +887,7 @@ function renderChannel(s){
   mkChart('cChMonthly','bar',{
     labels:mL,
     datasets:chK.map((ch,i)=>({label:ch,data:months.map(m=>chMD[ch][m]||0),backgroundColor:cols[i%cols.length],borderRadius:2,
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:v=>v>0?v:''}}))
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:(v,ctx)=>{const total=ctx.dataset.data.reduce((a,b)=>a+(b||0),0);return v>=Math.max(5,total*0.05)?v:'';},display:(ctx)=>ctx.dataset.data[ctx.dataIndex]>=5}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
@@ -944,6 +961,7 @@ function fmt(n){return Number(n).toLocaleString('ko-KR');}
 function pct(n,t){return t>0?(n/t*100).toFixed(1):'0.0';}
 
 // ── 필터 ──
+const FILTER={year:'all',quarter:'all',month:'all'};
 function initFilter(){
   const allMs=Object.keys(G.summary.byReceiptMonth).sort();
   buildMonthBtns(allMs);
