@@ -509,15 +509,22 @@ function showPg(name,el){
 
 async function loadData(){
   document.getElementById('lo').style.display='flex';
-  document.getElementById('lt').textContent='Apps Script 연결 중...';
-  try{
-    const url=`${APPS_SCRIPT_URL}?callback=_cb&t=${Date.now()}`;
-    G=await fetchJSONP(url,'_cb');
-    if(!G||!G.success) throw new Error(G?.error||'오류');
-  }catch(e){
-    console.warn('API 실패, 목업:', e.message);
+  const isLocal = location.protocol === 'file:';
+  const hasUrl  = APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes('YOUR_');
+  if(!hasUrl || isLocal){
     document.getElementById('lt').textContent='목업 데이터 로딩 중...';
     G=getMock();
+  } else {
+    document.getElementById('lt').textContent='Apps Script 연결 중...';
+    try{
+      const url=`${APPS_SCRIPT_URL}?callback=_cb&t=${Date.now()}`;
+      G=await fetchJSONP(url,'_cb');
+      if(!G||!G.success) throw new Error(G?.error||'오류');
+    }catch(e){
+      console.warn('API 실패, 목업:', e.message);
+      document.getElementById('lt').textContent='목업 데이터 로딩 중...';
+      G=getMock();
+    }
   }
   renderAll();
   initFilter();
