@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JMW Quality Dashboard v1.6</title>
+<title>JMW Quality Dashboard v1.7</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -235,7 +235,7 @@ tbody tr:hover td{background:#F8FAFC}
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="brand"><span class="brand-dot"></span>JMW Quality</div>
-    <div class="brand-sub">v1.6 · Q.T.S 품질 모니터링</div>
+    <div class="brand-sub">v1.7 · Q.T.S 품질 모니터링</div>
   </div>
 
   <nav class="sb-nav">
@@ -966,7 +966,6 @@ function fmt(n){return Number(n).toLocaleString('ko-KR');}
 function pct(n,t){return t>0?(n/t*100).toFixed(1):'0.0';}
 
 // ── 필터 ──
-const FILTER={year:'all',quarter:'all',month:'all'};
 function initFilter(){
   const allMs=Object.keys(G.summary.byReceiptMonth).sort();
   buildMonthBtns(allMs);
