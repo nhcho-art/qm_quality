@@ -3,352 +3,264 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JMW Quality Dashboard v1.3</title>
+<title>JMW Quality Dashboard v1.4</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #f0f2f5;
-  --surface: #ffffff;
-  --surface2: #f7f8fa;
-  --border: #e4e7ec;
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
-  --blue: #1a56db;
-  --blue-light: #e8effe;
-  --blue-mid: #3b82f6;
-  --red: #e02424;
-  --red-light: #fde8e8;
-  --orange: #d97706;
-  --orange-light: #fef3c7;
-  --green: #057a55;
-  --green-light: #def7ec;
-  --yellow: #e3a008;
-  --yellow-light: #fdf6b2;
-  --purple: #7e3af2;
-  --purple-light: #edebfe;
-  --radius: 12px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+:root{
+  --navy:#0F1E3C;--blue:#2563EB;--teal:#0D9488;--amber:#D97706;
+  --red:#DC2626;--green:#16A34A;--purple:#7C3AED;--orange:#EA580C;
+  --bg:#F0F4F8;--card:#FFFFFF;--card2:#F8FAFC;
+  --border:#CBD5E1;--border2:#E2E8F0;
+  --text:#0F172A;--text2:#334155;--text3:#64748B;--text4:#94A3B8;
+  --sb-w:220px;--sh:0 1px 4px rgba(0,0,0,.08),0 6px 20px rgba(0,0,0,.05);
+  --r:14px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; }
-
-/* ── 전체 레이아웃 ── */
-.app { display: flex; min-height: 100vh; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:13px}
 
 /* ── 사이드바 ── */
-.sidebar {
-  width: 220px; flex-shrink: 0;
-  background: #0f172a;
-  display: flex; flex-direction: column;
-  position: fixed; top: 0; left: 0; bottom: 0;
-  z-index: 100; overflow-y: auto;
-}
-.sidebar-logo {
-  display: flex; align-items: center; gap: 10px;
-  padding: 20px 16px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-.logo { width: 34px; height: 34px; background: var(--red); border-radius: 8px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 700; color: white; }
-.logo-text { }
-.logo-title { font-size: 13px; font-weight: 700; color: white; line-height: 1.2; }
-.logo-sub   { font-size: 10px; color: #64748b; margin-top: 2px; }
+.sidebar{width:var(--sb-w);min-height:100vh;background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;overflow-y:auto}
+.sb-logo{padding:22px 18px 14px;border-bottom:1px solid rgba(255,255,255,.1)}
+.brand{font-size:15px;font-weight:800;color:#fff;display:flex;align-items:center;gap:9px}
+.brand-dot{width:9px;height:9px;background:var(--red);border-radius:50%;box-shadow:0 0 10px rgba(220,38,38,.7);flex-shrink:0}
+.brand-sub{font-size:9.5px;color:rgba(255,255,255,.32);margin-top:3px;font-family:'JetBrains Mono',monospace}
+.sb-nav{flex:1;padding:10px;display:flex;flex-direction:column;gap:2px}
+.sb-sec{font-size:9.5px;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:1.2px;text-transform:uppercase;padding:12px 10px 5px}
+.nb{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:9px;border:none;background:transparent;color:rgba(255,255,255,.5);font-size:13px;font-weight:500;font-family:'Noto Sans KR',sans-serif;cursor:pointer;transition:all .15s;width:100%;text-align:left}
+.nb:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9)}
+.nb.on{background:rgba(220,38,38,.22);color:#fff;font-weight:700}
+.nb.on .nbi{color:#FCA5A5}
+.nbi{font-size:14px;width:18px;text-align:center;flex-shrink:0}
 
-/* 사이드바 메뉴 */
-.sidebar-section { padding: 16px 10px 8px; }
-.sidebar-section-label {
-  font-size: 9.5px; font-weight: 700; color: #475569;
-  text-transform: uppercase; letter-spacing: .8px;
-  padding: 0 8px; margin-bottom: 6px;
-}
-.nav-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 9px 10px; border-radius: 8px;
-  font-size: 13px; font-weight: 500; color: #94a3b8;
-  cursor: pointer; transition: all .15s; margin-bottom: 2px;
-  white-space: nowrap;
-}
-.nav-item:hover  { background: rgba(255,255,255,0.06); color: #e2e8f0; }
-.nav-item.active { background: rgba(26,86,219,0.25); color: #93c5fd; font-weight: 600; }
-.nav-item.active .nav-icon { color: var(--blue); }
-.nav-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+/* 필터 */
+.sb-filter{padding:12px 12px 8px;border-top:1px solid rgba(255,255,255,.08)}
+.sb-filter-lbl{font-size:9.5px;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;display:block}
+.sf-group{margin-bottom:9px}
+.sf-glbl{font-size:10px;color:rgba(255,255,255,.38);margin-bottom:4px;display:block}
+.sf-btns{display:flex;flex-wrap:wrap;gap:3px}
+.sfbtn{padding:3px 8px;border-radius:5px;font-size:10px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:rgba(255,255,255,.45);transition:all .12s;font-family:'Noto Sans KR',sans-serif}
+.sfbtn:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.9)}
+.sfbtn.on{background:rgba(220,38,38,.32);color:#fff;border-color:rgba(220,38,38,.45)}
 
-/* 사이드바 필터 */
-.sidebar-filter { padding: 12px 10px; border-top: 1px solid rgba(255,255,255,0.06); margin-top: auto; }
-.sf-label { font-size: 9.5px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: .8px; padding: 0 6px; margin-bottom: 8px; }
-.sf-group { margin-bottom: 10px; }
-.sf-group-label { font-size: 10px; color: #64748b; padding: 0 6px; margin-bottom: 5px; }
-.sf-btns { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 2px; }
-.sfbtn {
-  padding: 4px 9px; border-radius: 5px; font-size: 11px; font-weight: 500;
-  cursor: pointer; border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.05); color: #94a3b8;
-  transition: all .12s; font-family: 'Noto Sans KR', sans-serif;
-}
-.sfbtn:hover  { background: rgba(255,255,255,0.1); color: #e2e8f0; }
-.sfbtn.active { background: var(--blue); color: white; border-color: var(--blue); }
-.sf-month-wrap { display: flex; flex-wrap: wrap; gap: 3px; padding: 0 2px; }
-
-/* 사이드바 하단 */
-.sidebar-bottom {
-  padding: 12px 10px;
-  border-top: 1px solid rgba(255,255,255,0.06);
-}
-.live-row { display: flex; align-items: center; gap: 6px; padding: 0 4px; margin-bottom: 8px; }
-.live-dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; flex-shrink: 0;
-  animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 50%{box-shadow:0 0 0 4px rgba(34,197,94,0)} }
-.updated-time { font-size: 10px; color: #64748b; font-family: 'DM Mono', monospace; flex: 1; }
-.btn-refresh {
-  width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;
-  background: rgba(255,255,255,0.07); color: #94a3b8;
-  border: 1px solid rgba(255,255,255,0.1); border-radius: 7px;
-  padding: 8px 12px; font-size: 12px; cursor: pointer; transition: all .15s;
-  font-family: 'Noto Sans KR', sans-serif;
-}
-.btn-refresh:hover { background: rgba(255,255,255,0.13); color: #e2e8f0; }
-
-/* ── 콘텐츠 영역 ── */
-.content { margin-left: 220px; flex: 1; min-width: 0; }
-.content-header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 14px 28px;
-  display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 50;
-}
-.content-title { font-size: 15px; font-weight: 700; }
-.content-sub   { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-.filter-summary-top { font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
+/* 하단 */
+.sb-footer{padding:12px 14px;border-top:1px solid rgba(255,255,255,.08)}
+.sb-kpi{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:7px}
+.sb-ki{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:8px;padding:7px 9px}
+.sb-kv{font-size:14px;font-weight:700;color:#fff;font-family:'JetBrains Mono',monospace;display:block}
+.sb-kl{font-size:9px;color:rgba(255,255,255,.3);display:block;margin-top:1px}
+.sb-time{font-size:9.5px;color:rgba(255,255,255,.2);text-align:center;font-family:'JetBrains Mono',monospace;margin-bottom:6px}
+.sb-btn{width:100%;padding:7px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.1);border-radius:7px;font-size:11px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s}
+.sb-btn:hover{background:rgba(255,255,255,.13);color:#fff}
 
 /* ── 메인 ── */
-.main { padding: 20px 24px; }
-.page { display: none; animation: fadeIn .2s ease; }
-.page.active { display: block; }
-@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+.main{margin-left:var(--sb-w);min-height:100vh}
+.topbar{background:var(--card);border-bottom:2px solid var(--border);padding:0 28px;display:flex;align-items:center;gap:12px;height:56px;position:sticky;top:0;z-index:50;box-shadow:var(--sh)}
+.topbar-title{font-size:15px;font-weight:700;color:var(--text);flex:1}
+.topbar-title span{font-size:11px;color:var(--text3);font-weight:400;margin-left:8px}
+.filter-info{font-size:11px;color:var(--text4);font-family:'JetBrains Mono',monospace}
+.tbtn{padding:7px 14px;border-radius:8px;border:1.5px solid var(--border);background:var(--card2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s}
+.tbtn:hover{background:var(--bg)}
 
-/* ── KPI 그리드 ── */
-.kpi-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 16px; }
-.kpi-card {
-  background: var(--surface); border-radius: var(--radius);
-  padding: 16px 18px; border: 1px solid var(--border); box-shadow: var(--shadow);
-  position: relative; overflow: hidden; transition: transform .15s;
-}
-.kpi-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
-.kpi-accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: var(--radius) var(--radius) 0 0; background: var(--blue); }
-.kpi-accent.red    { background: var(--red); }
-.kpi-accent.orange { background: var(--orange); }
-.kpi-accent.green  { background: var(--green); }
-.kpi-accent.yellow { background: var(--yellow); }
-.kpi-accent.purple { background: var(--purple); }
-.kpi-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
-.kpi-value { font-size: 26px; font-weight: 700; color: var(--text-primary); font-family: 'DM Mono', monospace; line-height: 1; }
-.kpi-value.small { font-size: 18px; }
-.kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 6px; display: flex; align-items: center; gap: 4px; }
-.kpi-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px; }
-.kpi-badge.up   { background: var(--red-light);   color: var(--red); }
-.kpi-badge.down { background: var(--green-light);  color: var(--green); }
-.kpi-badge.neu  { background: var(--blue-light);   color: var(--blue); }
-
-/* ── 게이지 ── */
-.gauge-wrap { margin-top: 6px; }
-.gauge-bar { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 4px; }
-.gauge-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
-.gauge-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-top: 2px; font-family: 'DM Mono', monospace; }
+.page-wrap{padding:20px 24px}
+.pg{display:none;animation:fadeIn .2s ease}
+.pg.on{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── 카드 ── */
-.card { background: var(--surface); border-radius: var(--radius); padding: 18px 20px; border: 1px solid var(--border); box-shadow: var(--shadow); }
-.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.card-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
-.card-title-sub { font-size: 11px; color: var(--text-muted); font-weight: 400; margin-left: 6px; }
-.card-badge { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; background: var(--blue-light); color: var(--blue); }
-.card-badge.red    { background: var(--red-light);    color: var(--red); }
-.card-badge.green  { background: var(--green-light);  color: var(--green); }
-.card-badge.orange { background: var(--orange-light); color: var(--orange); }
-
-/* ── 그리드 레이아웃 ── */
-.grid-2   { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.grid-3   { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 14px; }
-.grid-3b  { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.grid-4   { display: grid; grid-template-columns: 3fr 2fr; gap: 14px; margin-bottom: 14px; }
-.col-full { grid-column: 1 / -1; }
-
-/* ── 차트 높이 ── */
-.h180 { position: relative; height: 180px; }
-.h220 { position: relative; height: 220px; }
-.h260 { position: relative; height: 260px; }
-.h300 { position: relative; height: 300px; }
-.h340 { position: relative; height: 340px; }
-
-/* ── 테이블 ── */
-.tbl-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-thead th {
-  background: var(--surface2); padding: 9px 12px;
-  text-align: left; font-size: 10.5px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: .4px;
-  color: var(--text-secondary); border-bottom: 1px solid var(--border);
-  white-space: nowrap;
-}
-tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-tbody tr:last-child td { border-bottom: none; }
-tbody tr:hover td { background: var(--surface2); }
-.td-mono { font-family: 'DM Mono', monospace; font-size: 12px; }
-.td-right { text-align: right; }
-.td-center { text-align: center; }
-
-/* ── 인라인 바 ── */
-.inline-bar { display: flex; align-items: center; gap: 7px; }
-.inline-track { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; min-width: 60px; }
-.inline-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
-.fill-blue   { background: var(--blue); }
-.fill-red    { background: var(--red); }
-.fill-orange { background: var(--orange); }
-.fill-green  { background: var(--green); }
-
-/* ── 태그 ── */
-.tag { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 500; }
-.tag-blue   { background: var(--blue-light);   color: var(--blue); }
-.tag-red    { background: var(--red-light);     color: var(--red); }
-.tag-orange { background: var(--orange-light);  color: var(--orange); }
-.tag-green  { background: var(--green-light);   color: var(--green); }
-.tag-purple { background: var(--purple-light);  color: var(--purple); }
-.tag-gray   { background: #f3f4f6; color: #6b7280; }
-
-/* ── 신호등 배지 ── */
-.signal { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; }
-.signal-dot { width: 8px; height: 8px; border-radius: 50%; }
-.sig-red    { color: var(--red);    } .sig-red .signal-dot    { background: var(--red); }
-.sig-orange { color: var(--orange); } .sig-orange .signal-dot { background: var(--orange); }
-.sig-green  { color: var(--green);  } .sig-green .signal-dot  { background: var(--green); }
-
-/* ── 순위 배지 ── */
-.rank { display: inline-flex; align-items: center; justify-content: center;
-  width: 20px; height: 20px; border-radius: 50%; font-size: 11px; font-weight: 700; }
-.rank-1 { background: #fef3c7; color: #d97706; }
-.rank-2 { background: #f3f4f6; color: #374151; }
-.rank-3 { background: #fde8e8; color: #e02424; }
-.rank-n { background: var(--surface2); color: var(--text-muted); }
-
-/* ── 파레토 리스트 ── */
-.pareto-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
-.pareto-item:last-child { border-bottom: none; }
-.pareto-name { font-size: 12.5px; font-weight: 500; flex: 1; }
-.pareto-bar  { flex: 1.2; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
-.pareto-fill { height: 100%; background: var(--red); border-radius: 3px; }
-.pareto-cnt  { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 600; min-width: 30px; text-align: right; }
-.pareto-pct  { font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; min-width: 38px; text-align: right; }
-.pareto-cum  { font-size: 11px; color: var(--blue); font-family: 'DM Mono', monospace; min-width: 38px; text-align: right; }
-
-/* ── 타이밍 도넛 ── */
-.timing-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
-.timing-legend { display: flex; flex-direction: column; gap: 7px; }
-.timing-item { display: flex; align-items: center; gap: 8px; }
-.timing-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-.timing-label { font-size: 12px; flex: 1; }
-.timing-val { font-family: 'DM Mono', monospace; font-size: 12.5px; font-weight: 600; }
-.timing-pct { font-size: 11px; color: var(--text-muted); margin-left: 3px; }
-
-/* ── MoM 변화율 바 ── */
-.mom-item { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); }
-.mom-item:last-child { border-bottom: none; }
-.mom-month { font-family: 'DM Mono', monospace; font-size: 11.5px; color: var(--text-secondary); min-width: 52px; }
-.mom-cnt   { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 600; min-width: 36px; text-align: right; }
-.mom-bar-wrap { flex: 1; position: relative; height: 6px; background: var(--border); border-radius: 3px; }
-.mom-bar-pos  { position: absolute; top: 0; height: 100%; background: var(--red);   border-radius: 3px; }
-.mom-bar-neg  { position: absolute; top: 0; height: 100%; background: var(--green); border-radius: 3px; }
-.mom-change { font-size: 11px; font-weight: 600; min-width: 44px; text-align: right; font-family: 'DM Mono', monospace; }
-.mom-change.up   { color: var(--red); }
-.mom-change.down { color: var(--green); }
-
-/* ── 채널 카드 ── */
-.channel-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
-.ch-card { background: var(--surface2); border-radius: 10px; padding: 14px; text-align: center; border: 1px solid var(--border); }
-.ch-name { font-size: 11px; color: var(--text-secondary); font-weight: 500; margin-bottom: 6px; }
-.ch-num  { font-size: 26px; font-weight: 700; font-family: 'DM Mono', monospace; }
-.ch-pct  { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
-.ch-bar  { height: 4px; border-radius: 2px; margin-top: 8px; }
+.card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);padding:18px 20px}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.ct{font-size:13px;font-weight:700;color:var(--text)}
+.cs{font-size:11px;color:var(--text3);font-weight:400;margin-left:6px}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.b-blue{background:#EFF6FF;color:var(--blue)}
+.b-red{background:#FEF2F2;color:var(--red)}
+.b-green{background:#F0FDF4;color:var(--green)}
+.b-amber{background:#FFFBEB;color:var(--amber)}
+.b-gray{background:var(--card2);color:var(--text3)}
+.b-purple{background:#F5F3FF;color:var(--purple)}
 
 /* ── 섹션 구분선 ── */
-.section-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 10px; margin-top: 4px; }
+.section-divider{display:flex;align-items:center;gap:10px;margin:4px 0 12px}
+.section-divider .sd-line{flex:1;height:1.5px;background:var(--border2)}
+.section-divider .sd-label{font-size:10.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap}
 
-/* ── 히트맵 셀 ── */
-.heatmap-cell { text-align: center; font-size: 12px; font-family: 'DM Mono', monospace; font-weight: 600; }
+/* ── KPI 그리드 ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:16px}
+.kpi-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);padding:16px 18px;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(15,30,60,.14)}
+.kpi-accent{position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
+.acc-red{background:var(--red)}
+.acc-amber{background:var(--amber)}
+.acc-blue{background:var(--blue)}
+.acc-green{background:var(--green)}
+.acc-purple{background:var(--purple)}
+.acc-teal{background:var(--teal)}
+.kpi-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px}
+.kpi-val{font-size:26px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;line-height:1}
+.kpi-val.sm{font-size:16px;margin-top:2px}
+.kpi-sub{font-size:11px;color:var(--text4);margin-top:6px}
+.kpi-sub b{font-weight:700}
+.kpi-sub .up{color:var(--red)}
+.kpi-sub .dn{color:var(--green)}
+.gauge-bar{height:4px;background:var(--border2);border-radius:2px;overflow:hidden;margin-top:7px}
+.gauge-fill{height:100%;border-radius:2px;transition:width .6s ease}
+.gauge-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--text4);margin-top:2px;font-family:'JetBrains Mono',monospace}
+
+/* ── 그리드 레이아웃 ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.g3{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px}
+.g3b{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+.g4{display:grid;grid-template-columns:3fr 2fr;gap:14px;margin-bottom:14px}
+.mb14{margin-bottom:14px}
+
+/* ── 차트 ── */
+.h160{position:relative;height:160px}
+.h200{position:relative;height:200px}
+.h240{position:relative;height:240px}
+.h280{position:relative;height:280px}
+.h320{position:relative;height:320px}
+
+/* ── 테이블 ── */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{background:var(--card2);padding:9px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text3);border-bottom:1.5px solid var(--border);white-space:nowrap}
+tbody td{padding:10px 12px;border-bottom:1px solid var(--border2)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#F8FAFC}
+.mono{font-family:'JetBrains Mono',monospace;font-size:11.5px}
+.tr{text-align:right}.tc{text-align:center}
+
+/* ── 인라인 바 ── */
+.ibar{display:flex;align-items:center;gap:7px}
+.itrack{flex:1;height:5px;background:var(--border2);border-radius:3px;overflow:hidden;min-width:50px}
+.ifill{height:100%;border-radius:3px;background:var(--blue)}
+.ifill-red{background:var(--red)}
+.ifill-amber{background:var(--amber)}
+
+/* ── 태그 ── */
+.tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10.5px;font-weight:500}
+.tg-blue{background:#EFF6FF;color:var(--blue)}
+.tg-red{background:#FEF2F2;color:var(--red)}
+.tg-amber{background:#FFFBEB;color:var(--amber)}
+.tg-green{background:#F0FDF4;color:var(--green)}
+.tg-gray{background:var(--card2);color:var(--text3)}
+.tg-purple{background:#F5F3FF;color:var(--purple)}
+
+/* ── 신호등 ── */
+.sig{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700}
+.sig-dot{width:7px;height:7px;border-radius:50%}
+.sig-r{color:var(--red)}.sig-r .sig-dot{background:var(--red)}
+.sig-a{color:var(--amber)}.sig-a .sig-dot{background:var(--amber)}
+.sig-g{color:var(--green)}.sig-g .sig-dot{background:var(--green)}
+
+/* ── 순위 ── */
+.rank{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;font-size:10.5px;font-weight:800}
+.rk1{background:#FEF3C7;color:#D97706}
+.rk2{background:#F1F5F9;color:#475569}
+.rk3{background:#FEF2F2;color:var(--red)}
+.rkn{background:var(--card2);color:var(--text4)}
+
+/* ── 파레토 ── */
+.pareto-item{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--border2)}
+.pareto-item:last-child{border-bottom:none}
+.pareto-name{font-size:12px;font-weight:500;flex:1}
+.pareto-bar{flex:1.2;height:5px;background:var(--border2);border-radius:3px;overflow:hidden}
+.pareto-fill{height:100%;background:var(--red);border-radius:3px}
+.pareto-cnt{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;min-width:28px;text-align:right}
+.pareto-pct{font-size:10.5px;color:var(--text3);font-family:'JetBrains Mono',monospace;min-width:36px;text-align:right}
+.pareto-cum{font-size:10.5px;color:var(--blue);font-family:'JetBrains Mono',monospace;min-width:36px;text-align:right}
+
+/* ── 타이밍 레전드 ── */
+.timing-wrap{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:center}
+.timing-legend{display:flex;flex-direction:column;gap:7px}
+.timing-item{display:flex;align-items:center;gap:8px}
+.timing-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.timing-lbl{font-size:12px;flex:1;color:var(--text2)}
+.timing-val{font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;color:var(--text)}
+.timing-pct{font-size:10.5px;color:var(--text4);margin-left:3px}
+
+/* ── MoM 바 ── */
+.mom-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border2)}
+.mom-item:last-child{border-bottom:none}
+.mom-month{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);min-width:46px}
+.mom-cnt{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;min-width:32px;text-align:right}
+.mom-bar-wrap{flex:1;position:relative;height:5px;background:var(--border2);border-radius:3px}
+.mom-bar-pos{position:absolute;top:0;height:100%;background:var(--red);border-radius:3px}
+.mom-bar-neg{position:absolute;top:0;height:100%;background:var(--green);border-radius:3px}
+.mom-change{font-size:10.5px;font-weight:700;min-width:42px;text-align:right;font-family:'JetBrains Mono',monospace}
+.mom-change.up{color:var(--red)}.mom-change.dn{color:var(--green)}
+
+/* ── 채널 카드 ── */
+.channel-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.ch-card{background:var(--card2);border:1.5px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.ch-name{font-size:11px;color:var(--text3);font-weight:600;margin-bottom:6px}
+.ch-num{font-size:26px;font-weight:800;font-family:'JetBrains Mono',monospace}
+.ch-pct{font-size:10.5px;color:var(--text4);margin-top:3px}
+.ch-bar{height:4px;border-radius:2px;margin-top:8px;background:currentColor;opacity:.6}
+
+/* ── 히트맵 ── */
+.hmap{text-align:center;font-size:11.5px;font-family:'JetBrains Mono',monospace;font-weight:700}
+
+/* ── SKU 신호등 리스트 ── */
+.sku-sig-item{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--border2)}
+.sku-sig-item:last-child{border-bottom:none}
 
 /* ── 로딩 ── */
-.loading-overlay { position: fixed; inset: 0; background: rgba(15,23,42,.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; }
-.spinner { width: 38px; height: 38px; border: 3px solid rgba(255,255,255,.15); border-top-color: var(--red); border-radius: 50%; animation: spin .7s linear infinite; margin-bottom: 14px; }
-.loading-txt { font-size: 13px; color: #94a3b8; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.loading-overlay{position:fixed;inset:0;background:rgba(15,30,60,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999}
+.spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,.15);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:14px}
+.loading-txt{font-size:13px;color:rgba(255,255,255,.55)}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── 반응형 ── */
-@media(max-width:1100px) { .kpi-row { grid-template-columns: repeat(3,1fr); } }
-@media(max-width:900px)  {
-  .kpi-row { grid-template-columns: repeat(2,1fr); }
-  .grid-2,.grid-3,.grid-3b,.grid-4 { grid-template-columns: 1fr; }
-  .main,.header,.nav { padding-left: 14px; padding-right: 14px; }
+@media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .g2,.g3,.g3b,.g4{grid-template-columns:1fr}
+  .page-wrap{padding:14px}
 }
-
-/* ── 필터 바 ── */
-/* filter-bar moved to sidebar */
-.filter-group { display: flex; align-items: center; gap: 6px; }
-.filter-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px; white-space: nowrap; }
-.filter-btns  { display: flex; gap: 4px; }
-.fbtn {
-  padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;
-  cursor: pointer; border: 1px solid var(--border); background: var(--surface2);
-  color: var(--text-secondary); transition: all .12s; white-space: nowrap;
-  font-family: 'Noto Sans KR', sans-serif;
-}
-.fbtn:hover  { border-color: var(--blue); color: var(--blue); }
-.fbtn.active { background: var(--blue); color: white; border-color: var(--blue); }
-.filter-divider { width: 1px; height: 20px; background: var(--border); }
 </style>
 </head>
 <body>
 
-<div class="loading-overlay" id="loadingOverlay">
+<div class="loading-overlay" id="lo">
   <div class="spinner"></div>
-  <div class="loading-txt">품질 데이터 로딩 중...</div>
+  <div class="loading-txt" id="lt">품질 데이터 로딩 중...</div>
 </div>
 
-<div class="app">
+<div style="display:flex">
 
-<!-- 사이드바 -->
+<!-- ── 사이드바 ── -->
 <aside class="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo">QT</div>
-    <div class="logo-text">
-      <div class="logo-title">JMW Quality<br>Dashboard</div>
-      <div class="logo-sub">v1.3 · 품질 모니터링</div>
-    </div>
+  <div class="sb-logo">
+    <div class="brand"><span class="brand-dot"></span>JMW Quality</div>
+    <div class="brand-sub">v1.4 · Q.T.S 품질 모니터링</div>
   </div>
-  <div class="sidebar-section">
-    <div class="sidebar-section-label">메뉴</div>
-    <div class="nav-item active" onclick="showPage('overview',this)"><span class="nav-icon">📊</span> 종합 현황</div>
-    <div class="nav-item" onclick="showPage('trend',this)"><span class="nav-icon">📈</span> 월별 트렌드</div>
-    <div class="nav-item" onclick="showPage('sku',this)"><span class="nav-icon">🔍</span> SKU 분석</div>
-    <div class="nav-item" onclick="showPage('defect',this)"><span class="nav-icon">⚠️</span> 불량유형</div>
-    <div class="nav-item" onclick="showPage('channel',this)"><span class="nav-icon">📦</span> 채널 분석</div>
-  </div>
-  <div class="sidebar-filter">
-    <div class="sf-label">필터</div>
+
+  <nav class="sb-nav">
+    <div class="sb-sec">메뉴</div>
+    <button class="nb on" onclick="showPg('overview',this)"><span class="nbi">📊</span>종합 현황</button>
+    <button class="nb" onclick="showPg('trend',this)"><span class="nbi">📈</span>월별 트렌드</button>
+    <button class="nb" onclick="showPg('sku',this)"><span class="nbi">🔍</span>SKU 분석</button>
+    <button class="nb" onclick="showPg('defect',this)"><span class="nbi">⚠️</span>불량유형</button>
+    <button class="nb" onclick="showPg('channel',this)"><span class="nbi">📦</span>채널 분석</button>
+  </nav>
+
+  <div class="sb-filter">
+    <span class="sb-filter-lbl">필터</span>
     <div class="sf-group">
-      <div class="sf-group-label">연도</div>
+      <span class="sf-glbl">연도</span>
       <div class="sf-btns" id="yearBtns">
-        <button class="sfbtn active" onclick="setFilter('year','all',this)">전체</button>
+        <button class="sfbtn on" onclick="setFilter('year','all',this)">전체</button>
         <button class="sfbtn" onclick="setFilter('year','2025',this)">2025</button>
         <button class="sfbtn" onclick="setFilter('year','2026',this)">2026</button>
       </div>
     </div>
     <div class="sf-group">
-      <div class="sf-group-label">분기</div>
+      <span class="sf-glbl">분기</span>
       <div class="sf-btns" id="quarterBtns">
-        <button class="sfbtn active" onclick="setFilter('quarter','all',this)">전체</button>
+        <button class="sfbtn on" onclick="setFilter('quarter','all',this)">전체</button>
         <button class="sfbtn" onclick="setFilter('quarter','Q1',this)">1Q</button>
         <button class="sfbtn" onclick="setFilter('quarter','Q2',this)">2Q</button>
         <button class="sfbtn" onclick="setFilter('quarter','Q3',this)">3Q</button>
@@ -356,226 +268,279 @@ tbody tr:hover td { background: var(--surface2); }
       </div>
     </div>
     <div class="sf-group">
-      <div class="sf-group-label">월</div>
-      <div class="sf-month-wrap" id="monthBtns"></div>
+      <span class="sf-glbl">월</span>
+      <div class="sf-btns" id="monthBtns"></div>
     </div>
   </div>
-  <div class="sidebar-bottom">
-    <div class="live-row">
-      <div class="live-dot"></div>
-      <span class="updated-time" id="updatedTime">—</span>
+
+  <div class="sb-footer">
+    <div class="sb-kpi">
+      <div class="sb-ki"><span class="sb-kv" id="sb-total">—</span><span class="sb-kl">총 불량건수</span></div>
+      <div class="sb-ki"><span class="sb-kv" id="sb-rate">—</span><span class="sb-kl">불량률</span></div>
     </div>
-    <button class="btn-refresh" id="btnRefresh" onclick="loadData()">↺ 새로고침</button>
+    <div class="sb-time" id="sb-time">—</div>
+    <button class="sb-btn" onclick="loadData()">↺ 새로고침</button>
   </div>
 </aside>
 
-<!-- 콘텐츠 -->
-<div class="content">
-  <div class="content-header">
-    <div>
-      <div class="content-title" id="contentTitle">종합 현황</div>
-      <div class="content-sub">26년 누적 기준 · 실시간 모니터링</div>
-    </div>
-    <div class="filter-summary-top" id="filterSummary">—</div>
+<!-- ── 콘텐츠 ── -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topTitle">종합 현황 <span id="topSub">2026년 누적</span></div>
+    <span class="filter-info" id="filterInfo">—</span>
+    <button class="tbtn" onclick="loadData()">🔄 갱신</button>
   </div>
 
-  <main class="main">
+  <div class="page-wrap">
 
   <!-- ① 종합 현황 -->
-  <div class="page active" id="page-overview">
-    <div class="kpi-row">
-      <div class="kpi-card"><div class="kpi-accent red"></div><div class="kpi-label">총 불량 건수</div><div class="kpi-value" id="k-total">—</div><div class="kpi-sub">누적 접수 기준</div></div>
-      <div class="kpi-card"><div class="kpi-accent orange"></div><div class="kpi-label">전체 불량률</div><div class="kpi-value" id="k-rate">—</div><div class="kpi-sub" id="k-rate-sub">판매수량 대비</div><div class="gauge-wrap"><div class="gauge-bar"><div class="gauge-fill" id="gaugeFill" style="width:0%"></div></div><div class="gauge-labels"><span>0%</span><span>목표 1%</span><span>3%</span></div></div></div>
-      <div class="kpi-card"><div class="kpi-accent"></div><div class="kpi-label">관리 SKU 수</div><div class="kpi-value" id="k-skus">—</div><div class="kpi-sub">불량 발생 모델</div></div>
-      <div class="kpi-card"><div class="kpi-accent yellow"></div><div class="kpi-label">당월 불량</div><div class="kpi-value" id="k-monthly">—</div><div class="kpi-sub" id="k-monthly-sub">전월 대비 —</div></div>
-      <div class="kpi-card"><div class="kpi-accent purple"></div><div class="kpi-label">1위 불량유형</div><div class="kpi-value small" id="k-top-type">—</div><div class="kpi-sub" id="k-top-type-cnt">건수 —</div></div>
-      <div class="kpi-card"><div class="kpi-accent green"></div><div class="kpi-label">유통 채널</div><div class="kpi-value" id="k-channels">—</div><div class="kpi-sub">접수 경로 수</div></div>
+  <div class="pg on" id="pg-overview">
+
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-accent acc-red"></div><div class="kpi-lbl">총 불량 건수</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub">누적 접수 기준</div></div>
+      <div class="kpi-card"><div class="kpi-accent acc-amber"></div><div class="kpi-lbl">전체 불량률</div><div class="kpi-val" id="k-rate">—</div><div class="kpi-sub" id="k-rate-sub">판매수량 대비</div><div class="gauge-bar"><div class="gauge-fill" id="gFill" style="width:0%"></div></div><div class="gauge-labels"><span>0%</span><span>목표 1%</span><span>3%</span></div></div>
+      <div class="kpi-card"><div class="kpi-accent acc-blue"></div><div class="kpi-lbl">관리 SKU 수</div><div class="kpi-val" id="k-skus">—</div><div class="kpi-sub">불량 발생 모델</div></div>
+      <div class="kpi-card"><div class="kpi-accent acc-purple"></div><div class="kpi-lbl">당월 불량</div><div class="kpi-val" id="k-monthly">—</div><div class="kpi-sub" id="k-monthly-sub">전월 대비 —</div></div>
+      <div class="kpi-card"><div class="kpi-accent acc-teal"></div><div class="kpi-lbl">1위 불량유형</div><div class="kpi-val sm" id="k-top-type">—</div><div class="kpi-sub" id="k-top-cnt">—</div></div>
+      <div class="kpi-card"><div class="kpi-accent acc-green"></div><div class="kpi-lbl">유통 채널</div><div class="kpi-val" id="k-channels">—</div><div class="kpi-sub">접수 경로 수</div></div>
     </div>
-    <div class="grid-3">
-      <div class="card"><div class="card-header"><div class="card-title">월별 불량 접수 추이 <span class="card-title-sub">건수(바) + 불량률%(라인)</span></div><span class="card-badge" id="bdgMonths">—</span></div><div class="h260"><canvas id="cMonthlyCombo"></canvas></div></div>
-      <div class="card"><div class="card-header"><div class="card-title">품목별 불량 비중</div><span class="card-badge" id="bdgTotal2">—건</span></div><div class="h220"><canvas id="cCategory"></canvas></div><div id="categoryBars" style="margin-top:12px"></div></div>
+
+    <div class="section-divider"><div class="sd-line"></div><span class="sd-label">월별 추이</span><div class="sd-line"></div></div>
+    <div class="g3 mb14">
+      <div class="card">
+        <div class="ch"><div class="ct">월별 불량 접수 추이 <span class="cs">2026년 · 라인차트</span></div><span class="badge b-red" id="bdgMonths">—</span></div>
+        <div class="h240"><canvas id="cMonthLine"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">품목별 불량 비중</div><span class="badge b-blue" id="bdgTotal2">—건</span></div>
+        <div class="h200"><canvas id="cCategory"></canvas></div>
+        <div id="catBars" style="margin-top:10px"></div>
+      </div>
     </div>
-    <div class="grid-3b">
-      <div class="card"><div class="card-header"><div class="card-title">불량 발생 시점 분포</div><span class="card-badge">구매 후 경과 개월</span></div><div class="timing-wrap" style="margin-top:6px"><div style="position:relative;height:150px"><canvas id="cTiming"></canvas></div><div class="timing-legend" id="timingLegend"></div></div></div>
-      <div class="card"><div class="card-header"><div class="card-title">생산분류별 불량</div><span class="card-badge">JMW / 소싱</span></div><div class="h180"><canvas id="cMfgType"></canvas></div></div>
-      <div class="card"><div class="card-header"><div class="card-title">유통 채널별 비중</div></div><div class="h180"><canvas id="cChannelPie"></canvas></div></div>
+
+    <div class="section-divider"><div class="sd-line"></div><span class="sd-label">불량 분석</span><div class="sd-line"></div></div>
+    <div class="g3b mb14">
+      <div class="card">
+        <div class="ch"><div class="ct">발생 시점 분포</div><span class="badge b-amber">구매 후 경과</span></div>
+        <div class="timing-wrap" style="margin-top:6px">
+          <div style="position:relative;height:140px"><canvas id="cTiming"></canvas></div>
+          <div class="timing-legend" id="timingLegend"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">생산분류별</div><span class="badge b-gray">JMW / 소싱</span></div>
+        <div class="h160"><canvas id="cMfgType"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">유통 채널별</div></div>
+        <div class="h160"><canvas id="cChannelPie"></canvas></div>
+      </div>
     </div>
-    <div class="grid-2">
-      <div class="card"><div class="card-header"><div class="card-title">불량유형 파레토 (Top 10)</div><span class="card-badge red">누적 비율 포함</span></div><div id="paretoShort"></div></div>
-      <div class="card"><div class="card-header"><div class="card-title">불량 건수 Top 8 SKU</div><span class="card-badge">신호등 등급</span></div><div id="skuSignal"></div></div>
+
+    <div class="section-divider"><div class="sd-line"></div><span class="sd-label">Top 리스트</span><div class="sd-line"></div></div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ct">불량유형 파레토 Top 10</div><span class="badge b-red">누적 비율</span></div>
+        <div id="paretoShort"></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">불량 건수 Top 8 SKU</div><span class="badge b-gray">신호등 등급</span></div>
+        <div id="skuSignal"></div>
+      </div>
     </div>
   </div>
 
   <!-- ② 월별 트렌드 -->
-  <div class="page" id="page-trend">
-    <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
-      <div class="kpi-card"><div class="kpi-accent red"></div><div class="kpi-label">최다 불량 월</div><div class="kpi-value small" id="t-peak-month">—</div><div class="kpi-sub" id="t-peak-cnt">—건</div></div>
-      <div class="kpi-card"><div class="kpi-accent orange"></div><div class="kpi-label">월 평균 불량</div><div class="kpi-value" id="t-avg">—</div><div class="kpi-sub">건/월</div></div>
-      <div class="kpi-card"><div class="kpi-accent"></div><div class="kpi-label">최근 월 불량</div><div class="kpi-value" id="t-latest">—</div><div class="kpi-sub" id="t-latest-sub">—</div></div>
-      <div class="kpi-card"><div class="kpi-accent green"></div><div class="kpi-label">전월 대비</div><div class="kpi-value" id="t-mom">—</div><div class="kpi-sub" id="t-mom-sub">전월 —건</div></div>
+  <div class="pg" id="pg-trend">
+    <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="kpi-card"><div class="kpi-accent acc-red"></div><div class="kpi-lbl">최다 불량 월</div><div class="kpi-val sm" id="t-peak">—</div><div class="kpi-sub" id="t-peak-cnt">—</div></div>
+      <div class="kpi-card"><div class="kpi-accent acc-amber"></div><div class="kpi-lbl">월 평균 불량</div><div class="kpi-val" id="t-avg">—</div><div class="kpi-sub">건/월</div></div>
+      <div class="kpi-card"><div class="kpi-accent acc-blue"></div><div class="kpi-lbl">최근 월 불량</div><div class="kpi-val" id="t-latest">—</div><div class="kpi-sub" id="t-latest-sub">—</div></div>
+      <div class="kpi-card"><div class="kpi-accent acc-green"></div><div class="kpi-lbl">전월 대비</div><div class="kpi-val" id="t-mom">—</div><div class="kpi-sub" id="t-mom-sub">—</div></div>
     </div>
-    <div class="grid-2">
-      <div class="card"><div class="card-header"><div class="card-title">월별 불량건수 + 누적 추이</div></div><div class="h300"><canvas id="cTrendCumul"></canvas></div></div>
-      <div class="card"><div class="card-header"><div class="card-title">월별 MoM 변화율</div><span class="card-badge">전월 대비 증감</span></div><div id="momList" style="margin-top:4px"></div></div>
+
+    <div class="section-divider"><div class="sd-line"></div><span class="sd-label">추이 분석</span><div class="sd-line"></div></div>
+    <div class="g2 mb14">
+      <div class="card">
+        <div class="ch"><div class="ct">월별 불량건수 + 누적 추이</div></div>
+        <div class="h280"><canvas id="cTrendCumul"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">월별 MoM 변화율</div><span class="badge b-gray">전월 대비</span></div>
+        <div id="momList" style="margin-top:4px"></div>
+      </div>
     </div>
-    <div class="grid-2">
-      <div class="card"><div class="card-header"><div class="card-title">품목별 × 월별 불량 추이</div><span class="card-badge">스택 바</span></div><div class="h260"><canvas id="cMonthCategory"></canvas></div></div>
-      <div class="card"><div class="card-header"><div class="card-title">불량유형 × 월별 추이</div><span class="card-badge">Top 5 유형</span></div><div class="h260"><canvas id="cMonthDefectType"></canvas></div></div>
+
+    <div class="section-divider"><div class="sd-line"></div><span class="sd-label">교차 분석</span><div class="sd-line"></div></div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ct">품목별 × 월별 불량</div><span class="badge b-blue">스택 바</span></div>
+        <div class="h240"><canvas id="cMonthCat"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">불량유형 × 월별 추이</div><span class="badge b-amber">Top 5</span></div>
+        <div class="h240"><canvas id="cMonthType"></canvas></div>
+      </div>
     </div>
   </div>
 
   <!-- ③ SKU 분석 -->
-  <div class="page" id="page-sku">
-    <div class="grid-4">
-      <div class="card"><div class="card-header"><div class="card-title">모델별 불량 건수 Top 15</div><span class="card-badge red">상위 3개 강조</span></div><div class="h340"><canvas id="cSkuBar"></canvas></div></div>
-      <div class="card"><div class="card-header"><div class="card-title">불량률 상위 모델</div><span class="card-badge orange">판매수량 있는 모델</span></div><div class="h340"><canvas id="cDefectRate"></canvas></div></div>
+  <div class="pg" id="pg-sku">
+    <div class="section-divider"><div class="sd-line"></div><span class="sd-label">모델별 불량</span><div class="sd-line"></div></div>
+    <div class="g4 mb14">
+      <div class="card">
+        <div class="ch"><div class="ct">모델별 불량 건수 Top 15</div><span class="badge b-red">상위 3개 강조</span></div>
+        <div class="h320"><canvas id="cSkuBar"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">불량률 상위 모델</div><span class="badge b-amber">판매 대비</span></div>
+        <div class="h320"><canvas id="cDefectRate"></canvas></div>
+      </div>
     </div>
-    <div class="card" style="margin-bottom:14px"><div class="card-header"><div class="card-title">모델별 불량 상세 현황</div><span class="card-badge">🔴 ≥3% · 🟡 1~3% · 🟢 &lt;1%</span></div><div class="tbl-wrap"><table><thead><tr><th>순위</th><th>모델명</th><th>품목</th><th>생산분류</th><th class="td-right">불량건수</th><th class="td-right">판매수량</th><th class="td-right">불량률</th><th>등급</th><th>전체 비중</th></tr></thead><tbody id="skuBody"></tbody></table></div></div>
-    <div class="grid-2">
-      <div class="card"><div class="card-header"><div class="card-title">불량률 버블 차트</div><span class="card-badge">버블 크기 = 불량건수</span></div><div class="h260"><canvas id="cBubble"></canvas></div></div>
-      <div class="card"><div class="card-header"><div class="card-title">모델별 불량 시점 분포</div><span class="card-badge">Top 8 모델</span></div><div class="h260"><canvas id="cSkuTiming"></canvas></div></div>
+
+    <div class="section-divider"><div class="sd-line"></div><span class="sd-label">상세 현황</span><div class="sd-line"></div></div>
+    <div class="card mb14">
+      <div class="ch"><div class="ct">모델별 불량 상세</div><span class="badge b-gray">🔴 ≥3% · 🟡 1~3% · 🟢 &lt;1%</span></div>
+      <div class="tbl-wrap"><table><thead><tr><th>순위</th><th>모델명</th><th>품목</th><th>분류</th><th class="tr">불량건수</th><th class="tr">판매수량</th><th class="tr">불량률</th><th>등급</th><th>비중</th></tr></thead><tbody id="skuBody"></tbody></table></div>
+    </div>
+
+    <div class="section-divider"><div class="sd-line"></div><span class="sd-label">심화 분석</span><div class="sd-line"></div></div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ct">불량률 버블 차트</div><span class="badge b-gray">버블=불량건수</span></div>
+        <div class="h240"><canvas id="cBubble"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">모델별 발생 시점 분포</div><span class="badge b-amber">Top 8</span></div>
+        <div class="h240"><canvas id="cSkuTiming"></canvas></div>
+      </div>
     </div>
   </div>
 
   <!-- ④ 불량유형 -->
-  <div class="page" id="page-defect">
-    <div class="grid-2">
-      <div class="card"><div class="card-header"><div class="card-title">불량유형 파레토 (전체)</div><span class="card-badge red">누적 80% 기준선</span></div><div id="paretoFull"></div></div>
-      <div class="card"><div class="card-header"><div class="card-title">불량유형 도넛</div></div><div class="h300"><canvas id="cDefectDoughnut"></canvas></div></div>
+  <div class="pg" id="pg-defect">
+    <div class="section-divider"><div class="sd-line"></div><span class="sd-label">파레토 분석</span><div class="sd-line"></div></div>
+    <div class="g2 mb14">
+      <div class="card">
+        <div class="ch"><div class="ct">불량유형 파레토 (전체)</div><span class="badge b-red">누적 80% 기준</span></div>
+        <div id="paretoFull"></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">불량유형 분포</div></div>
+        <div class="h280"><canvas id="cDefectDoughnut"></canvas></div>
+      </div>
     </div>
-    <div class="card" style="margin-bottom:14px"><div class="card-header"><div class="card-title">품목 × 불량유형 매트릭스</div><span class="card-badge">셀 색상 = 건수 강도</span></div><div class="tbl-wrap" id="matrixWrap"></div></div>
-    <div class="grid-2">
-      <div class="card"><div class="card-header"><div class="card-title">불량유형별 발생 시점 분포</div><span class="card-badge">Top 8 유형</span></div><div class="h300"><canvas id="cDefectTiming"></canvas></div></div>
-      <div class="card"><div class="card-header"><div class="card-title">불량유형 × 채널 분포</div></div><div class="h300"><canvas id="cDefectChannel"></canvas></div></div>
+
+    <div class="section-divider"><div class="sd-line"></div><span class="sd-label">교차 분석</span><div class="sd-line"></div></div>
+    <div class="card mb14">
+      <div class="ch"><div class="ct">품목 × 불량유형 매트릭스</div><span class="badge b-gray">셀 색상 = 강도</span></div>
+      <div class="tbl-wrap" id="matrixWrap"></div>
+    </div>
+
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ct">불량유형별 발생 시점</div><span class="badge b-amber">Top 8</span></div>
+        <div class="h280"><canvas id="cDefectTiming"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">불량유형 × 채널</div></div>
+        <div class="h280"><canvas id="cDefectChannel"></canvas></div>
+      </div>
     </div>
   </div>
 
   <!-- ⑤ 채널 분석 -->
-  <div class="page" id="page-channel">
+  <div class="pg" id="pg-channel">
     <div class="channel-cards" id="channelCards"></div>
-    <div class="grid-2">
-      <div class="card"><div class="card-header"><div class="card-title">채널별 월별 불량 추이</div><span class="card-badge">스택 바</span></div><div class="h260"><canvas id="cChannelMonthly"></canvas></div></div>
-      <div class="card"><div class="card-header"><div class="card-title">채널 × 불량유형 분포</div><span class="card-badge">Top 6 유형</span></div><div class="h260"><canvas id="cChannelType"></canvas></div></div>
+
+    <div class="section-divider"><div class="sd-line"></div><span class="sd-label">채널 추이</span><div class="sd-line"></div></div>
+    <div class="g2 mb14">
+      <div class="card">
+        <div class="ch"><div class="ct">채널별 월별 불량 추이</div><span class="badge b-blue">스택 바</span></div>
+        <div class="h240"><canvas id="cChMonthly"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">채널 × 불량유형</div><span class="badge b-gray">Top 6</span></div>
+        <div class="h240"><canvas id="cChType"></canvas></div>
+      </div>
     </div>
-    <div class="grid-2">
-      <div class="card"><div class="card-header"><div class="card-title">채널별 품목 분포</div></div><div class="h260"><canvas id="cChannelCategory"></canvas></div></div>
-      <div class="card"><div class="card-header"><div class="card-title">채널별 발생 시점 분포</div></div><div class="h260"><canvas id="cChannelTiming"></canvas></div></div>
+
+    <div class="section-divider"><div class="sd-line"></div><span class="sd-label">채널 세부</span><div class="sd-line"></div></div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ct">채널별 품목 분포</div></div>
+        <div class="h240"><canvas id="cChCat"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">채널별 발생 시점</div></div>
+        <div class="h240"><canvas id="cChTiming"></canvas></div>
+      </div>
     </div>
   </div>
 
-  </main>
-</div><!-- /.content -->
-</div><!-- /.app -->
+  </div><!-- /page-wrap -->
+</div><!-- /main -->
+</div><!-- /flex -->
 
 <script>
+// Chart.js datalabels 전역 등록
+Chart.register(ChartDataLabels);
 
-// ============================================================
-// 설정
-// ============================================================
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxptR6SFm9KRqPm6KA5KQZiDWZoQqyQAPvDq1WZ-3mCq5ocpQGFpCvad8B-fI88MsHw/exec';
-const REFRESH_MIN = 10;
+const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbxptR6SFm9KRqPm6KA5KQZiDWZoQqyQAPvDq1WZ-3mCq5ocpQGFpCvad8B-fI88MsHw/exec';
+const REFRESH_MIN=10;
 
-// 팔레트
-const P = {
-  blue:   '#1a56db', blueM: '#3b82f6', blueL: '#93c5fd',
-  red:    '#e02424', redM:  '#f87171', redL:  '#fca5a5',
-  orange: '#d97706', orangeM:'#fbbf24',
-  green:  '#057a55', greenM: '#10b981',
-  purple: '#7e3af2', purpleM:'#a78bfa',
-  gray:   '#9ca3af', grayL:  '#e5e7eb',
-  cyan:   '#0891b2', pink:   '#db2777',
-};
-const PALETTE10 = [P.blue, P.red, P.orange, P.green, P.purple, P.cyan, P.pink, '#78350f', '#065f46', '#4c1d95'];
-const TIMING_COLORS = ['#1a56db','#3b82f6','#e3a008','#e02424','#6b7280'];
-const TIMING_KEYS   = ['1M','2M','3M','4M~12M','1Y이후'];
+// 팔레트 (판매 대시보드 동일)
+const P={blue:'#2563EB',teal:'#0D9488',amber:'#D97706',red:'#DC2626',green:'#16A34A',purple:'#7C3AED',orange:'#EA580C',navy:'#0F1E3C'};
+const PAL=['#2563EB','#DC2626','#D97706','#16A34A','#7C3AED','#0D9488','#EA580C','#78350F','#065F46','#4C1D95','#0369A1','#BE185D'];
+const TC=['#2563EB','#0D9488','#D97706','#DC2626','#64748B'];
+const TK=['1M','2M','3M','4M~12M','1Y이후'];
 
-let G = null;
-let charts = {};
+let G=null, charts={};
+const FILTER={year:'all',quarter:'all',month:'all'};
+const PG_TITLES={overview:'종합 현황',trend:'월별 트렌드',sku:'SKU 분석',defect:'불량유형 분석',channel:'채널 분석'};
 
-// ============================================================
-// 탭
-// ============================================================
-const PAGE_TITLES = {
-  overview:'종합 현황', trend:'월별 트렌드',
-  sku:'SKU 분석', defect:'불량유형 분석', channel:'채널 분석'
-};
-function showPage(name, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  el.classList.add('active');
-  const titleEl = document.getElementById('contentTitle');
-  if (titleEl) titleEl.textContent = PAGE_TITLES[name] || name;
+function showPg(name,el){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pg-'+name).classList.add('on');
+  el.classList.add('on');
+  document.getElementById('topTitle').textContent=PG_TITLES[name]||name;
 }
 
-// ============================================================
-// 데이터 로드
-// ============================================================
-async function loadData() {
-  const btn = document.getElementById('btnRefresh');
-  btn.textContent = '↺ 로딩중...';
-  document.getElementById('loadingOverlay').style.display = 'flex';
-  // API URL 미설정 or 로컬 환경이면 바로 목업 사용
-  const isLocal = location.protocol === 'file:';
-  const hasUrl  = APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes('YOUR_');
-
-  if (!hasUrl || isLocal) {
-    document.querySelector('.loading-txt').textContent = '목업 데이터 로딩 중...';
-    G = getMock();
-    console.log('ℹ️ 목업 모드 (로컬 or URL 미설정)');
-  } else {
-    document.querySelector('.loading-txt').textContent = 'Apps Script 연결 중...';
-    try {
-      const url = `${APPS_SCRIPT_URL}?callback=_cb&t=${Date.now()}`;
-      G = await fetchJSONP(url, '_cb');
-      if (!G || !G.success) throw new Error((G && G.error) || '응답 오류');
-      console.log('✅ 실데이터 로드 성공:', G.summary?.totalDefects, '건');
-    } catch(e) {
-      console.warn('⚠️ API 실패 →', e.message, '| 목업으로 폴백');
-      G = getMock();
-    }
+async function loadData(){
+  document.getElementById('lo').style.display='flex';
+  document.getElementById('lt').textContent='Apps Script 연결 중...';
+  try{
+    const url=`${APPS_SCRIPT_URL}?callback=_cb&t=${Date.now()}`;
+    G=await fetchJSONP(url,'_cb');
+    if(!G||!G.success) throw new Error(G?.error||'오류');
+  }catch(e){
+    console.warn('API 실패, 목업:', e.message);
+    document.getElementById('lt').textContent='목업 데이터 로딩 중...';
+    G=getMock();
   }
   renderAll();
-  // 전체 월 버튼 초기화
-  const allMs = Object.keys(G.summary.byReceiptMonth).sort();
-  buildMonthBtns(allMs);
-  FILTER.year = 'all'; FILTER.quarter = 'all'; FILTER.month = 'all';
-  document.querySelectorAll('.sfbtn').forEach(b => b.classList.remove('active'));
-  document.querySelector('#yearBtns .sfbtn').classList.add('active');
-  document.querySelector('#quarterBtns .sfbtn').classList.add('active');
-  document.querySelector('#monthBtns .sfbtn')?.classList.add('active');
-  // 필터 요약
-  document.getElementById('filterSummary').textContent = '📅 전체 기간 (' + (allMs[0]||'') + ' ~ ' + (allMs[allMs.length-1]||'') + ') · ' + G.summary.totalDefects + '건';
-  document.getElementById('updatedTime').textContent = new Date(G.updatedAt).toLocaleString('ko-KR');
-  document.getElementById('loadingOverlay').style.display = 'none';
-  btn.textContent = '↺ 새로고침';
+  initFilter();
+  document.getElementById('lo').style.display='none';
+  const t=new Date(G.updatedAt).toLocaleString('ko-KR');
+  document.getElementById('sb-time').textContent=t;
 }
 
-function fetchJSONP(url, fn) {
-  return new Promise((res, rej) => {
-    // 혹시 이전 콜백 잔재 정리
-    if (window[fn]) delete window[fn];
-    let done = false;
-    window[fn] = d => {
-      if (done) return;
-      done = true;
-      delete window[fn];
-      if (s.parentNode) s.remove();
-      res(d);
-    };
-    const s = document.createElement('script');
-    s.src = url;
-    s.onerror = () => { if (!done) { done = true; rej(new Error('script load error')); } };
+function fetchJSONP(url,fn){
+  return new Promise((res,rej)=>{
+    if(window[fn])delete window[fn];
+    let done=false;
+    window[fn]=d=>{if(done)return;done=true;delete window[fn];if(s.parentNode)s.remove();res(d);};
+    const s=document.createElement('script');
+    s.src=url;
+    s.onerror=()=>{if(!done){done=true;rej(new Error('load error'));}};
     document.head.appendChild(s);
-    setTimeout(() => { if (!done) { done = true; rej(new Error('timeout')); } }, 15000);
+    setTimeout(()=>{if(!done){done=true;rej(new Error('timeout'));}},15000);
   });
 }
 
-// ============================================================
-// 전체 렌더
-// ============================================================
-function renderAll() {
-  const s = G.summary;
+function renderAll(){
+  const s=G.summary;
   renderKPIs(s);
   renderOverview(s);
   renderTrend(s);
@@ -585,417 +550,317 @@ function renderAll() {
 }
 
 // ── KPI ──
-function renderKPIs(s) {
-  document.getElementById('k-total').textContent = fmt(s.totalDefects);
-  document.getElementById('bdgTotal2').textContent = fmt(s.totalDefects)+'건';
+function renderKPIs(s){
+  document.getElementById('k-total').textContent=fmt(s.totalDefects);
+  document.getElementById('sb-total').textContent=fmt(s.totalDefects);
+  document.getElementById('bdgTotal2').textContent=fmt(s.totalDefects)+'건';
 
-  // 불량률 계산
-  const totalSales = Object.values(s.monthlySalesTotals).reduce((a,b)=>a+b,0);
-  const rate = totalSales > 0 ? (s.totalDefects / totalSales * 100) : 0;
-  document.getElementById('k-rate').textContent = rate.toFixed(2)+'%';
-  document.getElementById('k-rate-sub').textContent = `총판매 ${fmt(totalSales)}개 대비`;
-  const gaugePct = Math.min(rate / 3 * 100, 100);
-  const gaugeColor = rate < 1 ? 'var(--green)' : rate < 2 ? 'var(--orange)' : 'var(--red)';
-  document.getElementById('gaugeFill').style.width = gaugePct + '%';
-  document.getElementById('gaugeFill').style.background = gaugeColor;
+  const totalSales=Object.values(s.monthlySalesTotals).reduce((a,b)=>a+b,0);
+  const rate=totalSales>0?(s.totalDefects/totalSales*100):0;
+  const rateStr=rate.toFixed(2)+'%';
+  document.getElementById('k-rate').textContent=rateStr;
+  document.getElementById('sb-rate').textContent=rateStr;
+  document.getElementById('k-rate-sub').textContent='총판매 '+fmt(totalSales)+'개 대비';
+  const gPct=Math.min(rate/3*100,100);
+  const gColor=rate<1?'var(--green)':rate<2?'var(--amber)':'var(--red)';
+  document.getElementById('gFill').style.cssText='width:'+gPct+'%;background:'+gColor;
 
-  document.getElementById('k-skus').textContent = s.uniqueModels;
-  document.getElementById('k-channels').textContent = s.uniqueChannels;
+  document.getElementById('k-skus').textContent=s.uniqueModels;
+  document.getElementById('k-channels').textContent=s.uniqueChannels;
 
-  // 당월 불량
-  const months = Object.keys(s.byReceiptMonth).sort();
-  const latestM = months[months.length-1] || '';
-  const prevM   = months[months.length-2] || '';
-  const latestV = s.byReceiptMonth[latestM] || 0;
-  const prevV   = s.byReceiptMonth[prevM]   || 0;
-  document.getElementById('k-monthly').textContent = fmt(latestV);
-  const momDiff = latestV - prevV;
-  const momPct  = prevV > 0 ? ((momDiff/prevV)*100).toFixed(1) : '—';
-  const momEl   = document.getElementById('k-monthly-sub');
-  momEl.innerHTML = `전월 대비 <span style="color:${momDiff>0?'var(--red)':'var(--green)'}; font-weight:600">${momDiff>0?'+':''}${fmt(momDiff)} (${momPct}%)</span>`;
+  const months=Object.keys(s.byReceiptMonth).sort();
+  const lM=months[months.length-1]||'', pM=months[months.length-2]||'';
+  const lV=s.byReceiptMonth[lM]||0, pV=s.byReceiptMonth[pM]||0;
+  document.getElementById('k-monthly').textContent=fmt(lV);
+  const diff=lV-pV, mPct=pV>0?((diff/pV)*100).toFixed(1):'—';
+  const cls=diff>0?'up':'dn';
+  document.getElementById('k-monthly-sub').innerHTML=`전월 대비 <b class="${cls}">${diff>0?'+':''}${fmt(diff)} (${mPct}%)</b>`;
 
-  // 1위 불량유형
-  const topType = Object.keys(s.byDefectDetail)[0] || '—';
-  const topCnt  = Object.values(s.byDefectDetail)[0] || 0;
-  document.getElementById('k-top-type').textContent = topType;
-  document.getElementById('k-top-type-cnt').textContent = fmt(topCnt)+'건 · '+ pct(topCnt, s.totalDefects)+'%';
+  const topType=Object.keys(s.byDefectDetail)[0]||'—';
+  const topCnt=Object.values(s.byDefectDetail)[0]||0;
+  document.getElementById('k-top-type').textContent=topType;
+  document.getElementById('k-top-cnt').textContent=fmt(topCnt)+'건 · '+pct(topCnt,s.totalDefects)+'%';
 
   // 트렌드 KPI
-  const avg = months.length ? (s.totalDefects / months.length).toFixed(1) : 0;
-  document.getElementById('t-avg').textContent = avg;
-  document.getElementById('t-latest').textContent = fmt(latestV);
-  const lLabel = latestM ? latestM.slice(0,4)+'년 '+latestM.slice(4)+'월' : '—';
-  document.getElementById('t-latest-sub').textContent = lLabel;
-  const momTxt = momDiff >= 0 ? `▲ +${fmt(momDiff)}` : `▼ ${fmt(momDiff)}`;
-  document.getElementById('t-mom').textContent = momTxt;
-  document.getElementById('t-mom').style.color = momDiff > 0 ? 'var(--red)' : 'var(--green)';
-  document.getElementById('t-mom-sub').textContent = `전월 ${fmt(prevV)}건`;
-
-  // 최다 불량 월
-  const peakM = months.reduce((a,b) => (s.byReceiptMonth[a]||0) > (s.byReceiptMonth[b]||0) ? a : b, months[0]||'');
-  document.getElementById('t-peak-month').textContent = peakM ? peakM.slice(0,4)+'년 '+peakM.slice(4)+'월' : '—';
-  document.getElementById('t-peak-cnt').textContent = fmt(s.byReceiptMonth[peakM]||0)+'건';
+  const avg=months.length?(s.totalDefects/months.length).toFixed(1):0;
+  document.getElementById('t-avg').textContent=avg;
+  document.getElementById('t-latest').textContent=fmt(lV);
+  document.getElementById('t-latest-sub').textContent=lM?lM.slice(0,4)+'년 '+lM.slice(4)+'월':'—';
+  document.getElementById('t-mom').textContent=diff>=0?'▲ +'+fmt(diff):'▼ '+fmt(diff);
+  document.getElementById('t-mom').style.color=diff>0?'var(--red)':'var(--green)';
+  document.getElementById('t-mom-sub').textContent='전월 '+fmt(pV)+'건';
+  const peakM=months.reduce((a,b)=>(s.byReceiptMonth[a]||0)>(s.byReceiptMonth[b]||0)?a:b,months[0]||'');
+  document.getElementById('t-peak').textContent=peakM?peakM.slice(0,4)+'년 '+peakM.slice(4)+'월':'—';
+  document.getElementById('t-peak-cnt').textContent=fmt(s.byReceiptMonth[peakM]||0)+'건';
 }
 
 // ── 종합 현황 ──
-function renderOverview(s) {
-  const months  = Object.keys(s.byReceiptMonth).sort();
-  const mLabels = months.map(m => m.slice(0,4)+'.'+m.slice(4));
-  const mVals   = months.map(m => s.byReceiptMonth[m]);
+function renderOverview(s){
+  // 2026년 월별만 필터
+  const months2026=Object.keys(s.byReceiptMonth).filter(m=>m.startsWith('2026')).sort();
+  const mL2026=months2026.map(m=>m.slice(4)+'월');
+  const mV2026=months2026.map(m=>s.byReceiptMonth[m]||0);
+  const mR2026=months2026.map(m=>{const v=s.byReceiptMonth[m]||0,sv=s.monthlySalesTotals[m]||0;return sv>0?+(v/sv*100).toFixed(2):null;});
 
-  // 월별 불량률 계산
-  const mRates = months.map(m => {
-    const v = s.byReceiptMonth[m] || 0;
-    const sv = s.monthlySalesTotals[m] || 0;
-    return sv > 0 ? +(v/sv*100).toFixed(2) : null;
-  });
+  document.getElementById('bdgMonths').textContent='2026년 '+months2026.length+'개월';
 
-  document.getElementById('bdgMonths').textContent = months.length+'개월';
-
-  // 콤보 차트 (바 + 라인)
-  mkChart('cMonthlyCombo', 'bar', {
-    labels: mLabels,
-    datasets: [
-      { type:'bar', label:'불량건수', data: mVals,
-        backgroundColor: mVals.map((v,i)=>v===Math.max(...mVals)?'rgba(224,36,36,0.85)':'rgba(26,86,219,0.7)'),
-        borderRadius: 5, yAxisID:'y', order:2 },
-      { type:'line', label:'불량률%', data: mRates,
-        borderColor: P.orange, backgroundColor: 'rgba(217,119,6,0.1)',
-        pointBackgroundColor: P.orange, pointRadius: 4,
-        borderWidth: 2, tension: 0.3, yAxisID:'y2', order:1, spanGaps:true }
+  // 라인 차트 (막대 없음) - datalabels on
+  mkChart('cMonthLine','line',{
+    labels:mL2026,
+    datasets:[
+      {label:'불량건수',data:mV2026,borderColor:P.red,backgroundColor:'rgba(220,38,38,0.08)',pointBackgroundColor:P.red,pointRadius:6,pointHoverRadius:8,borderWidth:2.5,tension:0.3,fill:true,
+       datalabels:{anchor:'top',align:'top',color:P.red,font:{family:'JetBrains Mono',weight:'700',size:12},formatter:v=>fmt(v)}},
+      {label:'불량률%',data:mR2026,borderColor:P.amber,backgroundColor:'transparent',pointBackgroundColor:P.amber,pointRadius:5,borderWidth:2,tension:0.3,yAxisID:'y2',spanGaps:true,
+       datalabels:{anchor:'bottom',align:'bottom',color:P.amber,font:{family:'JetBrains Mono',weight:'600',size:10},formatter:v=>v!=null?v.toFixed(2)+'%':''}},
     ]
-  }, {
-    plugins: { legend: { position:'top', labels:{ font:{size:11}, padding:12 } } },
-    scales: {
-      y:  { beginAtZero:true, position:'left',  grid:{color:'#f3f4f6'}, ticks:{font:{size:10}} },
-      y2: { beginAtZero:true, position:'right', grid:{display:false},   ticks:{font:{size:10}, callback:v=>v+'%'} },
-      x:  { grid:{display:false}, ticks:{font:{size:10}} }
+  },{
+    plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:12}},datalabels:{}},
+    scales:{
+      y:{beginAtZero:true,position:'left',grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}},
+      y2:{beginAtZero:true,position:'right',grid:{display:false},ticks:{font:{family:'JetBrains Mono',size:10},callback:v=>v+'%'}},
+      x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}
     }
   });
 
-  // 품목별 도넛
-  const cats = Object.keys(s.byCategory);
-  const catV = Object.values(s.byCategory);
-  mkChart('cCategory', 'doughnut', {
-    labels: cats,
-    datasets: [{ data: catV, backgroundColor: PALETTE10, borderWidth: 2, borderColor:'#fff' }]
-  }, { plugins:{ legend:{ position:'bottom', labels:{font:{size:11},padding:10,boxWidth:12} } }, cutout:'60%' });
+  // 품목별 도넛 - datalabels on
+  const cats=Object.keys(s.byCategory),catV=Object.values(s.byCategory);
+  mkChart('cCategory','doughnut',{
+    labels:cats,
+    datasets:[{data:catV,backgroundColor:PAL,borderWidth:2,borderColor:'#fff',
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:11},formatter:(v,ctx)=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return pct(v,t)+'%';}}}]
+  },{plugins:{legend:{position:'bottom',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},cutout:'55%'});
 
-  // 품목 바
-  const total = s.totalDefects;
-  const maxCat = Math.max(...catV);
-  document.getElementById('categoryBars').innerHTML = cats.map((c,i)=>`
-    <div style="display:flex;align-items:center;gap:8px;padding:4px 0">
-      <div style="font-size:11.5px;width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c}</div>
-      <div class="inline-track" style="flex:1"><div class="inline-fill fill-blue" style="width:${(catV[i]/maxCat*100).toFixed(1)}%"></div></div>
-      <div class="td-mono" style="font-size:11px;min-width:30px;text-align:right">${catV[i]}</div>
-      <div style="font-size:11px;color:var(--text-muted);min-width:36px;text-align:right">${pct(catV[i],total)}%</div>
+  // 품목 인라인 바
+  const total=s.totalDefects,maxCat=Math.max(...catV);
+  document.getElementById('catBars').innerHTML=cats.map((c,i)=>`
+    <div style="display:flex;align-items:center;gap:7px;padding:3px 0">
+      <div style="width:10px;height:10px;border-radius:50%;background:${PAL[i]};flex-shrink:0"></div>
+      <div style="font-size:11px;color:var(--text2);width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c}</div>
+      <div class="itrack" style="flex:1"><div class="ifill" style="width:${(catV[i]/maxCat*100).toFixed(1)}%;background:${PAL[i]}"></div></div>
+      <div class="mono" style="font-size:11px;min-width:26px;text-align:right;color:var(--text)">${catV[i]}</div>
+      <div style="font-size:10.5px;color:var(--text4);min-width:34px;text-align:right">${pct(catV[i],total)}%</div>
     </div>`).join('');
 
-  // 발생 시점 도넛
-  const tVals = TIMING_KEYS.map(k => s.byTiming[k]||0);
-  const tTotal = tVals.reduce((a,b)=>a+b,0);
+  // 발생 시점 도넛 - datalabels on
+  const tV=TK.map(k=>s.byTiming[k]||0),tT=tV.reduce((a,b)=>a+b,0);
   mkChart('cTiming','doughnut',{
-    labels: TIMING_KEYS,
-    datasets:[{ data:tVals, backgroundColor:TIMING_COLORS, borderWidth:2, borderColor:'#fff' }]
-  },{ plugins:{legend:{display:false}}, cutout:'55%' });
+    labels:TK,
+    datasets:[{data:tV,backgroundColor:TC,borderWidth:2,borderColor:'#fff',
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:11},formatter:(v,ctx)=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return pct(v,t)+'%';}}}]
+  },{plugins:{legend:{display:false},datalabels:{}},cutout:'50%'});
 
-  document.getElementById('timingLegend').innerHTML = TIMING_KEYS.map((k,i)=>`
+  document.getElementById('timingLegend').innerHTML=TK.map((k,i)=>`
     <div class="timing-item">
-      <div class="timing-dot" style="background:${TIMING_COLORS[i]}"></div>
-      <div class="timing-label">${k}</div>
-      <div class="timing-val">${tVals[i]}<span class="timing-pct">(${pct(tVals[i],tTotal)}%)</span></div>
+      <div class="timing-dot" style="background:${TC[i]}"></div>
+      <div class="timing-lbl">${k}</div>
+      <div class="timing-val">${tV[i]}<span class="timing-pct">(${pct(tV[i],tT)}%)</span></div>
     </div>`).join('');
 
-  // 생산분류
-  const mfgK = Object.keys(s.byMfgType);
-  const mfgV = Object.values(s.byMfgType);
+  // 생산분류 - datalabels on
+  const mfgK=Object.keys(s.byMfgType),mfgV=Object.values(s.byMfgType);
   mkChart('cMfgType','bar',{
-    labels: mfgK,
-    datasets:[{ data:mfgV, backgroundColor:[P.blue,P.orange,P.green,P.purple], borderRadius:6, borderSkipped:false }]
-  },{ indexAxis:'y', plugins:{legend:{display:false}},
-      scales:{x:{beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{font:{size:10}}}, y:{grid:{display:false},ticks:{font:{size:10}}}} });
+    labels:mfgK,
+    datasets:[{data:mfgV,backgroundColor:[P.blue,P.amber,P.green,P.purple],borderRadius:6,borderSkipped:false,
+      datalabels:{anchor:'end',align:'end',color:v=>v.dataset.backgroundColor[v.dataIndex],font:{family:'JetBrains Mono',weight:'700',size:12},formatter:v=>fmt(v)}}]
+  },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
+    scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}},y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}}});
 
-  // 채널 파이
-  const chK = Object.keys(s.byChannel);
-  const chV = Object.values(s.byChannel);
+  // 채널 파이 - datalabels on
+  const chK=Object.keys(s.byChannel),chV=Object.values(s.byChannel);
   mkChart('cChannelPie','doughnut',{
-    labels: chK,
-    datasets:[{ data:chV, backgroundColor:[P.blue,P.orange,P.green,P.purple,P.cyan], borderWidth:2, borderColor:'#fff' }]
-  },{ plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:10,boxWidth:12}}}, cutout:'55%' });
+    labels:chK,
+    datasets:[{data:chV,backgroundColor:[P.blue,P.amber,P.green,P.purple,P.teal],borderWidth:2,borderColor:'#fff',
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:11},formatter:(v,ctx)=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return pct(v,t)+'%';}}}]
+  },{plugins:{legend:{position:'bottom',labels:{font:{family:'Noto Sans KR',size:11},padding:8,boxWidth:10}},datalabels:{}},cutout:'50%'});
 
-  // 파레토 요약 (Top10)
-  renderPareto('paretoShort', s, 10, false);
+  renderPareto('paretoShort',s,10,false);
 
   // SKU 신호등
-  const models = Object.keys(s.byModel).slice(0, 8);
-  const modelCat = buildModelCat();
-  document.getElementById('skuSignal').innerHTML = models.map(m => {
-    const d = s.defectRateByModel[m] || {};
-    const r = d.rate;
-    let sig, sigCls;
-    if (r === null || r === undefined) { sig = '—'; sigCls = ''; }
-    else if (r >= 3) { sig = `<span class="signal sig-red"><span class="signal-dot"></span>${r.toFixed(2)}%</span>`; sigCls = 'red'; }
-    else if (r >= 1) { sig = `<span class="signal sig-orange"><span class="signal-dot"></span>${r.toFixed(2)}%</span>`; sigCls = 'orange'; }
-    else             { sig = `<span class="signal sig-green"><span class="signal-dot"></span>${r.toFixed(2)}%</span>`; sigCls = 'green'; }
-    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
-      <div style="font-size:12.5px;font-weight:600;flex:1">${m}</div>
-      <span class="tag tag-${sigCls||'gray'}" style="font-size:11px">${modelCat[m]||'—'}</span>
-      <div class="td-mono" style="font-size:12px;min-width:28px;text-align:right">${s.byModel[m]}</div>
-      <div style="min-width:80px;text-align:right">${sig || '—'}</div>
+  const models=Object.keys(s.byModel).slice(0,8),modelCat=buildModelCat();
+  document.getElementById('skuSignal').innerHTML=models.map(m=>{
+    const d=s.defectRateByModel[m]||{},r=d.rate;
+    let sig='',cls='';
+    if(r==null){sig='—';cls='tg-gray';}
+    else if(r>=3){sig=`<span class="sig sig-r"><span class="sig-dot"></span>${r.toFixed(2)}%</span>`;cls='tg-red';}
+    else if(r>=1){sig=`<span class="sig sig-a"><span class="sig-dot"></span>${r.toFixed(2)}%</span>`;cls='tg-amber';}
+    else{sig=`<span class="sig sig-g"><span class="sig-dot"></span>${r.toFixed(2)}%</span>`;cls='tg-green';}
+    return `<div class="sku-sig-item">
+      <div style="font-size:12px;font-weight:600;flex:1">${m}</div>
+      <span class="tag ${cls}" style="font-size:10px">${modelCat[m]||'—'}</span>
+      <div class="mono" style="font-size:11.5px;min-width:26px;text-align:right">${s.byModel[m]}</div>
+      <div style="min-width:80px;text-align:right">${sig}</div>
     </div>`;
   }).join('');
 }
 
 // ── 트렌드 ──
-function renderTrend(s) {
-  const months  = Object.keys(s.byReceiptMonth).sort();
-  const mLabels = months.map(m => m.slice(0,4)+'.'+m.slice(4));
-  const mVals   = months.map(m => s.byReceiptMonth[m]||0);
+function renderTrend(s){
+  const months=Object.keys(s.byReceiptMonth).sort();
+  const mL=months.map(m=>m.slice(0,4)+'.'+m.slice(4));
+  const mV=months.map(m=>s.byReceiptMonth[m]||0);
+  let cum=0; const cumV=mV.map(v=>{cum+=v;return cum;});
 
-  // 누적 추이
-  let cum = 0;
-  const cumVals = mVals.map(v => { cum += v; return cum; });
   mkChart('cTrendCumul','bar',{
-    labels: mLabels,
+    labels:mL,
     datasets:[
-      { type:'bar', label:'월별 불량', data:mVals, backgroundColor:'rgba(26,86,219,0.65)', borderRadius:4, yAxisID:'y', order:2 },
-      { type:'line', label:'누적 불량', data:cumVals, borderColor:P.red, backgroundColor:'rgba(224,36,36,0.08)', pointRadius:3, borderWidth:2.5, tension:0.3, yAxisID:'y2', order:1 }
+      {type:'bar',label:'월별 불량',data:mV,backgroundColor:'rgba(37,99,235,0.65)',borderRadius:4,yAxisID:'y',order:2,
+       datalabels:{anchor:'end',align:'end',color:P.blue,font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v>0?fmt(v):''}},
+      {type:'line',label:'누적 불량',data:cumV,borderColor:P.red,backgroundColor:'rgba(220,38,38,0.06)',pointRadius:3,borderWidth:2.5,tension:0.3,yAxisID:'y2',order:1,
+       datalabels:{anchor:'top',align:'top',color:P.red,font:{family:'JetBrains Mono',weight:'600',size:9},formatter:v=>fmt(v)}}
     ]
-  },{
-    plugins:{legend:{position:'top',labels:{font:{size:11},padding:12}}},
-    scales:{
-      y: {beginAtZero:true,position:'left', grid:{color:'#f3f4f6'},ticks:{font:{size:10}}},
-      y2:{beginAtZero:true,position:'right',grid:{display:false},ticks:{font:{size:10}}},
-      x: {grid:{display:false},ticks:{font:{size:10}}}
-    }
-  });
+  },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:12}},datalabels:{}},
+    scales:{y:{beginAtZero:true,position:'left',grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}},
+            y2:{beginAtZero:true,position:'right',grid:{display:false},ticks:{font:{family:'JetBrains Mono',size:10}}},
+            x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}}}});
 
-  // MoM 리스트
-  const maxAbs = Math.max(...mVals.map((v,i)=> i===0?0:Math.abs(v-mVals[i-1])), 1);
-  document.getElementById('momList').innerHTML = months.map((m,i)=>{
-    if(i===0) return '';
-    const curr = mVals[i], prev = mVals[i-1];
-    const diff = curr - prev;
-    const pctStr = prev>0 ? (diff/prev*100).toFixed(1)+'%' : '—';
-    const barPct = (Math.abs(diff)/maxAbs*100).toFixed(1);
-    return `<div class="mom-item">
-      <div class="mom-month">${m.slice(0,4)}.${m.slice(4)}</div>
-      <div class="mom-cnt">${fmt(curr)}</div>
+  const maxAbs=Math.max(...mV.map((v,i)=>i===0?0:Math.abs(v-mV[i-1])),1);
+  document.getElementById('momList').innerHTML=months.map((m,i)=>{
+    if(i===0)return'';
+    const curr=mV[i],prev=mV[i-1],diff=curr-prev;
+    const pctStr=prev>0?(diff/prev*100).toFixed(1)+'%':'—';
+    const barPct=(Math.abs(diff)/maxAbs*100).toFixed(1);
+    return`<div class="mom-item">
+      <div class="mom-month">${m.slice(0,4)+'.'+m.slice(4)}</div>
+      <div class="mom-cnt mono">${fmt(curr)}</div>
       <div class="mom-bar-wrap">
         <div class="${diff>=0?'mom-bar-pos':'mom-bar-neg'}" style="width:${barPct}%;${diff<0?'right:0':'left:0'}"></div>
       </div>
-      <div class="mom-change ${diff>=0?'up':'down'}">${diff>=0?'+':''}${fmt(diff)}</div>
-      <div style="font-size:11px;color:var(--text-muted);min-width:44px;text-align:right;font-family:'DM Mono',monospace">${diff>=0?'+':''}${pctStr}</div>
+      <div class="mom-change ${diff>=0?'up':'dn'}">${diff>=0?'+':''}${fmt(diff)}</div>
+      <div style="font-size:10px;color:var(--text4);min-width:40px;text-align:right;font-family:'JetBrains Mono'">${diff>=0?'+':''}${pctStr}</div>
     </div>`;
   }).join('');
 
-  // 품목별 × 월별 스택
-  if (!G.rawDefects || !G.rawDefects.length) return;
-  const cats = Object.keys(s.byCategory);
-  const catMonthData = {};
-  cats.forEach(c => { catMonthData[c] = {}; months.forEach(m => { catMonthData[c][m] = 0; }); });
-  G.rawDefects.forEach(d => {
-    if (!d.receiptDate) return;
-    const ym = d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
-    if (catMonthData[d.category] && months.includes(ym)) catMonthData[d.category][ym] += d.qty;
-  });
-  mkChart('cMonthCategory','bar',{
-    labels: mLabels,
-    datasets: cats.map((c,i)=>({ label:c, data:months.map(m=>catMonthData[c][m]||0), backgroundColor:PALETTE10[i], borderRadius:3 }))
-  },{
-    plugins:{legend:{position:'top',labels:{font:{size:11},padding:10}}},
-    scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10}}}, y:{stacked:true,beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{font:{size:10}}}}
-  });
+  if(!G.rawDefects||!G.rawDefects.length)return;
+  const cats=Object.keys(s.byCategory),catMD={};
+  cats.forEach(c=>{catMD[c]={};months.forEach(m=>{catMD[c][m]=0;});});
+  G.rawDefects.forEach(d=>{if(!d.receiptDate)return;const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);if(catMD[d.category]&&months.includes(ym))catMD[d.category][ym]+=d.qty;});
+  mkChart('cMonthCat','bar',{
+    labels:mL,
+    datasets:cats.map((c,i)=>({label:c,data:months.map(m=>catMD[c][m]||0),backgroundColor:PAL[i],borderRadius:2,
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:v=>v>0?v:''}}))
+  },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},
+    scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
-  // 불량유형 × 월별
-  const topTypes = Object.keys(s.byDefectDetail).slice(0,5);
-  const typeMonthData = {};
-  topTypes.forEach(t => { typeMonthData[t] = {}; months.forEach(m => { typeMonthData[t][m] = 0; }); });
-  G.rawDefects.forEach(d => {
-    if (!d.receiptDate || !topTypes.includes(d.defectDetail)) return;
-    const ym = d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
-    if (months.includes(ym)) typeMonthData[d.defectDetail][ym] += d.qty;
-  });
-  mkChart('cMonthDefectType','line',{
-    labels: mLabels,
-    datasets: topTypes.map((t,i)=>({ label:t, data:months.map(m=>typeMonthData[t][m]||0), borderColor:PALETTE10[i], backgroundColor:'transparent', pointRadius:3, borderWidth:2, tension:0.3 }))
-  },{
-    plugins:{legend:{position:'top',labels:{font:{size:11},padding:10}}},
-    scales:{x:{grid:{display:false},ticks:{font:{size:10}}}, y:{beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{font:{size:10}}}}
-  });
+  const topTypes=Object.keys(s.byDefectDetail).slice(0,5),typeMD={};
+  topTypes.forEach(t=>{typeMD[t]={};months.forEach(m=>{typeMD[t][m]=0;});});
+  G.rawDefects.forEach(d=>{if(!d.receiptDate||!topTypes.includes(d.defectDetail))return;const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);if(months.includes(ym))typeMD[d.defectDetail][ym]+=d.qty;});
+  mkChart('cMonthType','line',{
+    labels:mL,
+    datasets:topTypes.map((t,i)=>({label:t,data:months.map(m=>typeMD[t][m]||0),borderColor:PAL[i],backgroundColor:'transparent',pointRadius:4,borderWidth:2,tension:0.3,
+      datalabels:{anchor:'top',align:'top',color:PAL[i],font:{family:'JetBrains Mono',weight:'600',size:9},formatter:v=>v>0?v:''}}))
+  },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},
+    scales:{x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}},y:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 }
 
 // ── SKU ──
-function renderSKU(s) {
-  const allM  = Object.keys(s.byModel);
-  const top15 = allM.slice(0,15);
-  const t15V  = top15.map(m=>s.byModel[m]);
-  const total = s.totalDefects;
-  const modelCat = buildModelCat();
-  const modelMfg = buildModelMfg();
+function renderSKU(s){
+  const allM=Object.keys(s.byModel),top15=allM.slice(0,15),t15V=top15.map(m=>s.byModel[m]),total=s.totalDefects;
+  const modelCat=buildModelCat(),modelMfg=buildModelMfg();
 
   mkChart('cSkuBar','bar',{
-    labels: top15,
-    datasets:[{ data:t15V, backgroundColor:t15V.map((_,i)=>i<3?'rgba(224,36,36,0.82)':'rgba(26,86,219,0.68)'), borderRadius:4, borderSkipped:false }]
-  },{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{font:{size:10}}}, y:{grid:{display:false},ticks:{font:{size:10}}}} });
+    labels:top15,
+    datasets:[{data:t15V,backgroundColor:t15V.map((_,i)=>i<3?'rgba(220,38,38,0.82)':'rgba(37,99,235,0.68)'),borderRadius:4,borderSkipped:false,
+      datalabels:{anchor:'end',align:'right',color:(ctx)=>ctx.dataIndex<3?P.red:P.blue,font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>fmt(v)}}]
+  },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
+    scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}},y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}}}});
 
-  // 불량률 차트
-  const rateItems = Object.entries(s.defectRateByModel).filter(([,v])=>v.rate!==null&&v.sales>0).sort(([,a],[,b])=>b.rate-a.rate).slice(0,10);
+  const rI=Object.entries(s.defectRateByModel).filter(([,v])=>v.rate!=null&&v.sales>0).sort(([,a],[,b])=>b.rate-a.rate).slice(0,10);
   mkChart('cDefectRate','bar',{
-    labels: rateItems.map(([m])=>m),
-    datasets:[{
-      data: rateItems.map(([,v])=>+v.rate.toFixed(2)),
-      backgroundColor: rateItems.map(([,v])=> v.rate>=3?'rgba(224,36,36,0.8)': v.rate>=1?'rgba(217,119,6,0.8)':'rgba(5,122,85,0.8)'),
-      borderRadius:4, borderSkipped:false
-    }]
-  },{ indexAxis:'y', plugins:{legend:{display:false}},
-      scales:{x:{beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{font:{size:10},callback:v=>v+'%'}}, y:{grid:{display:false},ticks:{font:{size:10}}}} });
+    labels:rI.map(([m])=>m),
+    datasets:[{data:rI.map(([,v])=>+v.rate.toFixed(2)),
+      backgroundColor:rI.map(([,v])=>v.rate>=3?'rgba(220,38,38,0.8)':v.rate>=1?'rgba(217,119,6,0.8)':'rgba(22,163,74,0.8)'),
+      borderRadius:4,borderSkipped:false,
+      datalabels:{anchor:'end',align:'right',color:(ctx)=>{const r=rI[ctx.dataIndex][1].rate;return r>=3?P.red:r>=1?P.amber:P.green;},font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v.toFixed(2)+'%'}}]
+  },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
+    scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10},callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}}}});
 
-  // SKU 테이블
-  const tbody = document.getElementById('skuBody');
-  tbody.innerHTML = allM.slice(0,30).map((m,i)=>{
-    const cnt = s.byModel[m];
-    const d = s.defectRateByModel[m]||{};
-    const r = d.rate;
-    let sigHtml;
-    if (r===null||r===undefined) sigHtml = '<span class="tag tag-gray">—</span>';
-    else if (r>=3) sigHtml = `<span class="signal sig-red"><span class="signal-dot"></span>${r.toFixed(2)}%</span>`;
-    else if (r>=1) sigHtml = `<span class="signal sig-orange"><span class="signal-dot"></span>${r.toFixed(2)}%</span>`;
-    else           sigHtml = `<span class="signal sig-green"><span class="signal-dot"></span>${r.toFixed(2)}%</span>`;
-    const rankCls = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-n';
-    return `<tr>
-      <td class="td-center"><span class="rank ${rankCls}">${i+1}</span></td>
+  document.getElementById('skuBody').innerHTML=allM.slice(0,25).map((m,i)=>{
+    const cnt=s.byModel[m],d=s.defectRateByModel[m]||{},r=d.rate;
+    let sigH;
+    if(r==null)sigH='<span class="tag tg-gray">—</span>';
+    else if(r>=3)sigH=`<span class="sig sig-r"><span class="sig-dot"></span>${r.toFixed(2)}%</span>`;
+    else if(r>=1)sigH=`<span class="sig sig-a"><span class="sig-dot"></span>${r.toFixed(2)}%</span>`;
+    else sigH=`<span class="sig sig-g"><span class="sig-dot"></span>${r.toFixed(2)}%</span>`;
+    const rC=i===0?'rk1':i===1?'rk2':i===2?'rk3':'rkn';
+    return`<tr>
+      <td class="tc"><span class="rank ${rC}">${i+1}</span></td>
       <td><strong>${m}</strong></td>
-      <td><span class="tag tag-blue">${modelCat[m]||'—'}</span></td>
-      <td><span class="tag tag-gray">${modelMfg[m]||'—'}</span></td>
-      <td class="td-right td-mono">${fmt(cnt)}</td>
-      <td class="td-right td-mono">${d.sales>0?fmt(d.sales):'—'}</td>
-      <td class="td-right td-mono">${r!=null?r.toFixed(2)+'%':'—'}</td>
-      <td>${sigHtml}</td>
-      <td><div class="inline-bar">
-        <div class="inline-track"><div class="inline-fill fill-blue" style="width:${(cnt/t15V[0]*100).toFixed(1)}%"></div></div>
-        <span style="font-size:10.5px;color:var(--text-muted);min-width:30px">${pct(cnt,total)}%</span>
-      </div></td>
+      <td><span class="tag tg-blue">${modelCat[m]||'—'}</span></td>
+      <td><span class="tag tg-gray">${modelMfg[m]||'—'}</span></td>
+      <td class="tr mono">${fmt(cnt)}</td>
+      <td class="tr mono">${d.sales>0?fmt(d.sales):'—'}</td>
+      <td class="tr mono">${r!=null?r.toFixed(2)+'%':'—'}</td>
+      <td>${sigH}</td>
+      <td><div class="ibar"><div class="itrack"><div class="ifill" style="width:${(cnt/t15V[0]*100).toFixed(1)}%;background:${i<3?P.red:P.blue}"></div></div><span style="font-size:10px;color:var(--text4);min-width:28px">${pct(cnt,total)}%</span></div></td>
     </tr>`;
   }).join('');
 
-  // 버블 차트
-  const bItems = Object.entries(s.defectRateByModel).filter(([,v])=>v.rate!=null&&v.sales>0).slice(0,15);
+  const bI=Object.entries(s.defectRateByModel).filter(([,v])=>v.rate!=null&&v.sales>0).slice(0,12);
   mkChart('cBubble','bubble',{
-    datasets:[{ label:'SKU', data: bItems.map(([m,v])=>({ x:v.sales, y:v.rate, r:Math.max(4,Math.sqrt(v.defects)*2.5), label:m })),
-      backgroundColor:'rgba(26,86,219,0.55)', borderColor:'rgba(26,86,219,0.8)' }]
-  },{
-    plugins:{legend:{display:false}, tooltip:{ callbacks:{ label:ctx=>`${ctx.raw.label}: 판매 ${fmt(ctx.raw.x)} / 불량률 ${ctx.raw.y.toFixed(2)}%` } }},
-    scales:{
-      x:{title:{display:true,text:'판매수량',font:{size:10}},grid:{color:'#f3f4f6'},ticks:{font:{size:10}}},
-      y:{title:{display:true,text:'불량률(%)',font:{size:10}},beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{font:{size:10},callback:v=>v+'%'}}
-    }
-  });
+    datasets:[{label:'SKU',data:bI.map(([m,v])=>({x:v.sales,y:v.rate,r:Math.max(5,Math.sqrt(v.defects)*2.8),label:m})),backgroundColor:'rgba(37,99,235,0.5)',borderColor:'rgba(37,99,235,0.8)',
+      datalabels:{display:false}}]
+  },{plugins:{legend:{display:false},datalabels:{},tooltip:{callbacks:{label:ctx=>`${ctx.raw.label}: 판매${fmt(ctx.raw.x)} / 불량률${ctx.raw.y.toFixed(2)}%`}}},
+    scales:{x:{title:{display:true,text:'판매수량',font:{family:'Noto Sans KR',size:10}},grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
+            y:{title:{display:true,text:'불량률(%)',font:{family:'Noto Sans KR',size:10}},beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9},callback:v=>v+'%'}}}});
 
-  // 모델별 불량 시점 (Top8)
-  if (!G.rawDefects||!G.rawDefects.length) return;
-  const top8 = allM.slice(0,8);
-  const mTimingData = {};
-  top8.forEach(m => { mTimingData[m] = {1:0,2:0,3:0,12:0,99:0}; });
-  G.rawDefects.forEach(d => {
-    if (!top8.includes(d.model)) return;
-    const mo = d.monthsToReceipt||0;
-    if(mo<=1) mTimingData[d.model][1]+=d.qty;
-    else if(mo<=2) mTimingData[d.model][2]+=d.qty;
-    else if(mo<=3) mTimingData[d.model][3]+=d.qty;
-    else if(mo<=12) mTimingData[d.model][12]+=d.qty;
-    else mTimingData[d.model][99]+=d.qty;
-  });
+  if(!G.rawDefects||!G.rawDefects.length)return;
+  const top8=allM.slice(0,8),mTD={};
+  top8.forEach(m=>{mTD[m]={1:0,2:0,3:0,12:0,99:0};});
+  G.rawDefects.forEach(d=>{if(!top8.includes(d.model))return;const mo=d.monthsToReceipt||0;if(mo<=1)mTD[d.model][1]+=d.qty;else if(mo<=2)mTD[d.model][2]+=d.qty;else if(mo<=3)mTD[d.model][3]+=d.qty;else if(mo<=12)mTD[d.model][12]+=d.qty;else mTD[d.model][99]+=d.qty;});
   mkChart('cSkuTiming','bar',{
-    labels: top8,
-    datasets: TIMING_KEYS.map((k,i)=>({ label:k, data:top8.map(m=>mTimingData[m][[1,2,3,12,99][i]]||0), backgroundColor:TIMING_COLORS[i], borderRadius:3 }))
-  },{
-    plugins:{legend:{position:'top',labels:{font:{size:10},padding:8}}},
-    scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:9}}}, y:{stacked:true,beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{font:{size:10}}}}
-  });
+    labels:top8,
+    datasets:TK.map((k,i)=>({label:k,data:top8.map(m=>mTD[m][[1,2,3,12,99][i]]||0),backgroundColor:TC[i],borderRadius:2,
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:v=>v>0?v:''}}))
+  },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:10},padding:8,boxWidth:8}},datalabels:{}},
+    scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 }
 
 // ── 불량유형 ──
-function renderDefect(s) {
-  renderPareto('paretoFull', s, 999, true);
-
-  const types  = Object.keys(s.byDefectDetail);
-  const counts = Object.values(s.byDefectDetail);
+function renderDefect(s){
+  renderPareto('paretoFull',s,999,true);
+  const types=Object.keys(s.byDefectDetail),counts=Object.values(s.byDefectDetail);
   mkChart('cDefectDoughnut','doughnut',{
-    labels: types.slice(0,12),
-    datasets:[{ data:counts.slice(0,12), backgroundColor:PALETTE10.concat(['#78350f','#065f46']), borderWidth:2, borderColor:'#fff' }]
-  },{ plugins:{legend:{position:'right',labels:{font:{size:11},padding:8,boxWidth:12}}}, cutout:'50%' });
+    labels:types.slice(0,12),
+    datasets:[{data:counts.slice(0,12),backgroundColor:PAL.concat(['#78350f','#065f46']),borderWidth:2,borderColor:'#fff',
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:10},formatter:(v,ctx)=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return v/t>0.04?pct(v,t)+'%':'';}}}]
+  },{plugins:{legend:{position:'right',labels:{font:{family:'Noto Sans KR',size:11},padding:7,boxWidth:10}},datalabels:{}},cutout:'45%'});
 
-  // 매트릭스
-  const cats     = Object.keys(s.categoryDefectMatrix);
-  const topTypes = types.slice(0,12);
-  const maxCell  = Math.max(...cats.flatMap(c=>topTypes.map(t=>s.categoryDefectMatrix[c][t]||0)),1);
-  document.getElementById('matrixWrap').innerHTML = `<table>
-    <thead><tr><th>품목</th>${topTypes.map(t=>`<th class="td-center" style="min-width:70px;font-size:9.5px">${t}</th>`).join('')}<th class="td-right">합계</th></tr></thead>
+  const cats=Object.keys(s.categoryDefectMatrix),topT=types.slice(0,10);
+  const maxC=Math.max(...cats.flatMap(c=>topT.map(t=>s.categoryDefectMatrix[c][t]||0)),1);
+  document.getElementById('matrixWrap').innerHTML=`<table>
+    <thead><tr><th>품목</th>${topT.map(t=>`<th class="tc" style="min-width:64px;font-size:9px">${t}</th>`).join('')}<th class="tr">합계</th></tr></thead>
     <tbody>${cats.map(cat=>{
-      const row = s.categoryDefectMatrix[cat];
-      const rowTotal = topTypes.reduce((s,t)=>s+(row[t]||0),0);
-      return `<tr>
-        <td><strong>${cat}</strong></td>
-        ${topTypes.map(t=>{
-          const v = row[t]||0;
-          const op = v>0 ? (0.1+v/maxCell*0.8).toFixed(2) : 0;
-          return `<td class="heatmap-cell" style="background:rgba(224,36,36,${op})">${v>0?v:''}</td>`;
-        }).join('')}
-        <td class="td-right td-mono" style="font-weight:700">${rowTotal}</td>
-      </tr>`;
+      const row=s.categoryDefectMatrix[cat],rT=topT.reduce((s,t)=>s+(row[t]||0),0);
+      return`<tr><td><strong>${cat}</strong></td>${topT.map(t=>{const v=row[t]||0;const op=v>0?(0.1+v/maxC*0.8).toFixed(2):0;return`<td class="hmap" style="background:rgba(220,38,38,${op})">${v>0?v:''}</td>`;}).join('')}<td class="tr mono" style="font-weight:800">${rT}</td></tr>`;
     }).join('')}</tbody></table>`;
 
-  if (!G.rawDefects||!G.rawDefects.length) return;
-
-  // 불량유형 × 발생 시점
-  const top8t = types.slice(0,8);
-  const dtTimingData = {};
-  top8t.forEach(t => { dtTimingData[t] = {1:0,2:0,3:0,12:0,99:0}; });
-  G.rawDefects.forEach(d => {
-    if (!top8t.includes(d.defectDetail)) return;
-    const mo = d.monthsToReceipt||0;
-    if(mo<=1) dtTimingData[d.defectDetail][1]+=d.qty;
-    else if(mo<=2) dtTimingData[d.defectDetail][2]+=d.qty;
-    else if(mo<=3) dtTimingData[d.defectDetail][3]+=d.qty;
-    else if(mo<=12) dtTimingData[d.defectDetail][12]+=d.qty;
-    else dtTimingData[d.defectDetail][99]+=d.qty;
-  });
+  if(!G.rawDefects||!G.rawDefects.length)return;
+  const top8t=types.slice(0,8),dtTD={};
+  top8t.forEach(t=>{dtTD[t]={1:0,2:0,3:0,12:0,99:0};});
+  G.rawDefects.forEach(d=>{if(!top8t.includes(d.defectDetail))return;const mo=d.monthsToReceipt||0;if(mo<=1)dtTD[d.defectDetail][1]+=d.qty;else if(mo<=2)dtTD[d.defectDetail][2]+=d.qty;else if(mo<=3)dtTD[d.defectDetail][3]+=d.qty;else if(mo<=12)dtTD[d.defectDetail][12]+=d.qty;else dtTD[d.defectDetail][99]+=d.qty;});
   mkChart('cDefectTiming','bar',{
-    labels: top8t.map(t=>t.length>8?t.slice(0,8)+'…':t),
-    datasets: TIMING_KEYS.map((k,i)=>({ label:k, data:top8t.map(t=>dtTimingData[t][[1,2,3,12,99][i]]||0), backgroundColor:TIMING_COLORS[i], borderRadius:3 }))
-  },{
-    plugins:{legend:{position:'top',labels:{font:{size:10},padding:8}}},
-    scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:9}}}, y:{stacked:true,beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{font:{size:10}}}}
-  });
+    labels:top8t.map(t=>t.length>7?t.slice(0,7)+'…':t),
+    datasets:TK.map((k,i)=>({label:k,data:top8t.map(t=>dtTD[t][[1,2,3,12,99][i]]||0),backgroundColor:TC[i],borderRadius:2,
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:v=>v>0?v:''}}))
+  },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:10},padding:8,boxWidth:8}},datalabels:{}},
+    scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
-  // 불량유형 × 채널
-  const chK   = Object.keys(s.byChannel);
-  const top6t = types.slice(0,6);
-  const dtChData = {};
-  chK.forEach(ch => { dtChData[ch] = {}; top6t.forEach(t=>{ dtChData[ch][t]=0; }); });
-  G.rawDefects.forEach(d => {
-    if (dtChData[d.channel]&&top6t.includes(d.defectDetail)) dtChData[d.channel][d.defectDetail]+=d.qty;
-  });
+  const chK=Object.keys(s.byChannel),top6t=types.slice(0,6),dtChD={};
+  chK.forEach(ch=>{dtChD[ch]={};top6t.forEach(t=>{dtChD[ch][t]=0;});});
+  G.rawDefects.forEach(d=>{if(dtChD[d.channel]&&top6t.includes(d.defectDetail))dtChD[d.channel][d.defectDetail]+=d.qty;});
   mkChart('cDefectChannel','bar',{
-    labels: chK,
-    datasets: top6t.map((t,i)=>({ label:t, data:chK.map(ch=>dtChData[ch][t]||0), backgroundColor:PALETTE10[i], borderRadius:3 }))
-  },{
-    plugins:{legend:{position:'top',labels:{font:{size:10},padding:8}}},
-    scales:{x:{stacked:true,grid:{display:false}}, y:{stacked:true,beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{font:{size:10}}}}
-  });
+    labels:chK,
+    datasets:top6t.map((t,i)=>({label:t,data:chK.map(ch=>dtChD[ch][t]||0),backgroundColor:PAL[i],borderRadius:2,
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v>0?v:''}}))
+  },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:10},padding:8,boxWidth:8}},datalabels:{}},
+    scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 }
 
 // ── 채널 ──
-function renderChannel(s) {
-  const chK  = Object.keys(s.byChannel);
-  const chV  = Object.values(s.byChannel);
-  const chT  = chV.reduce((a,b)=>a+b,0);
-  const cols = [P.blue, P.orange, P.green, P.purple, P.cyan];
-  const maxCh = Math.max(...chV);
-
-  document.getElementById('channelCards').innerHTML = chK.map((ch,i)=>`
+function renderChannel(s){
+  const chK=Object.keys(s.byChannel),chV=Object.values(s.byChannel),chT=chV.reduce((a,b)=>a+b,0);
+  const cols=[P.blue,P.amber,P.green,P.purple,P.teal],maxCh=Math.max(...chV);
+  document.getElementById('channelCards').innerHTML=chK.map((ch,i)=>`
     <div class="ch-card">
       <div class="ch-name">${ch}</div>
       <div class="ch-num" style="color:${cols[i%cols.length]}">${fmt(chV[i])}</div>
@@ -1003,338 +868,156 @@ function renderChannel(s) {
       <div class="ch-bar" style="background:${cols[i%cols.length]};width:${(chV[i]/maxCh*100).toFixed(1)}%;margin:0 auto"></div>
     </div>`).join('');
 
-  // 채널 × 월별 스택
-  const months = Object.keys(s.byReceiptMonth).sort();
-  const mLabels = months.map(m=>m.slice(0,4)+'.'+m.slice(4));
-  const chMonthData = {};
-  chK.forEach(ch=>{ chMonthData[ch]={}; months.forEach(m=>{chMonthData[ch][m]=0;}); });
-  if (G.rawDefects) {
-    G.rawDefects.forEach(d=>{
-      if (!d.receiptDate) return;
-      const ym = d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
-      if (chMonthData[d.channel]&&months.includes(ym)) chMonthData[d.channel][ym]+=d.qty;
-    });
-  }
-  mkChart('cChannelMonthly','bar',{
-    labels: mLabels,
-    datasets: chK.map((ch,i)=>({ label:ch, data:months.map(m=>chMonthData[ch][m]||0), backgroundColor:cols[i%cols.length], borderRadius:3 }))
-  },{ plugins:{legend:{position:'top',labels:{font:{size:11},padding:10}}},
-      scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10}}}, y:{stacked:true,beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{font:{size:10}}}} });
+  const months=Object.keys(s.byReceiptMonth).sort(),mL=months.map(m=>m.slice(0,4)+'.'+m.slice(4));
+  const chMD={};chK.forEach(ch=>{chMD[ch]={};months.forEach(m=>{chMD[ch][m]=0;});});
+  if(G.rawDefects)G.rawDefects.forEach(d=>{if(!d.receiptDate)return;const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);if(chMD[d.channel]&&months.includes(ym))chMD[d.channel][ym]+=d.qty;});
+  mkChart('cChMonthly','bar',{
+    labels:mL,
+    datasets:chK.map((ch,i)=>({label:ch,data:months.map(m=>chMD[ch][m]||0),backgroundColor:cols[i%cols.length],borderRadius:2,
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:v=>v>0?v:''}}))
+  },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},
+    scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
-  // 채널 × 불량유형
-  const top6t = Object.keys(s.byDefectDetail).slice(0,6);
-  const ctData = {};
-  chK.forEach(ch=>{ctData[ch]={};top6t.forEach(t=>{ctData[ch][t]=0;});});
-  if (G.rawDefects) {
-    G.rawDefects.forEach(d=>{
-      if (ctData[d.channel]&&top6t.includes(d.defectDetail)) ctData[d.channel][d.defectDetail]+=d.qty;
-    });
-  }
-  mkChart('cChannelType','bar',{
-    labels: chK,
-    datasets: top6t.map((t,i)=>({ label:t, data:chK.map(ch=>ctData[ch][t]||0), backgroundColor:PALETTE10[i], borderRadius:3 }))
-  },{ plugins:{legend:{position:'top',labels:{font:{size:10},padding:8}}},
-      scales:{x:{stacked:true,grid:{display:false}}, y:{stacked:true,beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{font:{size:10}}}} });
+  const top6t=Object.keys(s.byDefectDetail).slice(0,6),ctD={};
+  chK.forEach(ch=>{ctD[ch]={};top6t.forEach(t=>{ctD[ch][t]=0;});});
+  if(G.rawDefects)G.rawDefects.forEach(d=>{if(ctD[d.channel]&&top6t.includes(d.defectDetail))ctD[d.channel][d.defectDetail]+=d.qty;});
+  mkChart('cChType','bar',{
+    labels:chK,
+    datasets:top6t.map((t,i)=>({label:t,data:chK.map(ch=>ctD[ch][t]||0),backgroundColor:PAL[i],borderRadius:2,
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v>0?v:''}}))
+  },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:10},padding:8,boxWidth:8}},datalabels:{}},
+    scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
-  // 채널 × 품목
-  const cats = Object.keys(s.byCategory);
-  const ccData = {};
-  chK.forEach(ch=>{ccData[ch]={};cats.forEach(c=>{ccData[ch][c]=0;});});
-  if (G.rawDefects) {
-    G.rawDefects.forEach(d=>{
-      if (ccData[d.channel]&&ccData[d.channel][d.category]!==undefined) ccData[d.channel][d.category]+=d.qty;
-    });
-  }
-  mkChart('cChannelCategory','bar',{
-    labels: chK,
-    datasets: cats.map((c,i)=>({ label:c, data:chK.map(ch=>ccData[ch][c]||0), backgroundColor:PALETTE10[i], borderRadius:3 }))
-  },{ plugins:{legend:{position:'top',labels:{font:{size:11},padding:10}}},
-      scales:{x:{stacked:true,grid:{display:false}}, y:{stacked:true,beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{font:{size:10}}}} });
+  const cats=Object.keys(s.byCategory),ccD={};
+  chK.forEach(ch=>{ccD[ch]={};cats.forEach(c=>{ccD[ch][c]=0;});});
+  if(G.rawDefects)G.rawDefects.forEach(d=>{if(ccD[d.channel]&&ccD[d.channel][d.category]!==undefined)ccD[d.channel][d.category]+=d.qty;});
+  mkChart('cChCat','bar',{
+    labels:chK,
+    datasets:cats.map((c,i)=>({label:c,data:chK.map(ch=>ccD[ch][c]||0),backgroundColor:PAL[i],borderRadius:2,
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v>0?v:''}}))
+  },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},
+    scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
-  // 채널 × 발생 시점
-  const chTimData = {};
-  chK.forEach(ch=>{chTimData[ch]={1:0,2:0,3:0,12:0,99:0};});
-  if (G.rawDefects) {
-    G.rawDefects.forEach(d=>{
-      if (!chTimData[d.channel]) return;
-      const mo = d.monthsToReceipt||0;
-      if(mo<=1) chTimData[d.channel][1]+=d.qty;
-      else if(mo<=2) chTimData[d.channel][2]+=d.qty;
-      else if(mo<=3) chTimData[d.channel][3]+=d.qty;
-      else if(mo<=12) chTimData[d.channel][12]+=d.qty;
-      else chTimData[d.channel][99]+=d.qty;
-    });
-  }
-  mkChart('cChannelTiming','bar',{
-    labels: chK,
-    datasets: TIMING_KEYS.map((k,i)=>({ label:k, data:chK.map(ch=>chTimData[ch][[1,2,3,12,99][i]]||0), backgroundColor:TIMING_COLORS[i], borderRadius:3 }))
-  },{ plugins:{legend:{position:'top',labels:{font:{size:11},padding:10}}},
-      scales:{x:{stacked:true,grid:{display:false}}, y:{stacked:true,beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{font:{size:10}}}} });
+  const chTiD={};chK.forEach(ch=>{chTiD[ch]={1:0,2:0,3:0,12:0,99:0};});
+  if(G.rawDefects)G.rawDefects.forEach(d=>{if(!chTiD[d.channel])return;const mo=d.monthsToReceipt||0;if(mo<=1)chTiD[d.channel][1]+=d.qty;else if(mo<=2)chTiD[d.channel][2]+=d.qty;else if(mo<=3)chTiD[d.channel][3]+=d.qty;else if(mo<=12)chTiD[d.channel][12]+=d.qty;else chTiD[d.channel][99]+=d.qty;});
+  mkChart('cChTiming','bar',{
+    labels:chK,
+    datasets:TK.map((k,i)=>({label:k,data:chK.map(ch=>chTiD[ch][[1,2,3,12,99][i]]||0),backgroundColor:TC[i],borderRadius:2,
+      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v>0?v:''}}))
+  },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},
+    scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 }
 
-// ── 파레토 공통 렌더러 ──
-function renderPareto(elId, s, limit, showCum) {
-  const types  = Object.keys(s.byDefectDetail);
-  const counts = Object.values(s.byDefectDetail);
-  const total  = counts.reduce((a,b)=>a+b,0);
-  const maxV   = counts[0]||1;
-  let cum = 0;
-  const el = document.getElementById(elId);
-  el.innerHTML = types.slice(0,limit).map((t,i)=>{
-    cum += counts[i];
-    const cumPct = (cum/total*100).toFixed(0);
-    const rankCls = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-n';
-    return `<div class="pareto-item">
-      <span class="rank ${rankCls}">${i+1}</span>
+// ── 파레토 ──
+function renderPareto(elId,s,limit,showCum){
+  const types=Object.keys(s.byDefectDetail),counts=Object.values(s.byDefectDetail),total=counts.reduce((a,b)=>a+b,0),maxV=counts[0]||1;
+  let cum=0;
+  document.getElementById(elId).innerHTML=types.slice(0,limit).map((t,i)=>{
+    cum+=counts[i];
+    const cumPct=(cum/total*100).toFixed(0);
+    const rC=i===0?'rk1':i===1?'rk2':i===2?'rk3':'rkn';
+    return`<div class="pareto-item">
+      <span class="rank ${rC}">${i+1}</span>
       <span class="pareto-name">${t}</span>
       <div class="pareto-bar"><div class="pareto-fill" style="width:${(counts[i]/maxV*100).toFixed(1)}%"></div></div>
       <span class="pareto-cnt">${counts[i]}</span>
       <span class="pareto-pct">${pct(counts[i],total)}%</span>
-      ${showCum ? `<span class="pareto-cum">▲${cumPct}%</span>` : ''}
+      ${showCum?`<span class="pareto-cum">▲${cumPct}%</span>`:''}
     </div>`;
   }).join('');
 }
 
-// ── 헬퍼: 모델→카테고리 맵 ──
-function buildModelCat() {
-  const map = {};
-  if (G.rawDefects) G.rawDefects.forEach(d=>{ if(!map[d.model]) map[d.model]=d.category; });
-  return map;
-}
-function buildModelMfg() {
-  const map = {};
-  if (G.rawDefects) G.rawDefects.forEach(d=>{ if(!map[d.model]) map[d.model]=d.mfgType; });
-  return map;
-}
+function buildModelCat(){const m={};if(G.rawDefects)G.rawDefects.forEach(d=>{if(!m[d.model])m[d.model]=d.category;});return m;}
+function buildModelMfg(){const m={};if(G.rawDefects)G.rawDefects.forEach(d=>{if(!m[d.model])m[d.model]=d.mfgType;});return m;}
 
 // ── 차트 팩토리 ──
-function mkChart(id, type, data, options={}) {
-  if (charts[id]) charts[id].destroy();
-  const ctx = document.getElementById(id);
-  if (!ctx) return;
-  charts[id] = new Chart(ctx, {
-    type, data,
-    options: {
-      responsive:true, maintainAspectRatio:false, animation:{duration:400},
-      plugins: {
-        legend: { labels:{ font:{family:'Noto Sans KR',size:11}, padding:12 } },
-        tooltip: { callbacks:{ label: ctx => {
-          const v = ctx.raw;
-          if (typeof v === 'object' && v !== null) return ` ${ctx.dataset.label||''}: ${v.y||v}`;
-          return ` ${ctx.dataset.label||''}: ${typeof v==='number'?v.toLocaleString('ko-KR'):v}`;
-        }}}
-      },
-      ...options
-    }
-  });
+function mkChart(id,type,data,opts={}){
+  if(charts[id])charts[id].destroy();
+  const ctx=document.getElementById(id);if(!ctx)return;
+  charts[id]=new Chart(ctx,{type,data,options:{
+    responsive:true,maintainAspectRatio:false,animation:{duration:350},
+    plugins:{
+      legend:{labels:{font:{family:'Noto Sans KR',size:11},padding:12}},
+      tooltip:{callbacks:{label:ctx=>{const v=ctx.raw;if(typeof v==='object'&&v!==null)return` ${ctx.dataset.label||''}: ${v.y||v}`;return` ${ctx.dataset.label||''}: ${typeof v==='number'?v.toLocaleString('ko-KR'):v}`;}}},
+      datalabels:{display:false}  // 기본값: 개별 데이터셋에서 override
+    },...opts
+  }});
 }
 
-// ── 숫자 포맷 ──
-function fmt(n) { return Number(n).toLocaleString('ko-KR'); }
-function pct(n, t) { return t>0 ? (n/t*100).toFixed(1) : '0.0'; }
+function fmt(n){return Number(n).toLocaleString('ko-KR');}
+function pct(n,t){return t>0?(n/t*100).toFixed(1):'0.0';}
 
-// ============================================================
-// 목업 데이터
-// ============================================================
-function getMock() {
-  const rawDefects = [];
-  const models = ['SRB3A01A','SRB3A02B','SRI5A01A','SW3A01MA','MS6301A','M5001A PLUS PRO','SDU3A01A','M5001A PLUS PRO_W','SC1500A','SC1500B'];
-  const cats   = {'SRB3A01A':'스타일러','SRB3A02B':'스타일러','SRI5A01A':'스타일러','SW3A01MA':'스타일러','MS6301A':'드라이기','M5001A PLUS PRO':'드라이기','SDU3A01A':'드라이기','M5001A PLUS PRO_W':'드라이기','SC1500A':'드라이기','SC1500B':'드라이기'};
-  const mfgs   = {'SRB3A01A':'소싱','SRB3A02B':'소싱','SRI5A01A':'소싱','SW3A01MA':'소싱','MS6301A':'JMW','M5001A PLUS PRO':'JMW','SDU3A01A':'JMW','M5001A PLUS PRO_W':'JMW','SC1500A':'JMW','SC1500B':'JMW'};
-  const defTypes = ['S/C','온도 제어 불량','배터리 성능 불량','충전 불량','터짐 불량','전원 불량','작동 불능','제품 조립 불량','패키지 외관불량','온도 상승 불량'];
-  const channels = ['제이엠더블유','엘리첸','자사몰'];
-  const modelWeights = [78,72,66,61,39,32,18,13,13,8];
-  const monthDates = [
-    ['2025-07-01','2025-07-31',42], ['2025-08-01','2025-08-31',38],
-    ['2025-09-01','2025-09-30',55], ['2025-10-01','2025-10-31',67],
-    ['2025-11-01','2025-11-30',71], ['2025-12-01','2025-12-31',89],
-    ['2026-01-01','2026-01-31',74], ['2026-02-01','2026-02-28',58],
-    ['2026-03-01','2026-03-31',251],['2026-04-01','2026-04-30',210]
-  ];
-  monthDates.forEach(([s,e,cnt])=>{
-    for(let i=0;i<cnt;i++){
-      const mIdx = weightedRandom(modelWeights);
-      const m = models[mIdx];
-      const mo = Math.random()<0.3 ? Math.random()*1 : Math.random()<0.5 ? 1+Math.random()*2 : 3+Math.random()*9;
-      const purchD = new Date(new Date(s).getTime() - mo*30*86400000);
-      rawDefects.push({
-        purchaseDate: fmt2(purchD), receiptDate: fmt2(rndDate(s,e)),
-        channel: channels[Math.floor(Math.random()*channels.length)],
-        category: cats[m], mfgType: mfgs[m], model: m, qty:1,
-        defectType:'작동 불량',
-        defectDetail: defTypes[Math.floor(Math.random()*defTypes.length)],
-        monthsToReceipt: mo
-      });
-    }
-  });
-
-  function weightedRandom(w){const t=w.reduce((a,b)=>a+b,0);let r=Math.random()*t;for(let i=0;i<w.length;i++){r-=w[i];if(r<=0)return i;}return 0;}
-  function rndDate(s,e){const sd=new Date(s).getTime(),ed=new Date(e).getTime();return new Date(sd+Math.random()*(ed-sd));}
-  function fmt2(d){const dt=d instanceof Date?d:new Date(d);return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');}
-
-  const summary = {
-    totalDefects: rawDefects.length,
-    uniqueModels: models.length, uniqueChannels: channels.length,
-    byReceiptMonth:{}, byCategory:{}, byModel:{}, byDefectDetail:{}, byChannel:{}, byMfgType:{},
-    byTiming:{'1M':0,'2M':0,'3M':0,'4M~12M':0,'1Y이후':0},
-    defectRateByModel:{}, monthlySalesTotals:{}, categoryDefectMatrix:{}
-  };
-  const sales = {'SRB3A01A':1250,'SRB3A02B':980,'SRI5A01A':1100,'SW3A01MA':890,'MS6301A':2100,'M5001A PLUS PRO':1560,'SDU3A01A':430,'M5001A PLUS PRO_W':320,'SC1500A':850,'SC1500B':680};
-  rawDefects.forEach(d=>{
-    if(d.receiptDate){const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);summary.byReceiptMonth[ym]=(summary.byReceiptMonth[ym]||0)+d.qty;}
-    summary.byCategory[d.category]=(summary.byCategory[d.category]||0)+d.qty;
-    summary.byModel[d.model]=(summary.byModel[d.model]||0)+d.qty;
-    summary.byDefectDetail[d.defectDetail]=(summary.byDefectDetail[d.defectDetail]||0)+d.qty;
-    summary.byChannel[d.channel]=(summary.byChannel[d.channel]||0)+d.qty;
-    summary.byMfgType[d.mfgType]=(summary.byMfgType[d.mfgType]||0)+d.qty;
-    const mo=d.monthsToReceipt;
-    if(mo<=1)summary.byTiming['1M']++;else if(mo<=2)summary.byTiming['2M']++;else if(mo<=3)summary.byTiming['3M']++;else if(mo<=12)summary.byTiming['4M~12M']++;else summary.byTiming['1Y이후']++;
-    if(!summary.categoryDefectMatrix[d.category])summary.categoryDefectMatrix[d.category]={};
-    summary.categoryDefectMatrix[d.category][d.defectDetail]=(summary.categoryDefectMatrix[d.category][d.defectDetail]||0)+d.qty;
-  });
-  ['202507','202508','202509','202510','202511','202512','202601','202602','202603','202604'].forEach(ym=>{ summary.monthlySalesTotals[ym]=Object.values(sales).reduce((a,b)=>a+b,0)+Math.floor(Math.random()*500); });
-  models.forEach(m=>{ const sq=sales[m]||0; const dq=summary.byModel[m]||0; summary.defectRateByModel[m]={defects:dq,sales:sq,rate:sq>0?dq/sq*100:null}; });
-  const sortObj = o=>Object.fromEntries(Object.entries(o).sort(([,a],[,b])=>b-a));
-  summary.byCategory=sortObj(summary.byCategory); summary.byModel=sortObj(summary.byModel);
-  summary.byDefectDetail=sortObj(summary.byDefectDetail); summary.byChannel=sortObj(summary.byChannel);
-  summary.byMfgType=sortObj(summary.byMfgType);
-  return { success:true, updatedAt:new Date().toISOString(), rawDefects, summary };
+// ── 필터 ──
+const FILTER={year:'all',quarter:'all',month:'all'};
+function initFilter(){
+  const allMs=Object.keys(G.summary.byReceiptMonth).sort();
+  buildMonthBtns(allMs);
+  document.getElementById('filterInfo').textContent='📅 전체 기간 ('+(allMs[0]||'')+' ~ '+(allMs[allMs.length-1]||'')+') · '+G.summary.totalDefects+'건';
 }
-
-
-// ============================================================
-// 필터 상태
-// ============================================================
-const FILTER = { year: 'all', quarter: 'all', month: 'all' };
-
-function setFilter(type, val, btn) {
-  FILTER[type] = val;
-  // 연도 바꾸면 분기·월 초기화
-  if (type === 'year') { FILTER.quarter = 'all'; FILTER.month = 'all'; }
-  if (type === 'quarter') { FILTER.month = 'all'; }
-
-  // 버튼 active 처리
-  const groupId = type === 'year' ? 'yearBtns' : type === 'quarter' ? 'quarterBtns' : 'monthBtns';
-  document.querySelectorAll(`#${groupId} .sfbtn`).forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-
-  // 분기 선택 시 월 버튼도 reset
-  if (type === 'year' || type === 'quarter') {
-    document.querySelectorAll('#monthBtns .sfbtn').forEach(b => b.classList.remove('active'));
-    const allBtn = document.querySelector('#monthBtns .sfbtn');
-    if (allBtn) allBtn.classList.add('active');
-    FILTER.month = 'all';
+function setFilter(type,val,btn){
+  FILTER[type]=val;
+  if(type==='year'){FILTER.quarter='all';FILTER.month='all';}
+  if(type==='quarter'){FILTER.month='all';}
+  const gId=type==='year'?'yearBtns':type==='quarter'?'quarterBtns':'monthBtns';
+  document.querySelectorAll('#'+gId+' .sfbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  if(type==='year'||type==='quarter'){
+    document.querySelectorAll('#monthBtns .sfbtn').forEach(b=>b.classList.remove('on'));
+    const aBtn=document.querySelector('#monthBtns .sfbtn');if(aBtn)aBtn.classList.add('on');
+    FILTER.month='all';
   }
-
   applyFilter();
 }
-
-function applyFilter() {
-  if (!G) return;
-
-  // 포함할 YYYYMM 목록 결정
-  const allMonths = Object.keys(G.summary.byReceiptMonth).sort();
-  const included = allMonths.filter(ym => {
-    const y = ym.slice(0,4);
-    const m = parseInt(ym.slice(4));
-    const q = m <= 3 ? 'Q1' : m <= 6 ? 'Q2' : m <= 9 ? 'Q3' : 'Q4';
-    if (FILTER.year    !== 'all' && y !== FILTER.year)    return false;
-    if (FILTER.quarter !== 'all' && q !== FILTER.quarter) return false;
-    if (FILTER.month   !== 'all' && ym !== FILTER.month)  return false;
-    return true;
-  });
-
-  // 월 버튼 동적 생성 (연도/분기 필터 기준)
-  buildMonthBtns(allMonths.filter(ym => {
-    const y = ym.slice(0,4);
-    const m = parseInt(ym.slice(4));
-    const q = m <= 3 ? 'Q1' : m <= 6 ? 'Q2' : m <= 9 ? 'Q3' : 'Q4';
-    if (FILTER.year    !== 'all' && y !== FILTER.year)    return false;
-    if (FILTER.quarter !== 'all' && q !== FILTER.quarter) return false;
-    return true;
-  }));
-
-  // 필터 적용된 rawDefects & summary 재계산
-  const filteredDefects = (G.rawDefects || []).filter(d => {
-    if (!d.receiptDate) return false;
-    const ym = d.receiptDate.slice(0,4) + d.receiptDate.slice(5,7);
-    return included.includes(ym);
-  });
-
-  const fs = buildFilteredSummary(filteredDefects, G.summary.monthlySalesTotals, included);
-
-  // 필터 요약 표시
-  const label = included.length === allMonths.length
-    ? '전체 기간 (' + allMonths[0] + ' ~ ' + allMonths[allMonths.length-1] + ')'
-    : included.length + '개월 선택';
-  document.getElementById('filterSummary').textContent = '📅 ' + label + ' · ' + filteredDefects.length + '건';
-
-  // 렌더 (임시로 G.rawDefects, G.summary 교체 후 렌더)
-  const origDefects = G.rawDefects;
-  const origSummary = G.summary;
-  G.rawDefects = filteredDefects;
-  G.summary    = fs;
-  renderAll();
-  G.rawDefects = origDefects;
-  G.summary    = origSummary;
+function applyFilter(){
+  if(!G)return;
+  const allM=Object.keys(G.summary.byReceiptMonth).sort();
+  const included=allM.filter(ym=>{const y=ym.slice(0,4),m=parseInt(ym.slice(4)),q=m<=3?'Q1':m<=6?'Q2':m<=9?'Q3':'Q4';if(FILTER.year!=='all'&&y!==FILTER.year)return false;if(FILTER.quarter!=='all'&&q!==FILTER.quarter)return false;if(FILTER.month!=='all'&&ym!==FILTER.month)return false;return true;});
+  buildMonthBtns(allM.filter(ym=>{const y=ym.slice(0,4),m=parseInt(ym.slice(4)),q=m<=3?'Q1':m<=6?'Q2':m<=9?'Q3':'Q4';if(FILTER.year!=='all'&&y!==FILTER.year)return false;if(FILTER.quarter!=='all'&&q!==FILTER.quarter)return false;return true;}));
+  const fD=(G.rawDefects||[]).filter(d=>{if(!d.receiptDate)return false;const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);return included.includes(ym);});
+  const fs=buildFilteredSummary(fD,G.summary.monthlySalesTotals,included);
+  const label=included.length===allM.length?'전체 기간 ('+(allM[0]||'')+' ~ '+(allM[allM.length-1]||'')+')':included.length+'개월 선택';
+  document.getElementById('filterInfo').textContent='📅 '+label+' · '+fD.length+'건';
+  const orig=G.rawDefects,origS=G.summary;G.rawDefects=fD;G.summary=fs;renderAll();G.rawDefects=orig;G.summary=origS;
 }
-
-function buildMonthBtns(months) {
-  const container = document.getElementById('monthBtns');
-  container.innerHTML = '<button class="sfbtn active" onclick="setFilter(\'month\',\'all\',this)">전체</button>'
-    + months.map(ym => {
-        const label = ym.slice(2,4) + '.' + ym.slice(4);
-        return `<button class="sfbtn" onclick="setFilter('month','${ym}',this)">${label}</button>`;
-      }).join('');
+function buildMonthBtns(months){
+  document.getElementById('monthBtns').innerHTML='<button class="sfbtn on" onclick="setFilter(\'month\',\'all\',this)">전체</button>'+months.map(ym=>'<button class="sfbtn" onclick="setFilter(\'month\',\''+ym+'\',this)">'+ym.slice(2,4)+'.'+ym.slice(4)+'</button>').join('');
 }
-
-function buildFilteredSummary(defects, monthlySales, includedMonths) {
-  const s = {
-    totalDefects: defects.reduce((a,d) => a + d.qty, 0),
-    uniqueModels:  [...new Set(defects.map(d=>d.model))].length,
-    uniqueChannels:[...new Set(defects.map(d=>d.channel))].length,
-    byReceiptMonth:{}, byCategory:{}, byModel:{}, byDefectDetail:{},
-    byChannel:{}, byMfgType:{},
-    byTiming:{'1M':0,'2M':0,'3M':0,'4M~12M':0,'1Y이후':0},
-    defectRateByModel:{}, monthlySalesTotals:{}, categoryDefectMatrix:{}
-  };
-  // includedMonths의 판매 데이터
-  includedMonths.forEach(ym => {
-    if (monthlySales[ym]) s.monthlySalesTotals[ym] = monthlySales[ym];
-  });
-
-  defects.forEach(d => {
-    const ym = d.receiptDate ? d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7) : '';
-    if (ym) s.byReceiptMonth[ym] = (s.byReceiptMonth[ym]||0) + d.qty;
-    s.byCategory[d.category]       = (s.byCategory[d.category]||0) + d.qty;
-    s.byModel[d.model]             = (s.byModel[d.model]||0) + d.qty;
-    s.byDefectDetail[d.defectDetail] = (s.byDefectDetail[d.defectDetail]||0) + d.qty;
-    s.byChannel[d.channel]         = (s.byChannel[d.channel]||0) + d.qty;
-    s.byMfgType[d.mfgType]         = (s.byMfgType[d.mfgType]||0) + d.qty;
-    const mo = d.monthsToReceipt||0;
-    if(mo<=1)s.byTiming['1M']++;else if(mo<=2)s.byTiming['2M']++;
-    else if(mo<=3)s.byTiming['3M']++;else if(mo<=12)s.byTiming['4M~12M']++;
-    else s.byTiming['1Y이후']++;
-    if(!s.categoryDefectMatrix[d.category]) s.categoryDefectMatrix[d.category]={};
-    s.categoryDefectMatrix[d.category][d.defectDetail] = (s.categoryDefectMatrix[d.category][d.defectDetail]||0)+d.qty;
-  });
-
-  // 불량률 계산
-  const sortDesc = o => Object.fromEntries(Object.entries(o).sort(([,a],[,b])=>b-a));
-  s.byCategory=sortDesc(s.byCategory); s.byModel=sortDesc(s.byModel);
-  s.byDefectDetail=sortDesc(s.byDefectDetail); s.byChannel=sortDesc(s.byChannel);
-  s.byMfgType=sortDesc(s.byMfgType);
-  Object.keys(s.byModel).forEach(m => {
-    const dq = s.byModel[m]||0;
-    const sq = Object.entries(s.monthlySalesTotals).reduce((acc,[ym,v])=> acc+v, 0);
-    s.defectRateByModel[m] = { defects:dq, sales:sq, rate: sq>0 ? dq/sq*100 : null };
-  });
+function buildFilteredSummary(defects,monthlySales,includedMonths){
+  const s={totalDefects:defects.reduce((a,d)=>a+d.qty,0),uniqueModels:[...new Set(defects.map(d=>d.model))].length,uniqueChannels:[...new Set(defects.map(d=>d.channel))].length,byReceiptMonth:{},byCategory:{},byModel:{},byDefectDetail:{},byChannel:{},byMfgType:{},byTiming:{'1M':0,'2M':0,'3M':0,'4M~12M':0,'1Y이후':0},defectRateByModel:{},monthlySalesTotals:{},categoryDefectMatrix:{}};
+  includedMonths.forEach(ym=>{if(monthlySales[ym])s.monthlySalesTotals[ym]=monthlySales[ym];});
+  defects.forEach(d=>{const ym=d.receiptDate?d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7):'';if(ym)s.byReceiptMonth[ym]=(s.byReceiptMonth[ym]||0)+d.qty;s.byCategory[d.category]=(s.byCategory[d.category]||0)+d.qty;s.byModel[d.model]=(s.byModel[d.model]||0)+d.qty;s.byDefectDetail[d.defectDetail]=(s.byDefectDetail[d.defectDetail]||0)+d.qty;s.byChannel[d.channel]=(s.byChannel[d.channel]||0)+d.qty;s.byMfgType[d.mfgType]=(s.byMfgType[d.mfgType]||0)+d.qty;const mo=d.monthsToReceipt||0;if(mo<=1)s.byTiming['1M']++;else if(mo<=2)s.byTiming['2M']++;else if(mo<=3)s.byTiming['3M']++;else if(mo<=12)s.byTiming['4M~12M']++;else s.byTiming['1Y이후']++;if(!s.categoryDefectMatrix[d.category])s.categoryDefectMatrix[d.category]={};s.categoryDefectMatrix[d.category][d.defectDetail]=(s.categoryDefectMatrix[d.category][d.defectDetail]||0)+d.qty;});
+  const sD=o=>Object.fromEntries(Object.entries(o).sort(([,a],[,b])=>b-a));
+  s.byCategory=sD(s.byCategory);s.byModel=sD(s.byModel);s.byDefectDetail=sD(s.byDefectDetail);s.byChannel=sD(s.byChannel);s.byMfgType=sD(s.byMfgType);
+  const sq=Object.values(s.monthlySalesTotals).reduce((a,v)=>a+v,0);
+  Object.keys(s.byModel).forEach(m=>{const dq=s.byModel[m]||0;s.defectRateByModel[m]={defects:dq,sales:sq,rate:sq>0?dq/sq*100:null};});
   return s;
 }
 
-setInterval(loadData, REFRESH_MIN*60*1000);
-window.addEventListener('DOMContentLoaded', loadData);
+// ── 목업 ──
+function getMock(){
+  const rawDefects=[],models=['SRB3A01A','SRB3A02B','SRI5A01A','SW3A01MA','MS6301A','M5001A PLUS PRO','SDU3A01A','M5001A PLUS PRO_W','SC1500A','SC1500B'];
+  const cats={'SRB3A01A':'스타일러','SRB3A02B':'스타일러','SRI5A01A':'스타일러','SW3A01MA':'스타일러','MS6301A':'드라이기','M5001A PLUS PRO':'드라이기','SDU3A01A':'드라이기','M5001A PLUS PRO_W':'드라이기','SC1500A':'드라이기','SC1500B':'드라이기'};
+  const mfgs={'SRB3A01A':'소싱','SRB3A02B':'소싱','SRI5A01A':'소싱','SW3A01MA':'소싱','MS6301A':'JMW','M5001A PLUS PRO':'JMW','SDU3A01A':'JMW','M5001A PLUS PRO_W':'JMW','SC1500A':'JMW','SC1500B':'JMW'};
+  const defTypes=['S/C','온도 제어 불량','배터리 성능 불량','충전 불량','터짐 불량','전원 불량','작동 불능','제품 조립 불량','패키지 외관불량','온도 상승 불량'];
+  const channels=['제이엠더블유','엘리첸','자사몰'];
+  const mW=[78,72,66,61,39,32,18,13,13,8];
+  const mDates=[['2025-07-01','2025-07-31',42],['2025-08-01','2025-08-31',38],['2025-09-01','2025-09-30',55],['2025-10-01','2025-10-31',67],['2025-11-01','2025-11-30',71],['2025-12-01','2025-12-31',89],['2026-01-01','2026-01-31',74],['2026-02-01','2026-02-28',58],['2026-03-01','2026-03-31',251],['2026-04-01','2026-04-30',210]];
+  function wR(w){const t=w.reduce((a,b)=>a+b,0);let r=Math.random()*t;for(let i=0;i<w.length;i++){r-=w[i];if(r<=0)return i;}return 0;}
+  function rD(s,e){const sd=new Date(s).getTime(),ed=new Date(e).getTime();return new Date(sd+Math.random()*(ed-sd));}
+  function f2(d){const dt=d instanceof Date?d:new Date(d);return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');}
+  mDates.forEach(([s,e,cnt])=>{for(let i=0;i<cnt;i++){const mI=wR(mW),m=models[mI],mo=Math.random()<0.3?Math.random()*1:Math.random()<0.5?1+Math.random()*2:3+Math.random()*9;rawDefects.push({purchaseDate:f2(new Date(new Date(s).getTime()-mo*30*86400000)),receiptDate:f2(rD(s,e)),channel:channels[Math.floor(Math.random()*channels.length)],category:cats[m],mfgType:mfgs[m],model:m,qty:1,defectType:'작동 불량',defectDetail:defTypes[Math.floor(Math.random()*defTypes.length)],monthsToReceipt:mo});}});
+  const summary={totalDefects:rawDefects.length,uniqueModels:models.length,uniqueChannels:channels.length,byReceiptMonth:{},byCategory:{},byModel:{},byDefectDetail:{},byChannel:{},byMfgType:{},byTiming:{'1M':0,'2M':0,'3M':0,'4M~12M':0,'1Y이후':0},defectRateByModel:{},monthlySalesTotals:{},categoryDefectMatrix:{}};
+  const sales={'SRB3A01A':1250,'SRB3A02B':980,'SRI5A01A':1100,'SW3A01MA':890,'MS6301A':2100,'M5001A PLUS PRO':1560,'SDU3A01A':430,'M5001A PLUS PRO_W':320,'SC1500A':850,'SC1500B':680};
+  rawDefects.forEach(d=>{if(d.receiptDate){const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);summary.byReceiptMonth[ym]=(summary.byReceiptMonth[ym]||0)+d.qty;}summary.byCategory[d.category]=(summary.byCategory[d.category]||0)+d.qty;summary.byModel[d.model]=(summary.byModel[d.model]||0)+d.qty;summary.byDefectDetail[d.defectDetail]=(summary.byDefectDetail[d.defectDetail]||0)+d.qty;summary.byChannel[d.channel]=(summary.byChannel[d.channel]||0)+d.qty;summary.byMfgType[d.mfgType]=(summary.byMfgType[d.mfgType]||0)+d.qty;const mo=d.monthsToReceipt;if(mo<=1)summary.byTiming['1M']++;else if(mo<=2)summary.byTiming['2M']++;else if(mo<=3)summary.byTiming['3M']++;else if(mo<=12)summary.byTiming['4M~12M']++;else summary.byTiming['1Y이후']++;if(!summary.categoryDefectMatrix[d.category])summary.categoryDefectMatrix[d.category]={};summary.categoryDefectMatrix[d.category][d.defectDetail]=(summary.categoryDefectMatrix[d.category][d.defectDetail]||0)+d.qty;});
+  ['202507','202508','202509','202510','202511','202512','202601','202602','202603','202604'].forEach(ym=>{summary.monthlySalesTotals[ym]=Object.values(sales).reduce((a,b)=>a+b,0)+Math.floor(Math.random()*500);});
+  models.forEach(m=>{const sq=sales[m]||0,dq=summary.byModel[m]||0;summary.defectRateByModel[m]={defects:dq,sales:sq,rate:sq>0?dq/sq*100:null};});
+  const sO=o=>Object.fromEntries(Object.entries(o).sort(([,a],[,b])=>b-a));
+  summary.byCategory=sO(summary.byCategory);summary.byModel=sO(summary.byModel);summary.byDefectDetail=sO(summary.byDefectDetail);summary.byChannel=sO(summary.byChannel);summary.byMfgType=sO(summary.byMfgType);
+  return{success:true,updatedAt:new Date().toISOString(),rawDefects,summary};
+}
 
+setInterval(loadData,REFRESH_MIN*60*1000);
+window.addEventListener('DOMContentLoaded',loadData);
 </script>
 </body>
 </html>
