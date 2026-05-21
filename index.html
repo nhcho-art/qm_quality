@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JMW Quality Dashboard v1.5</title>
+<title>JMW Quality Dashboard v1.6</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -235,7 +235,7 @@ tbody tr:hover td{background:#F8FAFC}
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="brand"><span class="brand-dot"></span>JMW Quality</div>
-    <div class="brand-sub">v1.5 · Q.T.S 품질 모니터링</div>
+    <div class="brand-sub">v1.6 · Q.T.S 품질 모니터링</div>
   </div>
 
   <nav class="sb-nav">
@@ -519,11 +519,16 @@ async function loadData(){
   } else {
     document.getElementById('lt').textContent='Apps Script 연결 중...';
     try{
+      // JSONP 방식 (Apps Script CORS 우회)
       const url=`${APPS_SCRIPT_URL}?callback=_cb&t=${Date.now()}`;
-      G=await fetchJSONP(url,'_cb');
+      G=await Promise.race([
+        fetchJSONP(url,'_cb'),
+        new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),12000))
+      ]);
       if(!G||!G.success) throw new Error(G?.error||'오류');
+      console.log('✅ 실데이터:', G.summary?.totalDefects,'건');
     }catch(e){
-      console.warn('API 실패, 목업:', e.message);
+      console.warn('⚠️ API 실패, 목업 사용:', e.message);
       document.getElementById('lt').textContent='목업 데이터 로딩 중...';
       G=getMock();
     }
@@ -539,12 +544,12 @@ function fetchJSONP(url,fn){
   return new Promise((res,rej)=>{
     if(window[fn])delete window[fn];
     let done=false;
-    window[fn]=d=>{if(done)return;done=true;delete window[fn];if(s.parentNode)s.remove();res(d);};
+    const cleanup=()=>{try{if(s&&s.parentNode)s.remove();}catch(e){}};
+    window[fn]=d=>{if(done)return;done=true;cleanup();delete window[fn];res(d);};
     const s=document.createElement('script');
     s.src=url;
-    s.onerror=()=>{if(!done){done=true;rej(new Error('load error'));}};
+    s.onerror=e=>{if(!done){done=true;cleanup();rej(new Error('script error'));}};
     document.head.appendChild(s);
-    setTimeout(()=>{if(!done){done=true;rej(new Error('timeout'));}},15000);
   });
 }
 
