@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JMW Quality Dashboard v1.7</title>
+<title>JMW Quality Dashboard v1.8</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -235,7 +235,7 @@ tbody tr:hover td{background:#F8FAFC}
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="brand"><span class="brand-dot"></span>JMW Quality</div>
-    <div class="brand-sub">v1.7 · Q.T.S 품질 모니터링</div>
+    <div class="brand-sub">v1.8 · Q.T.S 품질 모니터링</div>
   </div>
 
   <nav class="sb-nav">
@@ -340,11 +340,11 @@ tbody tr:hover td{background:#F8FAFC}
     <div class="section-divider"><div class="sd-line"></div><span class="sd-label">Top 리스트</span><div class="sd-line"></div></div>
     <div class="g2">
       <div class="card">
-        <div class="ch"><div class="ct">불량유형 파레토 Top 10</div><span class="badge b-red">누적 비율</span></div>
+        <div class="ch"><div class="ct">불량유형 순위 Top 10</div><span class="badge b-red">건수 순</span></div>
         <div id="paretoShort"></div>
       </div>
       <div class="card">
-        <div class="ch"><div class="ct">불량 건수 Top 8 SKU</div><span class="badge b-gray">신호등 등급</span></div>
+        <div class="ch"><div class="ct">불량 건수 Top 10 SKU</div><span class="badge b-gray">신호등 등급</span></div>
         <div id="skuSignal"></div>
       </div>
     </div>
@@ -422,7 +422,7 @@ tbody tr:hover td{background:#F8FAFC}
     <div class="section-divider"><div class="sd-line"></div><span class="sd-label">파레토 분석</span><div class="sd-line"></div></div>
     <div class="g2 mb14">
       <div class="card">
-        <div class="ch"><div class="ct">불량유형 파레토 (전체)</div><span class="badge b-red">누적 80% 기준</span></div>
+        <div class="ch"><div class="ct">불량유형 순위 (전체)</div><span class="badge b-red">불량 건수 순</span></div>
         <div id="paretoFull"></div>
       </div>
       <div class="card">
@@ -506,7 +506,8 @@ function showPg(name,el){
   el.classList.add('on');
   document.getElementById('topTitle').textContent=PG_TITLES[name]||name;
   // 탭 전환 후 차트 레이아웃 재계산 (쏠림 방지)
-  setTimeout(()=>{ Object.values(charts).forEach(c=>{ if(c&&c.canvas&&c.canvas.closest('.pg.on')) c.resize(); }); },50);
+  setTimeout(()=>{ Object.values(charts).forEach(c=>{ try{if(c)c.resize();}catch(e){} }); },100);
+  setTimeout(()=>{ Object.values(charts).forEach(c=>{ try{if(c)c.resize();}catch(e){} }); },300);
 }
 
 async function loadData(){
@@ -622,22 +623,37 @@ function renderOverview(s){
 
   document.getElementById('bdgMonths').textContent='2026년 '+months2026.length+'개월';
 
-  // 라인 차트 (막대 없음) - datalabels on
-  mkChart('cMonthLine','line',{
+  // 월별 추이: 불량건수(바) + 불량률%(라인) 콤보 - 겹침 없이
+  mkChart('cMonthLine','bar',{
     labels:mL2026,
     datasets:[
-      {label:'불량건수',data:mV2026,borderColor:P.red,backgroundColor:'rgba(220,38,38,0.08)',pointBackgroundColor:P.red,pointRadius:6,pointHoverRadius:8,borderWidth:2.5,tension:0.3,fill:true,
-       datalabels:{anchor:'top',align:'top',offset:4,color:P.red,font:{family:'JetBrains Mono',weight:'700',size:11},formatter:v=>fmt(v)}},
-      {label:'불량률%',data:mR2026,borderColor:P.amber,backgroundColor:'transparent',pointBackgroundColor:P.amber,pointRadius:5,borderWidth:2,tension:0.3,yAxisID:'y2',spanGaps:true,
-       datalabels:{anchor:'bottom',align:'bottom',offset:4,color:P.amber,font:{family:'JetBrains Mono',weight:'600',size:10},formatter:v=>v!=null?v.toFixed(2)+'%':''}},
+      {type:'bar',label:'불량건수',data:mV2026,
+       backgroundColor:mV2026.map((v,i)=>v===Math.max(...mV2026)?'rgba(220,38,38,0.85)':'rgba(37,99,235,0.65)'),
+       borderRadius:6,yAxisID:'y',order:2,
+       datalabels:{anchor:'end',align:'end',clamp:true,color:(ctx)=>ctx.dataIndex===mV2026.indexOf(Math.max(...mV2026))?P.red:P.blue,
+                  font:{family:'JetBrains Mono',weight:'700',size:12},formatter:v=>v>0?fmt(v):''}},
+      {type:'line',label:'불량률%',data:mR2026,
+       borderColor:P.amber,backgroundColor:'rgba(217,119,6,0.1)',
+       pointBackgroundColor:P.amber,pointRadius:5,pointHoverRadius:7,
+       borderWidth:2.5,tension:0.35,yAxisID:'y2',spanGaps:true,order:1,
+       datalabels:{anchor:'top',align:'top',offset:8,color:P.amber,
+                  font:{family:'JetBrains Mono',weight:'600',size:11},
+                  formatter:v=>v!=null?v.toFixed(2)+'%':''}},
     ]
   },{
-    plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:12}},datalabels:{}},
+    plugins:{
+      legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:14,boxWidth:12}},
+      datalabels:{display:true}
+    },
     scales:{
-      y:{beginAtZero:true,position:'left',grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}},
-      y2:{beginAtZero:true,position:'right',grid:{display:false},ticks:{font:{family:'JetBrains Mono',size:10},callback:v=>v+'%'}},
+      y:{beginAtZero:true,position:'left',grid:{color:'#E2E8F0'},
+         ticks:{font:{family:'JetBrains Mono',size:10}},title:{display:true,text:'불량건수',font:{size:10},color:'var(--text3)'}},
+      y2:{beginAtZero:true,position:'right',grid:{display:false},
+          ticks:{font:{family:'JetBrains Mono',size:10},callback:v=>v+'%'},
+          title:{display:true,text:'불량률',font:{size:10},color:P.amber}},
       x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}
-    }
+    },
+    layout:{padding:{top:20}}
   });
 
   // 품목별 도넛 - datalabels on
@@ -679,7 +695,7 @@ function renderOverview(s){
   mkChart('cMfgType','bar',{
     labels:mfgK,
     datasets:[{data:mfgV,backgroundColor:[P.blue,P.amber,P.green,P.purple],borderRadius:6,borderSkipped:false,
-      datalabels:{anchor:'end',align:'end',color:v=>v.dataset.backgroundColor[v.dataIndex],font:{family:'JetBrains Mono',weight:'700',size:12},formatter:v=>fmt(v)}}]
+      datalabels:{anchor:'end',align:'end',clamp:true,clip:false,offset:4,color:v=>v.dataset.backgroundColor[v.dataIndex],font:{family:'JetBrains Mono',weight:'700',size:11},formatter:v=>fmt(v)}}]
   },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
     scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}},y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}}});
 
@@ -694,7 +710,7 @@ function renderOverview(s){
   renderPareto('paretoShort',s,10,false);
 
   // SKU 신호등
-  const models=Object.keys(s.byModel).slice(0,8),modelCat=buildModelCat();
+  const models=Object.keys(s.byModel).slice(0,10),modelCat=buildModelCat();
   document.getElementById('skuSignal').innerHTML=models.map(m=>{
     const d=s.defectRateByModel[m]||{},r=d.rate;
     let sig='',cls='';
@@ -755,7 +771,7 @@ function renderTrend(s){
   mkChart('cMonthCat','bar',{
     labels:mL,
     datasets:cats.map((c,i)=>({label:c,data:months.map(m=>catMD[c][m]||0),backgroundColor:PAL[i],borderRadius:2,
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:(v,ctx)=>{const total=ctx.dataset.data.reduce((a,b)=>a+(b||0),0);return v>=Math.max(5,total*0.05)?v:'';},display:(ctx)=>ctx.dataset.data[ctx.dataIndex]>=5}}))
+      datalabels:{display:false}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
@@ -778,7 +794,7 @@ function renderSKU(s){
   mkChart('cSkuBar','bar',{
     labels:top15,
     datasets:[{data:t15V,backgroundColor:t15V.map((_,i)=>i<3?'rgba(220,38,38,0.82)':'rgba(37,99,235,0.68)'),borderRadius:4,borderSkipped:false,
-      datalabels:{anchor:'end',align:'right',color:(ctx)=>ctx.dataIndex<3?P.red:P.blue,font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>fmt(v)}}]
+      datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,color:(ctx)=>ctx.dataIndex<3?P.red:P.blue,font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>fmt(v)}}]
   },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
     scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}},y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}}}});
 
@@ -788,7 +804,7 @@ function renderSKU(s){
     datasets:[{data:rI.map(([,v])=>+v.rate.toFixed(2)),
       backgroundColor:rI.map(([,v])=>v.rate>=3?'rgba(220,38,38,0.8)':v.rate>=1?'rgba(217,119,6,0.8)':'rgba(22,163,74,0.8)'),
       borderRadius:4,borderSkipped:false,
-      datalabels:{anchor:'end',align:'right',color:(ctx)=>{const r=rI[ctx.dataIndex][1].rate;return r>=3?P.red:r>=1?P.amber:P.green;},font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v.toFixed(2)+'%'}}]
+      datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,color:(ctx)=>{const r=rI[ctx.dataIndex][1].rate;return r>=3?P.red:r>=1?P.amber:P.green;},font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v.toFixed(2)+'%'}}]
   },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
     scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10},callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}}}});
 
@@ -828,7 +844,7 @@ function renderSKU(s){
   mkChart('cSkuTiming','bar',{
     labels:top8,
     datasets:TK.map((k,i)=>({label:k,data:top8.map(m=>mTD[m][[1,2,3,12,99][i]]||0),backgroundColor:TC[i],borderRadius:2,
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:(v,ctx)=>{const total=ctx.dataset.data.reduce((a,b)=>a+(b||0),0);return v>=Math.max(5,total*0.05)?v:'';},display:(ctx)=>ctx.dataset.data[ctx.dataIndex]>=5}}))
+      datalabels:{display:false}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:10},padding:8,boxWidth:8}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 }
@@ -859,7 +875,7 @@ function renderDefect(s){
   mkChart('cDefectTiming','bar',{
     labels:top8t.map(t=>t.length>7?t.slice(0,7)+'…':t),
     datasets:TK.map((k,i)=>({label:k,data:top8t.map(t=>dtTD[t][[1,2,3,12,99][i]]||0),backgroundColor:TC[i],borderRadius:2,
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:(v,ctx)=>{const total=ctx.dataset.data.reduce((a,b)=>a+(b||0),0);return v>=Math.max(5,total*0.05)?v:'';},display:(ctx)=>ctx.dataset.data[ctx.dataIndex]>=5}}))
+      datalabels:{display:false}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:10},padding:8,boxWidth:8}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
@@ -892,7 +908,7 @@ function renderChannel(s){
   mkChart('cChMonthly','bar',{
     labels:mL,
     datasets:chK.map((ch,i)=>({label:ch,data:months.map(m=>chMD[ch][m]||0),backgroundColor:cols[i%cols.length],borderRadius:2,
-      datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:9},formatter:(v,ctx)=>{const total=ctx.dataset.data.reduce((a,b)=>a+(b||0),0);return v>=Math.max(5,total*0.05)?v:'';},display:(ctx)=>ctx.dataset.data[ctx.dataIndex]>=5}}))
+      datalabels:{display:false}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
@@ -958,7 +974,8 @@ function mkChart(id,type,data,opts={}){
       legend:{labels:{font:{family:'Noto Sans KR',size:11},padding:12}},
       tooltip:{callbacks:{label:ctx=>{const v=ctx.raw;if(typeof v==='object'&&v!==null)return` ${ctx.dataset.label||''}: ${v.y||v}`;return` ${ctx.dataset.label||''}: ${typeof v==='number'?v.toLocaleString('ko-KR'):v}`;}}},
       datalabels:{display:false}  // 기본값: 개별 데이터셋에서 override
-    },...opts
+    },
+    layout:{padding:{top:18,right:30}},...opts
   }});
 }
 
@@ -969,7 +986,8 @@ function pct(n,t){return t>0?(n/t*100).toFixed(1):'0.0';}
 function initFilter(){
   const allMs=Object.keys(G.summary.byReceiptMonth).sort();
   buildMonthBtns(allMs);
-  document.getElementById('filterInfo').textContent='📅 전체 기간 ('+(allMs[0]||'')+' ~ '+(allMs[allMs.length-1]||'')+') · '+G.summary.totalDefects+'건';
+  const yr=allMs.length?allMs[0].slice(0,4):'2026';
+  document.getElementById('filterInfo').textContent='📅 '+yr+'년 누적 · '+G.summary.totalDefects+'건';
 }
 function setFilter(type,val,btn){
   FILTER[type]=val;
