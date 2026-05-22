@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v2.3</title>
+<title>JMW Quality Dashboard v2.4</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -183,7 +183,7 @@ tbody tr:hover td{background:#F8FAFC}
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="brand"><span class="brand-dot"></span>JMW Quality</div>
-    <div class="brand-sub">v2.3 · Q.T.S 품질 모니터링</div>
+    <div class="brand-sub">v2.4 · Q.T.S 품질 모니터링</div>
   </div>
   <nav class="sb-nav">
     <div class="sb-sec">메뉴</div>
@@ -406,13 +406,17 @@ function showPg(name,el){
   el.classList.add('on');
   document.getElementById('topTitle').textContent=PG_TITLES[name]||name;
   if(!G)return;
-  const s=G.summary;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    if(name==='trend')  {dpg(['cTrendCumul','cMonthCat','cMonthType']);renderTrend(s);}
-    if(name==='sku')    {dpg(['cSkuBar','cDefectRate','cBubble','cSkuTiming']);renderSKU(s);}
-    if(name==='defect') {dpg(['cDefectBar','cDefectTiming','cDefectChannel']);renderDefect(s);}
-    if(name==='channel'){dpg(['cChMonthly','cChType','cChCat','cChTiming']);renderChannel(s);}
-    if(name==='overview'){dpg(['cMonthLine','cCategory','cTiming','cMfgType','cChannelBar']);renderOverview(s);}
+    // 현재 필터 적용된 데이터로 렌더링
+    const {fD,fs}=getFilteredData();
+    const orig=G.rawDefects,origS=G.summary;
+    G.rawDefects=fD;G.summary=fs;
+    if(name==='trend')  {dpg(['cTrendCumul','cMonthCat','cMonthType']);renderTrend(fs);}
+    if(name==='sku')    {dpg(['cSkuBar','cDefectRate','cBubble','cSkuTiming']);renderSKU(fs);}
+    if(name==='defect') {dpg(['cDefectBar','cDefectTiming','cDefectChannel']);renderDefect(fs);}
+    if(name==='channel'){dpg(['cChMonthly','cChType','cChCat','cChTiming']);renderChannel(fs);}
+    if(name==='overview'){dpg(['cMonthLine','cCategory','cTiming','cMfgType','cChannelBar']);renderOverview(fs);}
+    G.rawDefects=orig;G.summary=origS;
   }));
 }
 function dpg(ids){ids.forEach(id=>{if(charts[id]){try{charts[id].destroy();}catch(e){}delete charts[id];}});}
@@ -896,6 +900,22 @@ function fmt(n){return Number(n).toLocaleString('ko-KR');}
 function pct(n,t){return t>0?(n/t*100).toFixed(1):'0.0';}
 
 // ── 필터 ──
+function getFilteredData(){
+  if(!G)return{fD:[],fs:G?.summary};
+  const allM=Object.keys(G.summary.byReceiptMonth).sort();
+  const included=allM.filter(ym=>{
+    const y=ym.slice(0,4),m=parseInt(ym.slice(4)),q=m<=3?'Q1':m<=6?'Q2':m<=9?'Q3':'Q4';
+    if(FILTER.year!=='all'&&y!==FILTER.year)return false;
+    if(FILTER.quarter!=='all'&&q!==FILTER.quarter)return false;
+    if(FILTER.month!=='all'&&ym!==FILTER.month)return false;
+    return true;
+  });
+  const fD=(G.rawDefects||[]).filter(d=>{if(!d.receiptDate)return false;
+    const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);return included.includes(ym);});
+  const fs=buildFilteredSummary(fD,G.summary.monthlySalesTotals,included);
+  return{fD,fs,included};
+}
+
 function initFilter(){
   const allMs=Object.keys(G.summary.byReceiptMonth).sort();
   buildMonthBtns(allMs);
@@ -919,27 +939,26 @@ function setFilter(type,val,btn){
 function applyFilter(){
   if(!G)return;
   const allM=Object.keys(G.summary.byReceiptMonth).sort();
-  const included=allM.filter(ym=>{
-    const y=ym.slice(0,4),m=parseInt(ym.slice(4)),q=m<=3?'Q1':m<=6?'Q2':m<=9?'Q3':'Q4';
-    if(FILTER.year!=='all'&&y!==FILTER.year)return false;
-    if(FILTER.quarter!=='all'&&q!==FILTER.quarter)return false;
-    if(FILTER.month!=='all'&&ym!==FILTER.month)return false;
-    return true;
-  });
   buildMonthBtns(allM.filter(ym=>{
     const y=ym.slice(0,4),m=parseInt(ym.slice(4)),q=m<=3?'Q1':m<=6?'Q2':m<=9?'Q3':'Q4';
     if(FILTER.year!=='all'&&y!==FILTER.year)return false;
     if(FILTER.quarter!=='all'&&q!==FILTER.quarter)return false;
     return true;
   }));
-  const fD=(G.rawDefects||[]).filter(d=>{if(!d.receiptDate)return false;
-    const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);return included.includes(ym);});
-  const fs=buildFilteredSummary(fD,G.summary.monthlySalesTotals,included);
-  const label=included.length===allM.length?'전체 기간':included.length+'개월 선택';
+  const {fD,fs}=getFilteredData();
+  const label=fD.length===G.rawDefects.length?'전체 기간':Object.keys(fs.byReceiptMonth).length+'개월 선택';
   document.getElementById('filterInfo').textContent='📅 '+label+' · '+fD.length+'건';
+  // 현재 보이는 탭만 재렌더 (필터 상태 유지)
   const orig=G.rawDefects,origS=G.summary;
   G.rawDefects=fD;G.summary=fs;
-  renderAll();
+  const activePg=document.querySelector('.pg.on');
+  const pgId=activePg?activePg.id.replace('pg-',''):'overview';
+  renderKPIs(fs);
+  if(pgId==='overview'){dpg(['cMonthLine','cCategory','cTiming','cMfgType','cChannelBar']);renderOverview(fs);}
+  else if(pgId==='trend'){dpg(['cTrendCumul','cMonthCat','cMonthType']);renderTrend(fs);}
+  else if(pgId==='sku'){dpg(['cSkuBar','cDefectRate','cBubble','cSkuTiming']);renderSKU(fs);}
+  else if(pgId==='defect'){dpg(['cDefectBar','cDefectTiming','cDefectChannel']);renderDefect(fs);}
+  else if(pgId==='channel'){dpg(['cChMonthly','cChType','cChCat','cChTiming']);renderChannel(fs);}
   G.rawDefects=orig;G.summary=origS;
 }
 function buildMonthBtns(months){
