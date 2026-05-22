@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v2.5</title>
+<title>JMW Quality Dashboard v2.8</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -50,17 +50,16 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .sb-btn:hover{background:rgba(255,255,255,.13);color:#fff}
 
 /* 메인 */
-.main{margin-left:var(--sb-w);min-height:100vh}
+.main{margin-left:var(--sb-w);flex:1;display:flex;flex-direction:column;}
 .topbar{background:var(--card);border-bottom:2px solid var(--border);padding:0 28px;display:flex;align-items:center;gap:12px;height:56px;position:sticky;top:0;z-index:50;box-shadow:var(--sh)}
 .topbar-title{font-size:15px;font-weight:700;color:var(--text);flex:1}
 .filter-info{font-size:11px;color:var(--text4);font-family:'JetBrains Mono',monospace}
 .tbtn{padding:7px 14px;border-radius:8px;border:1.5px solid var(--border);background:var(--card2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s}
 .tbtn:hover{background:var(--bg)}
-.page-wrap{padding:20px 24px}
 
 /* 탭 — 핵심: display:none 대신 크기 유지하면서 숨김 */
-.pg{display:none}
-.pg.on{display:block;animation:fadeIn .18s ease}
+.pg{display:none;padding:20px 24px 60px;}
+.pg.on{display:block;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 
 /* 카드 */
@@ -172,7 +171,7 @@ tbody tr:hover td{background:#F8FAFC}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 @media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.g2,.g3,.g3b,.g4{grid-template-columns:1fr}.page-wrap{padding:14px}}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.g2,.g3,.g3b,.g4{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -183,7 +182,7 @@ tbody tr:hover td{background:#F8FAFC}
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="brand"><span class="brand-dot"></span>JMW Quality</div>
-    <div class="brand-sub">v2.5 · Q.T.S 품질 모니터링</div>
+    <div class="brand-sub">v2.8 · Q.T.S 품질 모니터링</div>
   </div>
   <nav class="sb-nav">
     <div class="sb-sec">메뉴</div>
@@ -198,7 +197,6 @@ tbody tr:hover td{background:#F8FAFC}
     <div class="sf-group"><span class="sf-glbl">연도</span>
       <div class="sf-btns" id="yearBtns">
         <button class="sfbtn on" onclick="setFilter('year','all',this)">전체</button>
-        <button class="sfbtn" onclick="setFilter('year','2025',this)">2025</button>
         <button class="sfbtn" onclick="setFilter('year','2026',this)">2026</button>
       </div>
     </div>
@@ -231,8 +229,6 @@ tbody tr:hover td{background:#F8FAFC}
     <span class="filter-info" id="filterInfo">—</span>
     <button class="tbtn" onclick="loadData()">🔄 갱신</button>
   </div>
-  <div class="page-wrap">
-
   <!-- ① 종합 현황 -->
   <div class="pg on" id="pg-overview">
     <div class="kpi-grid">
@@ -381,7 +377,6 @@ tbody tr:hover td{background:#F8FAFC}
     </div>
   </div>
 
-  </div>
 </div>
 </div>
 <script>
@@ -399,25 +394,31 @@ let G=null, charts={};
 const FILTER={year:'all',quarter:'all',month:'all'};
 
 // ── 탭 전환 핵심: display:block으로 바뀐 다음 프레임에 차트 그리기 ──
-function showPg(name,el){
-  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
-  document.getElementById('pg-'+name).classList.add('on');
-  el.classList.add('on');
-  document.getElementById('topTitle').textContent=PG_TITLES[name]||name;
+// 매출 대시보드와 동일한 goPage 패턴
+const PG_NAMES=['overview','trend','sku','defect','channel'];
+const PAGE_RENDERS=[
+  ()=>renderWithFilter(renderOverview),
+  ()=>renderWithFilter(renderTrend),
+  ()=>renderWithFilter(renderSKU),
+  ()=>renderWithFilter(renderDefect),
+  ()=>renderWithFilter(renderChannel)
+];
+
+function renderWithFilter(fn){
   if(!G)return;
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    // 현재 필터 적용된 데이터로 렌더링
-    const {fD,fs}=getFilteredData();
-    const orig=G.rawDefects,origS=G.summary;
-    G.rawDefects=fD;G.summary=fs;
-    if(name==='trend')  {dpg(['cTrendCumul','cMonthCat','cMonthType']);renderTrend(fs);}
-    if(name==='sku')    {dpg(['cSkuBar','cDefectRate','cBubble','cSkuTiming']);renderSKU(fs);}
-    if(name==='defect') {dpg(['cDefectBar','cDefectTiming','cDefectChannel']);renderDefect(fs);}
-    if(name==='channel'){dpg(['cChMonthly','cChType','cChCat','cChTiming']);renderChannel(fs);}
-    if(name==='overview'){dpg(['cMonthLine','cCategory','cTiming','cMfgType','cChannelBar']);renderOverview(fs);}
-    G.rawDefects=orig;G.summary=origS;
-  }));
+  const {fD,fs}=getFilteredData();
+  const orig=G.rawDefects,origS=G.summary;
+  G.rawDefects=fD;G.summary=fs;
+  fn(fs);
+  G.rawDefects=orig;G.summary=origS;
+}
+
+function showPg(name,el){
+  const i=PG_NAMES.indexOf(name);
+  document.querySelectorAll('.pg').forEach((p,j)=>p.classList.toggle('on',i===j));
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',i===j));
+  document.getElementById('topTitle').textContent=PG_TITLES[name]||name;
+  if(G&&PAGE_RENDERS[i]) PAGE_RENDERS[i]();
 }
 function dpg(ids){ids.forEach(id=>{if(charts[id]){try{charts[id].destroy();}catch(e){}delete charts[id];}});}
 
@@ -944,11 +945,8 @@ function applyFilter(){
   const activePg=document.querySelector('.pg.on');
   const pgId=activePg?activePg.id.replace('pg-',''):'overview';
   renderKPIs(fs);
-  if(pgId==='overview'){dpg(['cMonthLine','cCategory','cTiming','cMfgType','cChannelBar']);renderOverview(fs);}
-  else if(pgId==='trend'){dpg(['cTrendCumul','cMonthCat','cMonthType']);renderTrend(fs);}
-  else if(pgId==='sku'){dpg(['cSkuBar','cDefectRate','cBubble','cSkuTiming']);renderSKU(fs);}
-  else if(pgId==='defect'){dpg(['cDefectBar','cDefectTiming','cDefectChannel']);renderDefect(fs);}
-  else if(pgId==='channel'){dpg(['cChMonthly','cChType','cChCat','cChTiming']);renderChannel(fs);}
+  const fi=PG_NAMES.indexOf(pgId);
+  if(PAGE_RENDERS[fi])PAGE_RENDERS[fi]();
   G.rawDefects=orig;G.summary=origS;
 }
 function buildMonthBtns(months){
@@ -981,9 +979,13 @@ function buildFilteredSummary(defects,monthlySales,includedMonths){
   const sO=o=>Object.fromEntries(Object.entries(o).sort(([,a],[,b])=>b-a));
   s.byCategory=sO(s.byCategory);s.byModel=sO(s.byModel);
   s.byDefectDetail=sO(s.byDefectDetail);s.byChannel=sO(s.byChannel);s.byMfgType=sO(s.byMfgType);
-  const sq=Object.values(s.monthlySalesTotals).reduce((a,v)=>a+v,0);
-  Object.keys(s.byModel).forEach(m=>{const dq=s.byModel[m]||0;
-    s.defectRateByModel[m]={defects:dq,sales:sq,rate:sq>0?dq/sq*100:null};});
+  // 모델별 판매수량은 원본 G.summary.defectRateByModel에서 가져옴
+  Object.keys(s.byModel).forEach(m=>{
+    const orig=G&&G.summary&&G.summary.defectRateByModel[m];
+    const salesQty=orig?orig.sales:0;
+    const dq=s.byModel[m]||0;
+    s.defectRateByModel[m]={defects:dq,sales:salesQty,rate:salesQty>0?dq/salesQty*100:null};
+  });
   return s;
 }
 
