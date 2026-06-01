@@ -687,19 +687,20 @@ async function loadData(){
 }
 
 // ── 탭 전환 ──
-const PAGE_RENDERS=[renderOverview,renderTrend,renderSKU,renderDefect,renderCritical];
+function getPageRender(i){ return[renderOverview,renderTrend,renderSKU,renderDefect,renderCritical][i]; }
+
 function showPg(i,el){
   document.querySelectorAll('.pg').forEach((p,j)=>p.classList.toggle('on',i===j));
   document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',i===j));
   document.getElementById('topTitle').innerHTML=PG_TITLES[i]+' <span id="topSub"></span>';
-  renderWithFilter(PAGE_RENDERS[i]);
+  renderWithFilter(getPageRender(i));
 }
 
 function renderAll(){
   renderKPIs(getFilteredSummary());
   const active=document.querySelector('.pg.on');
-  const idx=active?parseInt(active.id.replace('pg-','0')):0;
-  renderWithFilter(PAGE_RENDERS[idx]);
+  const idx=active?parseInt(active.id.replace('pg-','')):0;
+  renderWithFilter(getPageRender(idx));
 }
 
 function renderWithFilter(fn){
@@ -1485,7 +1486,7 @@ function applyFilter(){
   const idx=active?parseInt(active.id.replace('pg-','')):0;
   const orig=G.rawDefects,origS=G.summary;
   G.rawDefects=fD; G.summary=fs;
-  PAGE_RENDERS[idx](fs);
+  getPageRender(idx)(fs);
   G.rawDefects=orig; G.summary=origS;
 }
 
