@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v3.4</title>
+<title>JMW Quality Dashboard v3.5</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <style>
@@ -207,7 +207,7 @@ tbody tr:hover td{background:var(--card2);}
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="brand"><span class="dot"></span>JMW Quality</div>
-    <div class="sub">Quality Dashboard v3.4</div>
+    <div class="sub">Quality Dashboard v3.5</div>
   </div>
   <nav class="sb-nav">
     <div class="sb-sec">품질 모니터링</div>
@@ -231,30 +231,31 @@ tbody tr:hover td{background:var(--card2);}
   <div class="sb-ver">
     <div class="ver-latest">
       <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;">
-        <span class="ver-tag">v3.4</span>
+        <span class="ver-tag">v3.5</span>
         <span class="ver-new">NEW</span>
       </div>
-      <div class="ver-desc">📊 차트 가독성 전면 개선</div>
+      <div class="ver-desc">📊 종합현황 차트 개선</div>
     </div>
     <button class="ver-hist-btn" onclick="const b=this.nextElementSibling;b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.arrow').textContent=b.style.display==='block'?'▲':'▼';">
       <span>📋 전체 업데이트 내역</span>
       <span class="arrow">▼</span>
     </button>
     <div class="ver-hist-body">
+      <div class="vh">v3.5 · 2026.06</div>
+      <div>· 발생시점 도넛 → 수직 바</div>
+      <div>· 종합현황 맨 아래 불량률 Top10 추가</div>
+      <div>· 하단 3개 카드 g3b 레이아웃</div>
       <div class="vh">v3.4 · 2026.06</div>
-      <div>· 품목별 도넛 → 수직 바 차트</div>
+      <div>· 품목별 도넛 → 수직 바</div>
       <div>· 월별 추이 datalabel 겹침 해결</div>
       <div>· 트렌드 전체 좌우 2열 레이아웃</div>
-      <div>· 스타일러/드라이기 총건수+불량률만</div>
       <div>· 불량유형 추이 개별 차트 분리</div>
-      <div>· 좌1~5위 / 우6~10위 구조</div>
+      <div>· JS 호이스팅 버그 수정</div>
       <div class="vh">v3.3 · 2026.06</div>
       <div>· 기간 필터 매출 대시보드 방식</div>
-      <div>· 트렌드: 스타일러/드라이기 분리</div>
-      <div>· 불량유형 Top10 가로형</div>
+      <div>· 트렌드 스타일러/드라이기 분리</div>
       <div class="vh">v3.2 · 2026.06</div>
       <div>· UI 매출 대시보드 동기화</div>
-      <div>· 로딩 카운트다운 바</div>
       <div>· ptByRate 렌더링 버그 수정</div>
       <div class="vh">v3.1 · 2026.05</div>
       <div>· 긴급·크리티컬 탭 추가</div>
@@ -332,8 +333,7 @@ tbody tr:hover td{background:var(--card2);}
           <div style="font-size:14px;font-weight:800;color:var(--text);">발생 시점 분포</div>
           <span class="bdg b-amber">건수 · 비중</span>
         </div>
-        <div class="h180" style="position:relative;height:180px;"><canvas id="cTiming"></canvas></div>
-        <div class="donut-legend" id="timingLegend"></div>
+        <div class="h200"><canvas id="cTiming"></canvas></div>
       </div>
       <div class="card card-inner">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
@@ -352,7 +352,7 @@ tbody tr:hover td{background:var(--card2);}
     </div>
 
     <div class="sd"><div class="sd-line"></div><span class="sd-lbl">Top 리스트</span><div class="sd-line"></div></div>
-    <div class="g2">
+    <div class="g3b">
       <div class="card card-inner">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div style="font-size:14px;font-weight:800;color:var(--text);">불량유형 Top 10</div>
@@ -366,6 +366,13 @@ tbody tr:hover td{background:var(--card2);}
           <span class="bdg b-gray">신호등 등급</span>
         </div>
         <div id="skuSignal"></div>
+      </div>
+      <div class="card card-inner">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="font-size:14px;font-weight:800;color:var(--text);">불량률 Top 10</div>
+          <span class="bdg b-amber">판매수량 대비</span>
+        </div>
+        <div id="rateShort"></div>
       </div>
     </div>
   </div>
@@ -843,15 +850,26 @@ function renderOverview(s){
     layout:{padding:{top:52,right:8}}
   });
 
-  // 발생시점 도넛
+  // 발생시점 수직 바
   const tV=TK.map(k=>s.byTiming[k]||0), tTotal=tV.reduce((a,b)=>a+b,0);
-  mkChart('cTiming','doughnut',{labels:TK,datasets:[{data:tV,backgroundColor:TC,borderWidth:2,borderColor:'#fff',
-    datalabels:{color:'#fff',font:{family:'JetBrains Mono',weight:'700',size:10},
-      formatter:(v,ctx)=>v>0?TK[ctx.dataIndex]+'\n'+fmt(v)+'건\n'+pct(v,tTotal)+'%':null}}]
-  },{plugins:{legend:{display:false},datalabels:{}},cutout:'45%',layout:{padding:4}});
-  document.getElementById('timingLegend').innerHTML=TK.map((t,i)=>
-    `<div class="dl-item"><div class="dl-sq" style="background:${TC[i]}"></div>${t}</div>`
-  ).join('');
+  const tMax=Math.max(...tV,1);
+  mkChart('cTiming','bar',{labels:TK,datasets:[{
+    data:tV, backgroundColor:TC, borderRadius:6, borderSkipped:false,
+    datalabels:{
+      anchor:'end', align:'end', clamp:true, offset:4,
+      color:(ctx)=>TC[ctx.dataIndex],
+      font:{family:'JetBrains Mono',weight:'700',size:11},
+      formatter:(v,ctx)=>v>0?`${fmt(v)}건\n${pct(v,tTotal)}%`:''
+    }
+  }]},{
+    plugins:{legend:{display:false},datalabels:{}},
+    scales:{
+      x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}},
+      y:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}},
+         suggestedMax:tMax*1.5}
+    },
+    layout:{padding:{top:52,right:8}}
+  });
 
   // 생산분류 수치 카드
   const mfgK=Object.keys(s.byMfgType), mfgV=Object.values(s.byMfgType);
@@ -878,8 +896,11 @@ function renderOverview(s){
             y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}},
     layout:{padding:{right:120,top:4}}});
 
-  // Top5 파레토
+  // Top10 파레토
   renderPareto('ptShort',s,10,false);
+
+  // 불량률 Top10
+  renderRateTop('rateShort',s,10);
 
   // SKU 신호등 Top10
   const models=Object.keys(s.byModel).slice(0,10), mcat=buildModelCat();
@@ -1373,6 +1394,28 @@ function renderCritical(s){
     scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
             y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}},
     layout:{padding:{right:110,top:4}}});
+}
+
+// ── 불량률 Top 리스트 ──
+function renderRateTop(elId,s,limit){
+  const totalSalesAll=Object.values(s.monthlySalesTotals||{}).reduce((a,b)=>a+b,0);
+  const items=Object.entries(s.defectRateByModel||{})
+    .filter(([,v])=>v.rate!=null&&v.sales>0)
+    .sort(([,a],[,b])=>b.rate-a.rate)
+    .slice(0,limit);
+  const maxRate=items.length?items[0][1].rate:1;
+  const el=document.getElementById(elId); if(!el) return;
+  el.innerHTML=items.map(([m,v],i)=>{
+    const r=v.rate, rC=i===0?'r1':i===1?'r2':i===2?'r3':'rn';
+    const col=r>=3?'var(--red)':r>=1?'var(--amber)':'var(--green)';
+    return`<div class="pt-item">
+      <span class="rank ${rC}">${i+1}</span>
+      <span class="pt-name">${m}</span>
+      <div class="pt-bar"><div class="pt-fill" style="width:${(r/maxRate*100).toFixed(1)}%;background:${col}"></div></div>
+      <span class="pt-cnt" style="color:${col}">${r.toFixed(2)}%</span>
+      <span class="pt-pct" style="color:var(--text3)">${fmt(v.defects)}건</span>
+    </div>`;
+  }).join('');
 }
 
 // ── 파레토 리스트 ──
