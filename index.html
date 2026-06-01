@@ -816,7 +816,7 @@ function renderOverview(s){
   const cats=Object.keys(s.byCategory), catV=Object.values(s.byCategory);
   const catTotal=catV.reduce((a,b)=>a+b,0);
   const catColors=PAL.slice(0,cats.length);
-  const mcat=buildModelCat();
+  const mcatMap=buildModelCat();
   mkChart('cCategory','bar',{labels:cats,datasets:[{
     data:catV, backgroundColor:catColors, borderRadius:6, borderSkipped:false,
     datalabels:{
@@ -826,7 +826,7 @@ function renderOverview(s){
       formatter:(v,ctx)=>{
         const catName=cats[ctx.dataIndex];
         const catSales=Object.keys(s.defectRateByModel||{}).reduce((sum,m)=>{
-          if(mcat[m]===catName&&s.defectRateByModel[m]?.sales>0) return sum+s.defectRateByModel[m].sales;
+          if(mcatMap[m]===catName&&s.defectRateByModel[m]?.sales>0) return sum+s.defectRateByModel[m].sales;
           return sum;
         },0);
         const rateStr=catSales>0?(v/catSales*100).toFixed(2)+'%':'—';
@@ -953,10 +953,10 @@ function renderTrend(s){
     const catVals=months.map(m=>catMonthly[m]||0);
     const catMax=Math.max(...catVals,1);
     // 해당 품목 판매수량 집계
-    const mcat=buildModelCat();
+    const mcatInner=buildModelCat();
     const catSales=months.reduce((acc,m)=>{
       acc[m]=Object.keys(s.defectRateByModel||{}).reduce((sum,model)=>{
-        if(mcat[model]===catName&&s.defectRateByModel[model]?.sales>0){
+        if(mcatInner[model]===catName&&s.defectRateByModel[model]?.sales>0){
           return sum+s.defectRateByModel[model].sales/months.length;
         }
         return sum;
