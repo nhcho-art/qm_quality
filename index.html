@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v3.7</title>
+<title>JMW Quality Dashboard v3.8</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <style>
@@ -207,7 +207,7 @@ tbody tr:hover td{background:var(--card2);}
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="brand"><span class="dot"></span>JMW Quality</div>
-    <div class="sub">Quality Dashboard v3.7</div>
+    <div class="sub">Quality Dashboard v3.8</div>
   </div>
   <nav class="sb-nav">
     <div class="sb-sec">품질 모니터링</div>
@@ -231,16 +231,19 @@ tbody tr:hover td{background:var(--card2);}
   <div class="sb-ver">
     <div class="ver-latest">
       <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;">
-        <span class="ver-tag">v3.7</span>
+        <span class="ver-tag">v3.8</span>
         <span class="ver-new">NEW</span>
       </div>
-      <div class="ver-desc">📊 발생시점 datalabel 개선</div>
+      <div class="ver-desc">🔧 발생시점 datalabel 버그 수정</div>
     </div>
     <button class="ver-hist-btn" onclick="const b=this.nextElementSibling;b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.arrow').textContent=b.style.display==='block'?'▲':'▼';">
       <span>📋 전체 업데이트 내역</span>
       <span class="arrow">▼</span>
     </button>
     <div class="ver-hist-body">
+      <div class="vh">v3.8 · 2026.06</div>
+      <div>· 발생시점 datalabel display:false 버그 수정</div>
+      <div>· 건수(비율%) 바 안/바깥 자동 분기</div>
       <div class="vh">v3.7 · 2026.06</div>
       <div>· 발생시점 datalabel 건수(비율%) 형식</div>
       <div>· 바 좁으면 바깥 오른쪽, 충분하면 안쪽</div>
@@ -1434,58 +1437,61 @@ function renderCritical(s){
   const chartHeight=Math.max(180, critModelKeys.length*38+40);
   const wrapEl=document.getElementById('cCritModelTimingWrap');
   if(wrapEl) wrapEl.style.height=chartHeight+'px';
-  mkChart('cCritModelTiming','bar',{
-    labels:critModelKeys,
-    datasets:TK.map((label,i)=>({
-      label,
-      data:critModelKeys.map(m=>critTimingData[m][timingKeys[i]]||0),
-      backgroundColor:TC[i],
-      borderRadius:2,
-      datalabels:{
-        display:(ctx)=>ctx.raw>0,
-        anchor:(ctx)=>{
-          const modelName=critModelKeys[ctx.dataIndex];
-          const total=critModelTotals[modelName]||1;
-          return (ctx.raw/total)<0.12?'end':'center';
-        },
-        align:(ctx)=>{
-          const modelName=critModelKeys[ctx.dataIndex];
-          const total=critModelTotals[modelName]||1;
-          return (ctx.raw/total)<0.12?'right':'center';
-        },
-        clamp:false,
-        clip:false,
-        offset:(ctx)=>{
-          const modelName=critModelKeys[ctx.dataIndex];
-          const total=critModelTotals[modelName]||1;
-          return (ctx.raw/total)<0.12?4:0;
-        },
-        color:(ctx)=>{
-          const modelName=critModelKeys[ctx.dataIndex];
-          const total=critModelTotals[modelName]||1;
-          return (ctx.raw/total)<0.12?TC[ctx.datasetIndex]:'#fff';
-        },
-        font:{family:'JetBrains Mono',weight:'700',size:10},
-        formatter:(v,ctx)=>{
-          const modelName=critModelKeys[ctx.dataIndex];
-          const total=critModelTotals[modelName]||1;
-          const r=(v/total*100).toFixed(0);
-          return `${v}(${r}%)`;
+  if(charts['cCritModelTiming']){try{charts['cCritModelTiming'].destroy();}catch(e){} delete charts['cCritModelTiming'];}
+  const ctxCMT=document.getElementById('cCritModelTiming'); if(ctxCMT){
+  charts['cCritModelTiming']=new Chart(ctxCMT,{
+    type:'bar',
+    data:{
+      labels:critModelKeys,
+      datasets:TK.map((label,i)=>({
+        label,
+        data:critModelKeys.map(m=>critTimingData[m][timingKeys[i]]||0),
+        backgroundColor:TC[i],
+        borderRadius:2,
+        datalabels:{
+          display:(ctx)=>ctx.raw>0,
+          anchor:(ctx)=>{
+            const total=critModelTotals[critModelKeys[ctx.dataIndex]]||1;
+            return (ctx.raw/total)<0.12?'end':'center';
+          },
+          align:(ctx)=>{
+            const total=critModelTotals[critModelKeys[ctx.dataIndex]]||1;
+            return (ctx.raw/total)<0.12?'right':'center';
+          },
+          clamp:false,
+          clip:false,
+          offset:(ctx)=>{
+            const total=critModelTotals[critModelKeys[ctx.dataIndex]]||1;
+            return (ctx.raw/total)<0.12?4:0;
+          },
+          color:(ctx)=>{
+            const total=critModelTotals[critModelKeys[ctx.dataIndex]]||1;
+            return (ctx.raw/total)<0.12?TC[ctx.datasetIndex]:'#fff';
+          },
+          font:{family:'JetBrains Mono',weight:'700',size:10},
+          formatter:(v,ctx)=>{
+            const total=critModelTotals[critModelKeys[ctx.dataIndex]]||1;
+            const r=(v/total*100).toFixed(0);
+            return `${v}(${r}%)`;
+          }
         }
-      }
-    }))
-  },{
-    indexAxis:'y',
-    plugins:{
-      legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:12,boxWidth:10}},
-      datalabels:{}
+      }))
     },
-    scales:{
-      x:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
-      y:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}
-    },
-    layout:{padding:{right:8,top:4}}
-  });
+    options:{
+      responsive:true,maintainAspectRatio:false,animation:{duration:300},
+      indexAxis:'y',
+      plugins:{
+        legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:12,boxWidth:10}},
+        tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw}건 (${critModelTotals[critModelKeys[ctx.dataIndex]]>0?(ctx.raw/critModelTotals[critModelKeys[ctx.dataIndex]]*100).toFixed(0):0}%)`}},
+        datalabels:{}
+      },
+      scales:{
+        x:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
+        y:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}
+      },
+      layout:{padding:{right:8,top:4}}
+    }
+  });}
 }
 
 // ── 불량률 Top 리스트 ──
