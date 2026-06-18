@@ -1447,9 +1447,17 @@ function renderCritical(s){
         label,
         data:critModelKeys.map(m=>critTimingData[m][timingKeys[i]]||0),
         backgroundColor:TC[i],
-        borderRadius:2,
+        borderRadius:2
+      }))
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,animation:{duration:300},
+      indexAxis:'y',
+      plugins:{
+        legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:12,boxWidth:10}},
+        tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw}건 (${critModelTotals[critModelKeys[ctx.dataIndex]]>0?(ctx.raw/critModelTotals[critModelKeys[ctx.dataIndex]]*100).toFixed(0):0}%)`}},
         datalabels:{
-          display:(ctx)=>ctx.raw>0,
+          display:true,
           anchor:(ctx)=>{
             const total=critModelTotals[critModelKeys[ctx.dataIndex]]||1;
             return (ctx.raw/total)<0.12?'end':'center';
@@ -1460,30 +1468,19 @@ function renderCritical(s){
           },
           clamp:false,
           clip:false,
-          offset:(ctx)=>{
-            const total=critModelTotals[critModelKeys[ctx.dataIndex]]||1;
-            return (ctx.raw/total)<0.12?4:0;
-          },
+          offset:4,
           color:(ctx)=>{
             const total=critModelTotals[critModelKeys[ctx.dataIndex]]||1;
             return (ctx.raw/total)<0.12?TC[ctx.datasetIndex]:'#fff';
           },
           font:{family:'JetBrains Mono',weight:'700',size:10},
           formatter:(v,ctx)=>{
+            if(!v||v===0) return '';
             const total=critModelTotals[critModelKeys[ctx.dataIndex]]||1;
             const r=(v/total*100).toFixed(0);
             return `${v}(${r}%)`;
           }
         }
-      }))
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,animation:{duration:300},
-      indexAxis:'y',
-      plugins:{
-        legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:12,boxWidth:10}},
-        tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw}건 (${critModelTotals[critModelKeys[ctx.dataIndex]]>0?(ctx.raw/critModelTotals[critModelKeys[ctx.dataIndex]]*100).toFixed(0):0}%)`}},
-        datalabels:{}
       },
       scales:{
         x:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
