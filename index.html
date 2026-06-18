@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v3.5</title>
+<title>JMW Quality Dashboard v3.6</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <style>
@@ -207,7 +207,7 @@ tbody tr:hover td{background:var(--card2);}
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="brand"><span class="dot"></span>JMW Quality</div>
-    <div class="sub">Quality Dashboard v3.5</div>
+    <div class="sub">Quality Dashboard v3.6</div>
   </div>
   <nav class="sb-nav">
     <div class="sb-sec">품질 모니터링</div>
@@ -231,16 +231,19 @@ tbody tr:hover td{background:var(--card2);}
   <div class="sb-ver">
     <div class="ver-latest">
       <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;">
-        <span class="ver-tag">v3.5</span>
+        <span class="ver-tag">v3.6</span>
         <span class="ver-new">NEW</span>
       </div>
-      <div class="ver-desc">📊 종합현황 차트 개선</div>
+      <div class="ver-desc">🚨 크리티컬 모델 발생시점 분포 추가</div>
     </div>
     <button class="ver-hist-btn" onclick="const b=this.nextElementSibling;b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.arrow').textContent=b.style.display==='block'?'▲':'▼';">
       <span>📋 전체 업데이트 내역</span>
       <span class="arrow">▼</span>
     </button>
     <div class="ver-hist-body">
+      <div class="vh">v3.6 · 2026.06</div>
+      <div>· 크리티컬 모델 발생시점 분포 추가</div>
+      <div>· 수평 스택바 · 건수+비율 datalabel</div>
       <div class="vh">v3.5 · 2026.06</div>
       <div>· 발생시점 도넛 → 수직 바</div>
       <div>· 종합현황 맨 아래 불량률 Top10 추가</div>
@@ -620,6 +623,17 @@ tbody tr:hover td{background:var(--card2);}
           <span class="bdg b-gray">건수 · 비중</span>
         </div>
         <div class="h280"><canvas id="cCritChannel"></canvas></div>
+      </div>
+    </div>
+
+    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">크리티컬 발생시점 분포</span><div class="sd-line"></div></div>
+    <div class="card mb18">
+      <div class="card-hd">
+        <div class="card-hd-title">크리티컬 불량 모델별 발생시점 분포</div>
+        <span class="bdg b-amber">건수 · 비율</span>
+      </div>
+      <div class="card-body">
+        <div id="cCritModelTimingWrap" style="position:relative;"><canvas id="cCritModelTiming"></canvas></div>
       </div>
     </div>
   </div>
@@ -1300,7 +1314,7 @@ function renderDefect(s){
 // ── 크리티컬 ── (ptByRate 참조 제거)
 function renderCritical(s){
   if(!s||!G.rawDefects||!G.rawDefects.length) return;
-  dpg(['cCritType','cCritMonthly','cCritModel','cCritChannel']);
+  dpg(['cCritType','cCritMonthly','cCritModel','cCritChannel','cCritModelTiming']);
 
   const critD=G.rawDefects.filter(d=>CRITICAL_TYPES.includes(d.defectDetail));
   const total=critD.reduce((a,d)=>a+d.qty,0);
@@ -1394,6 +1408,62 @@ function renderCritical(s){
     scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
             y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}},
     layout:{padding:{right:110,top:4}}});
+
+  // ── 크리티컬 모델별 발생시점 분포 수평 스택바 ──
+  const critModelKeys=Object.keys(byModel).sort((a,b)=>byModel[b]-byModel[a]);
+  const critTimingData={};
+  critModelKeys.forEach(m=>{ critTimingData[m]={1:0,2:0,3:0,12:0,99:0}; });
+  critD.forEach(d=>{
+    if(!critModelKeys.includes(d.model)) return;
+    const mo=d.monthsToReceipt||0;
+    if(mo<=1) critTimingData[d.model][1]+=d.qty;
+    else if(mo<=2) critTimingData[d.model][2]+=d.qty;
+    else if(mo<=3) critTimingData[d.model][3]+=d.qty;
+    else if(mo<=12) critTimingData[d.model][12]+=d.qty;
+    else critTimingData[d.model][99]+=d.qty;
+  });
+  // 모델별 합계 (비율 계산용)
+  const critModelTotals={};
+  critModelKeys.forEach(m=>{
+    critModelTotals[m]=[1,2,3,12,99].reduce((s,k)=>s+critTimingData[m][k],0);
+  });
+  const timingKeys=[1,2,3,12,99];
+  const chartHeight=Math.max(180, critModelKeys.length*38+40);
+  const wrapEl=document.getElementById('cCritModelTimingWrap');
+  if(wrapEl) wrapEl.style.height=chartHeight+'px';
+  mkChart('cCritModelTiming','bar',{
+    labels:critModelKeys,
+    datasets:TK.map((label,i)=>({
+      label,
+      data:critModelKeys.map(m=>critTimingData[m][timingKeys[i]]||0),
+      backgroundColor:TC[i],
+      borderRadius:2,
+      datalabels:{
+        display:(ctx)=>ctx.raw>0,
+        anchor:'center',
+        align:'center',
+        color:'#fff',
+        font:{family:'JetBrains Mono',weight:'700',size:10},
+        formatter:(v,ctx)=>{
+          const modelName=critModelKeys[ctx.dataIndex];
+          const total=critModelTotals[modelName]||1;
+          const r=(v/total*100).toFixed(0);
+          return v>0?`${v}\n(${r}%)`:'';
+        }
+      }
+    }))
+  },{
+    indexAxis:'y',
+    plugins:{
+      legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:12,boxWidth:10}},
+      datalabels:{}
+    },
+    scales:{
+      x:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
+      y:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}
+    },
+    layout:{padding:{right:8,top:4}}
+  });
 }
 
 // ── 불량률 Top 리스트 ──
