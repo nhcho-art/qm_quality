@@ -3,752 +3,618 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v4.0</title>
+<title>JMW Quality Dashboard v5.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <style>
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --navy:#1A0A2E;--blue:#2563EB;--teal:#0D9488;--amber:#D97706;
-  --red:#C0392B;--green:#16A34A;--purple:#7B2D8B;--purple2:#9B4DB0;--purple3:#F3E8F7;
-  --orange:#EA580C;
-  --bg:#F5F4F8;--card:#FFFFFF;--card2:#FAFAFA;
-  --border:rgba(0,0,0,.07);--border2:rgba(0,0,0,.04);
-  --text:#1A0A2E;--text2:#3D2B50;--text3:#7B6B8D;--text4:#B0A0C0;
-  --sb-w:220px;
-  --sh:0 2px 12px rgba(123,45,139,.07),0 1px 3px rgba(0,0,0,.04);
+  --purple:#7B2D8B;--purple2:#9B4DB0;--purple3:#F5EEF8;--purple4:#EDE0F5;
+  --red:#C0392B;--red2:#E74C3C;--blue:#2563EB;--teal:#0D9488;
+  --amber:#D97706;--green:#16A34A;--orange:#EA580C;
+  --navy:#1A0A2E;
+  --bg:#F4F2F8;--card:#FFFFFF;--card2:#FAFAFA;
+  --border:rgba(123,45,139,.1);--border2:rgba(123,45,139,.05);
+  --text:#1A0A2E;--text2:#3D2B50;--text3:#6B5B7B;--text4:#A090B0;
+  --sh:0 2px 12px rgba(123,45,139,.08),0 1px 3px rgba(0,0,0,.04);
   --r:14px;
+  --nav-h:56px;--filter-h:48px;
 }
-body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;display:flex;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;}
 
-/* ── 사이드바 ── */
-.sidebar{width:var(--sb-w);min-height:100vh;background:#fff;border-right:1px solid rgba(123,45,139,.1);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;overflow-y:auto;}
-.sb-logo{padding:22px 18px 14px;border-bottom:1px solid rgba(123,45,139,.08);}
-.sb-logo .brand{font-size:16px;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:9px;}
-.sb-logo .dot{width:8px;height:8px;background:var(--purple);border-radius:50%;box-shadow:0 0 8px rgba(123,45,139,.5);}
-.sb-logo .sub{font-size:10px;color:var(--text4);margin-top:3px;font-family:'JetBrains Mono',monospace;}
-.sb-nav{flex:1;padding:10px;display:flex;flex-direction:column;gap:1px;}
-.sb-sec{font-size:9px;font-weight:700;color:var(--text4);letter-spacing:1.4px;text-transform:uppercase;padding:14px 10px 5px;}
-.nb{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;border:none;background:transparent;color:var(--text3);font-size:13px;font-weight:500;font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;cursor:pointer;transition:all .15s;width:100%;text-align:left;}
-.nb:hover{background:var(--purple3);color:var(--purple);}
-.nb.on{background:var(--purple3);color:var(--purple);font-weight:700;}
-.nb.on .nbi{color:var(--purple);}
-.nbi{font-size:14px;width:20px;text-align:center;flex-shrink:0;}
+/* ── 상단 네비 ── */
+.topnav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:0;box-shadow:0 1px 8px rgba(123,45,139,.07);}
+.nav-logo{display:flex;align-items:center;gap:8px;margin-right:32px;flex-shrink:0;}
+.nav-logo-dot{width:8px;height:8px;border-radius:50%;background:var(--purple);box-shadow:0 0 8px rgba(123,45,139,.5);}
+.nav-logo-text{font-size:15px;font-weight:800;color:var(--navy);letter-spacing:-.3px;}
+.nav-logo-ver{font-size:10px;color:var(--text4);font-family:'JetBrains Mono',monospace;margin-left:4px;}
+.nav-tabs{display:flex;align-items:center;gap:2px;flex:1;}
+.nav-tab{padding:7px 16px;border-radius:8px;border:none;background:transparent;color:var(--text3);font-size:13px;font-weight:600;font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.nav-tab:hover{background:var(--purple3);color:var(--purple);}
+.nav-tab.on{background:var(--purple);color:#fff;}
+.nav-right{display:flex;align-items:center;gap:10px;margin-left:16px;flex-shrink:0;}
+.nav-time{font-size:11px;color:var(--text4);font-family:'JetBrains Mono',monospace;}
+.nav-btn{padding:7px 16px;border-radius:8px;border:none;background:var(--purple);color:#fff;font-size:12px;font-weight:700;font-family:'Pretendard',sans-serif;cursor:pointer;transition:opacity .15s;}
+.nav-btn:hover{opacity:.85;}
 
-/* 사이드바 로딩 카운트다운 */
-#loading-wrap{margin:10px 4px 0;padding:10px 12px;background:var(--purple3);border:1px solid rgba(123,45,139,.12);border-radius:10px;display:none;}
-#loading-wrap .lw-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
-#loading-msg{font-size:10px;color:var(--text3);font-family:'Noto Sans KR',sans-serif;line-height:1.4;flex:1;}
-#loading-sec{font-size:12px;font-weight:700;color:var(--purple);font-family:'JetBrains Mono',monospace;flex-shrink:0;margin-left:6px;}
-#loading-bar-wrap{height:8px;background:rgba(123,45,139,.1);border-radius:4px;overflow:hidden;}
-#loading-bar{height:100%;width:0%;border-radius:4px;background:linear-gradient(90deg,#1D4ED8 0%,#2563EB 20%,#06B6D4 40%,#10B981 55%,#84CC16 68%,#FACC15 78%,#F97316 88%,#EF4444 100%);transition:width .9s linear;}
+/* ── 기간 필터바 ── */
+.filterbar{position:fixed;top:var(--nav-h);left:0;right:0;z-index:190;height:var(--filter-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:6px;}
+.filterbar select{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--text);font-size:12px;font-weight:600;font-family:'Pretendard',sans-serif;cursor:pointer;outline:none;height:32px;}
+.ftab{padding:4px 13px;border-radius:16px;border:1.5px solid transparent;font-size:12px;font-weight:600;font-family:'Pretendard',sans-serif;cursor:pointer;background:transparent;color:var(--text3);transition:all .15s;}
+.ftab:hover{background:var(--purple3);color:var(--purple);}
+.ftab.on{background:var(--purple);color:#fff;}
+.fsep{width:1px;height:18px;background:var(--border);margin:0 2px;}
+.flabel{font-size:11px;color:var(--text4);font-family:'JetBrains Mono',monospace;margin-left:auto;}
 
-/* 버전 히스토리 */
-.sb-ver{padding:10px 12px;border-top:1px solid rgba(255,255,255,.08);}
-.ver-latest{background:var(--purple3);border:1px solid rgba(123,45,139,.2);border-radius:8px;padding:8px 10px;margin-bottom:6px;}
-.ver-tag{font-size:10px;font-weight:800;color:var(--purple);font-family:'JetBrains Mono',monospace;}
-.ver-new{font-size:9px;background:var(--purple);color:#fff;padding:1px 6px;border-radius:10px;font-weight:700;margin-left:4px;}
-.ver-desc{font-size:10px;color:rgba(255,255,255,.8);font-weight:700;margin-top:2px;}
-.ver-hist-btn{width:100%;display:flex;justify-content:space-between;align-items:center;background:var(--card2);border:1px solid rgba(123,45,139,.1);border-radius:7px;padding:6px 10px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
-.ver-hist-btn span{font-size:10px;color:var(--text3);font-weight:700;}
-.ver-hist-btn .arrow{font-size:9px;color:rgba(255,255,255,.4);}
-.ver-hist-body{display:none;margin-top:4px;background:var(--card2);border:1px solid rgba(123,45,139,.08);border-radius:7px;padding:8px 10px;font-size:9px;color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;line-height:1.8;color:var(--text3)}
-.ver-hist-body .vh{color:var(--purple);font-weight:700;margin-bottom:3px;}
-.ver-hist-body .vh+.vh{margin-top:6px;}
+/* ── 메인 콘텐츠 ── */
+.main{margin-top:calc(var(--nav-h) + var(--filter-h));padding:24px 24px 60px;}
+.pg{display:none;}.pg.on{display:block;}
 
-/* 사이드바 푸터 */
-.sb-footer{padding:14px 16px;border-top:1px solid rgba(255,255,255,.1);}
-.sb-kpi{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;}
-.sb-kpi-item{background:var(--purple3);border:1px solid rgba(123,45,139,.12);border-radius:8px;padding:8px 10px;}
-.sb-kpi-v{font-size:15px;font-weight:700;color:var(--purple);font-family:'JetBrains Mono',monospace;display:block;}
-.sb-kpi-l{font-size:9px;color:var(--text3);display:block;margin-top:2px;}
-.sb-updated{font-size:10px;color:var(--text4);text-align:center;font-family:'JetBrains Mono',monospace;}
-.sb-auto{font-size:9px;color:var(--text4);text-align:center;margin-top:3px;font-family:'JetBrains Mono',monospace;}
+/* ── KPI 카드 (사운드글룩 스타일) ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px;}
+.kpi-card{border-radius:var(--r);padding:20px 22px;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s;cursor:default;}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.12);}
+.kpi-card.solid{color:#fff;}
+.kpi-card.solid .kpi-lbl{color:rgba(255,255,255,.75);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;}
+.kpi-card.solid .kpi-val{font-size:32px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;letter-spacing:-1px;}
+.kpi-card.solid .kpi-sub{font-size:11px;color:rgba(255,255,255,.65);margin-top:8px;}
+.kpi-card.solid .kpi-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.2);font-size:11px;font-weight:700;margin-top:6px;}
+.kpi-card.light{background:#fff;border:1px solid var(--border);box-shadow:var(--sh);}
+.kpi-card.light .kpi-lbl{color:var(--text3);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;}
+.kpi-card.light .kpi-val{font-size:28px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--text);line-height:1;letter-spacing:-0.5px;}
+.kpi-card.light .kpi-sub{font-size:12px;color:var(--text3);margin-top:6px;}
+.kpi-deco{position:absolute;right:-10px;bottom:-10px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.08);}
+.kpi-deco2{position:absolute;right:20px;bottom:-20px;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.05);}
+.kc-purple{background:linear-gradient(135deg,#7B2D8B 0%,#9B4DB0 100%);}
+.kc-red{background:linear-gradient(135deg,#C0392B 0%,#E74C3C 100%);}
+.kc-blue{background:linear-gradient(135deg,#1D4ED8 0%,#3B82F6 100%);}
+.kc-teal{background:linear-gradient(135deg,#0D9488 0%,#2DD4BF 100%);}
+.kc-amber{background:linear-gradient(135deg,#B45309 0%,#F59E0B 100%);}
+.gauge-bar{height:3px;background:rgba(255,255,255,.25);border-radius:2px;overflow:hidden;margin-top:8px;}
+.gauge-fill{height:100%;border-radius:2px;background:rgba(255,255,255,.8);}
 
-/* ── 메인 ── */
-.main{margin-left:var(--sb-w);flex:1;display:flex;flex-direction:column;}
-.topbar{background:#fff;border-bottom:1px solid rgba(123,45,139,.08);padding:0 28px;display:flex;align-items:center;gap:10px;height:52px;position:sticky;top:0;z-index:50;box-shadow:0 1px 8px rgba(123,45,139,.06);}
-.topbar-title{font-size:15px;font-weight:800;color:var(--text);flex:1;}
-.topbar-title span{color:var(--text3);font-weight:400;font-size:12px;margin-left:6px;}
-.tbtn{padding:6px 14px;border-radius:7px;border:1.5px solid var(--border);background:transparent;color:var(--text2);font-size:12px;font-family:'Noto Sans KR',sans-serif;cursor:pointer;font-weight:600;}
-.tbtn.primary{background:var(--purple);color:#fff;border-color:var(--purple);}
-
-/* 필터 period-bar */
-.period-bar{background:#fff;border-bottom:1px solid rgba(123,45,139,.06);padding:0 28px;display:flex;align-items:center;gap:4px;height:44px;}
-.ptab{padding:5px 14px;border-radius:20px;border:1.5px solid transparent;font-size:13px;font-weight:600;font-family:'Noto Sans KR',sans-serif;cursor:pointer;background:transparent;color:var(--text3);transition:all .15s;}
-.ptab:hover{background:#F1F5F9;color:var(--text2);}
-.ptab.on{background:var(--purple);color:#fff;border-color:var(--purple);}
-.period-label{font-size:12px;color:var(--text3);margin-left:auto;font-family:'JetBrains Mono',monospace;}
-.period-sep{width:1px;height:20px;background:var(--border2);margin:0 4px;}
-
-/* 페이지 */
-.pg{display:none;padding:24px 28px 60px;}
-.pg.on{display:block;}
-
-/* 카드 */
-.card{background:#fff;border:1px solid rgba(123,45,139,.07);border-radius:var(--r);box-shadow:var(--sh);}
+/* ── 카드 ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);}
 .card-inner{padding:20px 22px;}
-.card-hd{padding:14px 22px 12px;background:#FDFCFE;border-bottom:1px solid rgba(123,45,139,.06);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.card-hd-title{font-size:14px;font-weight:800;color:var(--text);flex:1;}
+.card-hd{padding:14px 22px 12px;background:#FDFCFE;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.card-hd-title{font-size:14px;font-weight:700;color:var(--text);flex:1;}
 .card-body{padding:18px 22px;}
 
-/* 배지 — 매출 대시보드 통일 */
+/* ── 섹션 구분 ── */
+.sd{display:flex;align-items:center;gap:10px;margin:4px 0 14px;}
+.sd-line{flex:1;height:1px;background:var(--border);}
+.sd-lbl{font-size:11px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;}
+
+/* ── 그리드 ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.g3{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px;}
+.g3b{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px;}
+.g3c{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px;}
+.g4{display:grid;grid-template-columns:3fr 2fr;gap:16px;margin-bottom:16px;}
+.mb16{margin-bottom:16px;}
+.h160{position:relative;height:160px;}.h200{position:relative;height:200px;}
+.h220{position:relative;height:220px;}.h240{position:relative;height:240px;}
+.h260{position:relative;height:260px;}.h280{position:relative;height:280px;}
+.h300{position:relative;height:300px;}.h320{position:relative;height:320px;}
+
+/* ── 배지 ── */
 .bdg{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;}
 .b-blue{background:rgba(37,99,235,.1);color:#1D4ED8;}
 .b-teal{background:rgba(13,148,136,.1);color:#0D7A70;}
 .b-amber{background:rgba(217,119,6,.1);color:#B45309;}
-.b-red{background:rgba(220,38,38,.1);color:#B91C1C;}
+.b-red{background:rgba(192,57,43,.1);color:#C0392B;}
 .b-green{background:rgba(22,163,74,.1);color:#15803D;}
-.b-purple{background:rgba(124,58,237,.1);color:#6D28D9;}
-.b-gray{background:#F1F5F9;color:var(--text2);}
+.b-purple{background:rgba(123,45,139,.12);color:#7B2D8B;}
+.b-gray{background:#F3EFF8;color:var(--text3);}
 
-/* 순위 — 매출 대시보드 통일 */
+/* ── 랭크 ── */
 .rank{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:4px;font-size:11px;font-weight:800;font-family:'JetBrains Mono',monospace;}
-.r1{background:#FEF3C7;color:#92400E;}
-.r2{background:#F1F5F9;color:#475569;}
-.r3{background:#FEE2E2;color:#991B1B;}
-.rn{background:#F8FAFC;color:#94A3B8;}
+.r1{background:#F3E8FF;color:#7B2D8B;}.r2{background:#F1F5F9;color:#475569;}
+.r3{background:#FEE2E2;color:#991B1B;}.rn{background:#F8F4FC;color:var(--text4);}
 
-/* 신호등 */
+/* ── 신호등 ── */
 .sig{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;}
 .sig-dot{width:7px;height:7px;border-radius:50%;}
 .sig-r{color:var(--red);}.sig-r .sig-dot{background:var(--red);}
 .sig-a{color:var(--amber);}.sig-a .sig-dot{background:var(--amber);}
 .sig-g{color:var(--green);}.sig-g .sig-dot{background:var(--green);}
 
-/* KPI 그리드 */
-.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:18px;}
-.kpi-card{background:#fff;border:1px solid rgba(123,45,139,.07);border-radius:var(--r);box-shadow:var(--sh);padding:16px 18px;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s;}
-.kpi-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(123,45,139,.13);}
-.kpi-accent{position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0;}
-.acc-red{background:#C0392B}.acc-amber{background:var(--amber)}.acc-blue{background:var(--blue)}
-.acc-green{background:var(--green)}.acc-purple{background:var(--purple)}.acc-teal{background:var(--teal)}
-.kpi-lbl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;}
-.kpi-val{font-size:26px;font-weight:800;color:var(--text);font-family:'JetBrains Mono',monospace;line-height:1;}
-.kpi-val.sm{font-size:16px;}
-.kpi-sub{font-size:11px;color:var(--text4);margin-top:6px;}
-.kpi-sub .up{color:var(--red);font-weight:700;}
-.kpi-sub .dn{color:var(--green);font-weight:700;}
-.gauge-bar{height:4px;background:var(--border2);border-radius:2px;overflow:hidden;margin-top:7px;}
-.gauge-fill{height:100%;border-radius:2px;transition:width .6s ease;}
-.gauge-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--text4);margin-top:2px;font-family:'JetBrains Mono',monospace;}
+/* ── 파레토 ── */
+.pt-item{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--border2);}
+.pt-item:last-child{border-bottom:none;}
+.pt-name{font-size:13px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text2);}
+.pt-bar{flex:1.2;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.pt-fill{height:100%;background:var(--purple);border-radius:3px;}
+.pt-cnt{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;min-width:26px;text-align:right;color:var(--text);}
+.pt-pct{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;min-width:36px;text-align:right;}
+.pt-cum{font-size:11px;color:var(--purple);font-family:'JetBrains Mono',monospace;min-width:38px;text-align:right;}
 
-/* 그리드 레이아웃 */
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
-.g3{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px;}
-.g3b{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:18px;}
-.g3c{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:18px;}
-.g4{display:grid;grid-template-columns:3fr 2fr;gap:18px;margin-bottom:18px;}
-.mb18{margin-bottom:18px;}
-.h160{position:relative;height:160px;}
-.h200{position:relative;height:200px;}
-.h220{position:relative;height:220px;}
-.h240{position:relative;height:240px;}
-.h260{position:relative;height:260px;}
-.h280{position:relative;height:280px;}
-.h320{position:relative;height:320px;}
+/* ── 인라인바 ── */
+.ibar{display:flex;align-items:center;gap:7px;}
+.itrack{flex:1;height:4px;background:var(--border);border-radius:3px;overflow:hidden;min-width:40px;}
+.ifill{height:100%;border-radius:3px;}
 
-/* 섹션 구분선 */
-.sd{display:flex;align-items:center;gap:10px;margin:4px 0 14px;}
-.sd-line{flex:1;height:1.5px;background:var(--border2);}
-.sd-lbl{font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;opacity:.8;}
-
-/* 테이블 */
+/* ── 테이블 ── */
 .tbl-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:13px;}
-thead th{background:#FDFCFE;padding:9px 13px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text3);border-bottom:1px solid rgba(123,45,139,.1);white-space:nowrap;}
-tbody td{padding:9px 13px;border-bottom:1px solid var(--border2);}
+thead th{background:#FDFCFE;padding:9px 13px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text3);border-bottom:1px solid var(--border);white-space:nowrap;}
+tbody td{padding:9px 13px;border-bottom:1px solid var(--border2);font-size:13px;}
 tbody tr:last-child td{border-bottom:none;}
-tbody tr:hover td{background:var(--card2);}
+tbody tr:hover td{background:#FDFCFE;}
 .mono{font-family:'JetBrains Mono',monospace;font-weight:700;}
 .tr{text-align:right;}.tc{text-align:center;}
 
-/* 파레토 리스트 */
-.pt-item{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--border2);}
-.pt-item:last-child{border-bottom:none;}
-.pt-name{font-size:12px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text2);}
-.pt-bar{flex:1.2;height:5px;background:var(--border2);border-radius:3px;overflow:hidden;}
-.pt-fill{height:100%;background:var(--purple);border-radius:3px;}
-.pt-cnt{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;min-width:26px;text-align:right;}
-.pt-pct{font-size:10.5px;color:var(--text3);font-family:'JetBrains Mono',monospace;min-width:36px;text-align:right;}
-.pt-cum{font-size:10.5px;color:var(--blue);font-family:'JetBrains Mono',monospace;min-width:38px;text-align:right;}
+/* ── 생산분류 카드 ── */
+.mfg-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}
+.mfg-card{background:#FDFCFE;border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center;}
+.mfg-name{font-size:11px;color:var(--text3);font-weight:700;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;}
+.mfg-cnt{font-size:26px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;}
+.mfg-rate{font-size:12px;color:var(--text3);margin-top:4px;}
 
-/* 인라인바 */
-.ibar{display:flex;align-items:center;gap:7px;}
-.itrack{flex:1;height:5px;background:var(--border2);border-radius:3px;overflow:hidden;min-width:40px;}
-.ifill{height:100%;border-radius:3px;}
-
-/* MoM 리스트 */
+/* ── MoM ── */
 .mom-item{display:flex;align-items:center;gap:8px;padding:8px 4px;border-bottom:1px solid var(--border2);}
 .mom-item:last-child{border-bottom:none;}
 
-/* 도넛 범례 */
-.donut-legend{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:center;margin-top:10px;}
-.dl-item{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--text2);}
-.dl-sq{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+/* ── 버전 패널 ── */
+.ver-panel{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:0;}
+.ver-latest-tag{font-size:11px;font-weight:800;color:var(--purple);font-family:'JetBrains Mono',monospace;}
+.ver-new-pill{font-size:9px;background:var(--purple);color:#fff;padding:1px 7px;border-radius:10px;font-weight:700;margin-left:5px;vertical-align:middle;}
+.ver-desc-main{font-size:13px;font-weight:700;color:var(--text);margin-top:4px;}
+.ver-hist-toggle{display:flex;align-items:center;gap:6px;margin-top:10px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text3);}
+.ver-hist-body{display:none;margin-top:8px;font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;line-height:1.9;border-top:1px solid var(--border);padding-top:8px;}
+.ver-hist-body .vh{color:var(--purple);font-weight:700;margin-top:6px;display:block;}
+.ver-hist-body .vh:first-child{margin-top:0;}
 
-/* 생산분류 카드 */
-.mfg-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}
-.mfg-card{background:#FDFCFE;border:1px solid rgba(123,45,139,.08);border-radius:10px;padding:14px 16px;text-align:center;}
-.mfg-name{font-size:11px;color:var(--text3);font-weight:700;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;}
-.mfg-cnt{font-size:28px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;}
-.mfg-rate{font-size:11px;color:var(--text4);margin-top:4px;}
+/* ── 로딩 ── */
+#loading-overlay{position:fixed;top:0;left:0;right:0;z-index:500;background:rgba(123,45,139,.06);height:3px;display:none;}
+#loading-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--purple),var(--purple2));transition:width .9s linear;}
 
-/* 스크롤바 */
-::-webkit-scrollbar{width:5px;height:5px;}
+/* ── 모델 상세 검색 ── */
+.model-search-wrap{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px;background:#fff;padding:16px 20px;border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--sh);}
+.model-search-input{flex:1;min-width:160px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--border);font-size:13px;font-family:'Pretendard',sans-serif;outline:none;color:var(--text);transition:border-color .15s;}
+.model-search-input:focus{border-color:var(--purple);}
+.model-search-select{flex:2;min-width:200px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--border);font-size:13px;font-family:'Pretendard',sans-serif;outline:none;color:var(--text);background:#fff;cursor:pointer;}
+.model-search-select:focus{border-color:var(--purple);}
+
+/* ── 스크롤바 ── */
+::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:rgba(123,45,139,.2);border-radius:3px;}
 
+/* ── 반응형 ── */
 @media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(3,1fr);}}
 @media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.g2,.g3,.g3b,.g4{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 
-<aside class="sidebar">
-  <div class="sb-logo">
-    <div class="brand"><span class="dot"></span>JMW Quality</div>
-    <div class="sub">Quality Dashboard v4.0</div>
-  </div>
-  <nav class="sb-nav">
-    <div class="sb-sec">품질 모니터링</div>
-    <button class="nb on" onclick="showPg(0,this)"><span class="nbi">📊</span>종합 현황</button>
-    <button class="nb" onclick="showPg(1,this)"><span class="nbi">📈</span>월별 트렌드</button>
-    <button class="nb" onclick="showPg(2,this)"><span class="nbi">🔍</span>SKU 분석</button>
-    <button class="nb" onclick="showPg(3,this)"><span class="nbi">⚠️</span>불량유형</button>
-    <button class="nb" onclick="showPg(4,this)"><span class="nbi">🚨</span>긴급·크리티컬</button>
-    <button class="nb" onclick="showPg(5,this)"><span class="nbi">🔎</span>모델 상세</button>
+<!-- 로딩 바 -->
+<div id="loading-overlay"><div id="loading-bar"></div></div>
 
-    <!-- 로딩 카운트다운 -->
-    <div id="loading-wrap">
-      <div class="lw-row">
-        <span id="loading-msg">📡 데이터 연결 중...</span>
-        <span id="loading-sec">20s</span>
-      </div>
-      <div id="loading-bar-wrap"><div id="loading-bar"></div></div>
-    </div>
-  </nav>
-
-  <!-- 버전 히스토리 -->
-  <div class="sb-ver">
-    <div class="ver-latest">
-      <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;">
-        <span class="ver-tag">v4.0</span>
-        <span class="ver-new">NEW</span>
-      </div>
-      <div class="ver-desc">✨ 전체 디자인 리뉴얼 + 데이터 확장 + 모델 상세 탭</div>
-    </div>
-    <button class="ver-hist-btn" onclick="const b=this.nextElementSibling;b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.arrow').textContent=b.style.display==='block'?'▲':'▼';">
-      <span>📋 전체 업데이트 내역</span>
-      <span class="arrow">▼</span>
-    </button>
-    <div class="ver-hist-body">
-      <div class="vh">v4.0 · 2026.08</div>
-      <div>· 전체 디자인 리뉴얼 (보라 아이덴티티)</div>
-      <div>· Pretendard 폰트 · 차트 그리드 제거</div>
-      <div>· 실데이터 모델/품목/불량유형 반영</div>
-      <div>· 가전-선풍기/바디드라이어 탭 추가</div>
-      <div>· 모델 상세 탭 신설</div>
-      <div>· CRITICAL_TYPES 3개 추가</div>
-      <div class="vh">v3.8 · 2026.06</div>
-      <div>· 발생시점 datalabel display:false 버그 수정</div>
-      <div>· 건수(비율%) 바 안/바깥 자동 분기</div>
-      <div class="vh">v3.7 · 2026.06</div>
-      <div>· 발생시점 datalabel 건수(비율%) 형식</div>
-      <div>· 바 좁으면 바깥 오른쪽, 충분하면 안쪽</div>
-      <div class="vh">v3.6 · 2026.06</div>
-      <div>· 크리티컬 모델 발생시점 분포 추가</div>
-      <div>· 수평 스택바 · 건수+비율 datalabel</div>
-      <div class="vh">v3.5 · 2026.06</div>
-      <div>· 발생시점 도넛 → 수직 바</div>
-      <div>· 종합현황 맨 아래 불량률 Top10 추가</div>
-      <div>· 하단 3개 카드 g3b 레이아웃</div>
-      <div class="vh">v3.4 · 2026.06</div>
-      <div>· 품목별 도넛 → 수직 바</div>
-      <div>· 월별 추이 datalabel 겹침 해결</div>
-      <div>· 트렌드 전체 좌우 2열 레이아웃</div>
-      <div>· 불량유형 추이 개별 차트 분리</div>
-      <div>· JS 호이스팅 버그 수정</div>
-      <div class="vh">v3.3 · 2026.06</div>
-      <div>· 기간 필터 매출 대시보드 방식</div>
-      <div>· 트렌드 스타일러/드라이기 분리</div>
-      <div class="vh">v3.2 · 2026.06</div>
-      <div>· UI 매출 대시보드 동기화</div>
-      <div>· ptByRate 렌더링 버그 수정</div>
-      <div class="vh">v3.1 · 2026.05</div>
-      <div>· 긴급·크리티컬 탭 추가</div>
-      <div class="vh">v3.0 · 2026.04</div>
-      <div>· 5탭 구조 · Apps Script 연동</div>
-    </div>
+<!-- 상단 네비 -->
+<nav class="topnav">
+  <div class="nav-logo">
+    <div class="nav-logo-dot"></div>
+    <span class="nav-logo-text">JMW Quality</span>
+    <span class="nav-logo-ver">v5.0</span>
   </div>
-
-  <div class="sb-footer">
-    <div class="sb-kpi">
-      <div class="sb-kpi-item"><span class="sb-kpi-v" id="sb-total">—</span><span class="sb-kpi-l">총 불량건수</span></div>
-      <div class="sb-kpi-item"><span class="sb-kpi-v" id="sb-rate">—</span><span class="sb-kpi-l">전체 불량률</span></div>
-    </div>
-    <div class="sb-updated" id="sb-updated">로딩 중...</div>
-    <div class="sb-auto">🔄 10분 자동 갱신</div>
+  <div class="nav-tabs">
+    <button class="nav-tab on" onclick="showPg(0,this)">종합 현황</button>
+    <button class="nav-tab" onclick="showPg(1,this)">월별 트렌드</button>
+    <button class="nav-tab" onclick="showPg(2,this)">SKU 분석</button>
+    <button class="nav-tab" onclick="showPg(3,this)">불량유형</button>
+    <button class="nav-tab" onclick="showPg(4,this)">긴급·크리티컬</button>
+    <button class="nav-tab" onclick="showPg(5,this)">모델 상세</button>
   </div>
-</aside>
+  <div class="nav-right">
+    <span class="nav-time" id="sb-updated">로딩 중...</span>
+    <button class="nav-btn" onclick="loadData()">새로고침</button>
+  </div>
+</nav>
+
+<!-- 기간 필터바 -->
+<div class="filterbar">
+  <select id="monthSelect" onchange="onMonthSelect(this.value)">
+    <option value="all">전체 월</option>
+  </select>
+  <div class="fsep"></div>
+  <button class="ftab" onclick="setPeriod('q1',this)">Q1</button>
+  <button class="ftab" onclick="setPeriod('q2',this)">Q2</button>
+  <button class="ftab" onclick="setPeriod('q3',this)">Q3</button>
+  <button class="ftab" onclick="setPeriod('q4',this)">Q4</button>
+  <div class="fsep"></div>
+  <button class="ftab" onclick="setPeriod('h1',this)">상반기</button>
+  <button class="ftab" onclick="setPeriod('h2',this)">하반기</button>
+  <button class="ftab on" onclick="setPeriod('year',this)">연간</button>
+  <span class="flabel" id="periodLabel">연간</span>
+</div>
 
 <div class="main">
-  <div class="topbar">
-    <div class="topbar-title" id="topTitle">종합 현황 <span id="topSub">2026년 누적</span></div>
-    <button class="tbtn primary" onclick="loadData()">🔄 지금 갱신</button>
+
+<!-- ① 종합 현황 -->
+<div class="pg on" id="pg-0">
+  <div class="kpi-grid">
+    <div class="kpi-card solid kc-red"><div class="kpi-deco"></div><div class="kpi-deco2"></div>
+      <div class="kpi-lbl">총 불량건수</div><div class="kpi-val" id="k-total">—</div>
+      <div class="kpi-sub" id="k-rate-sub">누적 접수 기준</div>
+    </div>
+    <div class="kpi-card solid kc-amber"><div class="kpi-deco"></div><div class="kpi-deco2"></div>
+      <div class="kpi-lbl">전체 불량률</div><div class="kpi-val" id="k-rate">—</div>
+      <div class="gauge-bar"><div class="gauge-fill" id="gFill" style="width:0%"></div></div>
+      <div class="kpi-sub" style="margin-top:4px">목표 1% 이하</div>
+    </div>
+    <div class="kpi-card solid kc-blue"><div class="kpi-deco"></div><div class="kpi-deco2"></div>
+      <div class="kpi-lbl">관리 SKU 수</div><div class="kpi-val" id="k-skus">—</div>
+      <div class="kpi-sub">불량 발생 모델</div>
+    </div>
+    <div class="kpi-card light">
+      <div class="kpi-lbl">당월 불량</div><div class="kpi-val" id="k-monthly">—</div>
+      <div class="kpi-sub" id="k-monthly-sub">—</div>
+    </div>
+    <div class="kpi-card light">
+      <div class="kpi-lbl">1위 불량유형</div>
+      <div class="kpi-val" id="k-top-type" style="font-size:16px;margin-top:6px">—</div>
+      <div class="kpi-sub" id="k-top-cnt">—</div>
+    </div>
   </div>
 
-  <!-- 필터 period-bar -->
-  <div class="period-bar">
-    <select id="monthSelect" onchange="onMonthSelect(this.value)"
-      style="padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--text);font-size:13px;font-weight:600;font-family:'Noto Sans KR',sans-serif;cursor:pointer;outline:none;height:34px;-webkit-appearance:auto;margin-right:4px;">
-      <option value="all">전체 월</option>
+  <div class="sd"><div class="sd-line"></div><span class="sd-lbl">월별 추이</span><div class="sd-line"></div></div>
+  <div class="g3 mb16">
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">월별 불량 접수 추이 <span style="font-size:12px;color:var(--text3);font-weight:500;" id="bdgMonths"></span></div>
+        <span class="bdg b-red">건수 + 불량률</span>
+      </div>
+      <div class="h280"><canvas id="cMonthLine"></canvas></div>
+    </div>
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">품목별 불량</div>
+        <span class="bdg b-gray">건수 · 비중 · 불량률</span>
+      </div>
+      <div class="h200"><canvas id="cCategory"></canvas></div>
+    </div>
+  </div>
+
+  <div class="sd"><div class="sd-line"></div><span class="sd-lbl">불량 분포</span><div class="sd-line"></div></div>
+  <div class="g3b mb16">
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">발생 시점 분포</div>
+        <span class="bdg b-amber">건수 · 비중</span>
+      </div>
+      <div class="h200"><canvas id="cTiming"></canvas></div>
+    </div>
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">생산분류별</div>
+        <span class="bdg b-gray">건수 · 불량률</span>
+      </div>
+      <div class="mfg-cards" id="mfgCards"></div>
+    </div>
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">유통 채널별</div>
+        <span class="bdg b-gray">건수 · 비중</span>
+      </div>
+      <div class="h200"><canvas id="cChannelBar"></canvas></div>
+    </div>
+  </div>
+
+  <div class="sd"><div class="sd-line"></div><span class="sd-lbl">Top 리스트</span><div class="sd-line"></div></div>
+  <div class="g3b">
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">불량유형 Top 10</div>
+        <span class="bdg b-red">건수 순</span>
+      </div>
+      <div id="ptShort"></div>
+    </div>
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">불량건수 Top 10 SKU</div>
+        <span class="bdg b-gray">신호등 등급</span>
+      </div>
+      <div id="skuSignal"></div>
+    </div>
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">불량률 Top 10</div>
+        <span class="bdg b-amber">판매수량 대비</span>
+      </div>
+      <div id="rateShort"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ② 월별 트렌드 -->
+<div class="pg" id="pg-1">
+  <div class="kpi-grid">
+    <div class="kpi-card solid kc-red"><div class="kpi-deco"></div><div class="kpi-lbl">최다 불량 월</div><div class="kpi-val sm" id="t-peak" style="font-size:18px">—</div><div class="kpi-sub" id="t-peak-cnt">—</div></div>
+    <div class="kpi-card solid kc-amber"><div class="kpi-deco"></div><div class="kpi-lbl">월 평균 불량</div><div class="kpi-val" id="t-avg">—</div><div class="kpi-sub">건/월</div></div>
+    <div class="kpi-card solid kc-blue"><div class="kpi-deco"></div><div class="kpi-lbl">최근 월 불량</div><div class="kpi-val" id="t-latest">—</div><div class="kpi-sub" id="t-latest-sub">—</div></div>
+    <div class="kpi-card light"><div class="kpi-lbl">전월 대비</div><div class="kpi-val" id="t-mom">—</div><div class="kpi-sub" id="t-mom-sub">—</div></div>
+    <div class="kpi-card light"><div class="kpi-lbl">누적 불량</div><div class="kpi-val" id="t-total">—</div><div class="kpi-sub">전체 기간</div></div>
+  </div>
+  <div class="sd"><div class="sd-line"></div><span class="sd-lbl">추이 분석</span><div class="sd-line"></div></div>
+  <div class="g2 mb16">
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">월별 불량건수 + 추세선</div><span class="bdg b-gray">선형 회귀</span>
+      </div>
+      <div class="h280"><canvas id="cTrendLine"></canvas></div>
+    </div>
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">월별 MoM 변화</div><span class="bdg b-gray">전월 대비</span>
+      </div>
+      <div id="momList" style="max-height:280px;overflow-y:auto;"></div>
+    </div>
+  </div>
+  <div class="sd"><div class="sd-line"></div><span class="sd-lbl">품목별 월별 불량</span><div class="sd-line"></div></div>
+  <div class="g2 mb16">
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">스타일러 · 월별 불량</div><span class="bdg b-blue">건수 + 불량률</span>
+      </div>
+      <div class="h240"><canvas id="cMonthCatStyler"></canvas></div>
+    </div>
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">드라이기 · 월별 불량</div><span class="bdg b-red">건수 + 불량률</span>
+      </div>
+      <div class="h240"><canvas id="cMonthCatDryer"></canvas></div>
+    </div>
+  </div>
+  <div class="g2 mb16">
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">가전-선풍기 · 월별 불량</div><span class="bdg b-teal">건수 + 불량률</span>
+      </div>
+      <div class="h240"><canvas id="cMonthCatFan"></canvas></div>
+    </div>
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">가전-바디드라이어 · 월별 불량</div><span class="bdg b-purple">건수 + 불량률</span>
+      </div>
+      <div class="h240"><canvas id="cMonthCatBody"></canvas></div>
+    </div>
+  </div>
+  <div class="sd"><div class="sd-line"></div><span class="sd-lbl">모델별 추이</span><div class="sd-line"></div></div>
+  <div class="g2 mb16">
+    <div class="card"><div class="card-hd"><div class="card-hd-title">불량건수 Top 10 · 월별</div><span class="bdg b-red">건수 기준</span></div>
+      <div class="card-body" id="topCntModelWrap" style="display:flex;flex-direction:column;gap:10px;"></div></div>
+    <div class="card"><div class="card-hd"><div class="card-hd-title">불량률 Top 10 · 월별</div><span class="bdg b-amber">불량률 % 기준</span></div>
+      <div class="card-body" id="topRateModelWrap" style="display:flex;flex-direction:column;gap:10px;"></div></div>
+  </div>
+  <div class="sd"><div class="sd-line"></div><span class="sd-lbl">불량유형별 추이</span><div class="sd-line"></div></div>
+  <div class="g2 mb16">
+    <div class="card"><div class="card-hd"><div class="card-hd-title">불량유형 1~5위 · 월별</div><span class="bdg b-red">개별 추이</span></div>
+      <div class="card-body" id="typeChartLeft" style="display:flex;flex-direction:column;gap:10px;"></div></div>
+    <div class="card"><div class="card-hd"><div class="card-hd-title">불량유형 6~10위 · 월별</div><span class="bdg b-gray">개별 추이</span></div>
+      <div class="card-body" id="typeChartRight" style="display:flex;flex-direction:column;gap:10px;"></div></div>
+  </div>
+</div>
+
+<!-- ③ SKU 분석 -->
+<div class="pg" id="pg-2">
+  <div class="sd"><div class="sd-line"></div><span class="sd-lbl">모델별 불량</span><div class="sd-line"></div></div>
+  <div class="g4 mb16">
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">모델별 불량건수 Top 15</div><span class="bdg b-red">상위 3개 강조</span>
+      </div>
+      <div class="h320"><canvas id="cSkuBar"></canvas></div>
+    </div>
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">불량률 상위 모델</div><span class="bdg b-amber">판매 대비 %</span>
+      </div>
+      <div class="h320"><canvas id="cDefectRate"></canvas></div>
+    </div>
+  </div>
+  <div class="sd"><div class="sd-line"></div><span class="sd-lbl">상세 현황</span><div class="sd-line"></div></div>
+  <div class="card mb16">
+    <div class="card-hd">
+      <div class="card-hd-title">모델별 불량 상세</div>
+      <span class="bdg b-red">≥3%</span><span class="bdg b-amber">1~3%</span><span class="bdg b-green">&lt;1%</span>
+    </div>
+    <div class="card-body" style="padding:0;">
+      <div class="tbl-wrap">
+        <table><thead><tr><th>순위</th><th>모델명</th><th>품목</th><th>분류</th><th class="tr">불량건수</th><th class="tr">판매수량</th><th class="tr">불량률</th><th>등급</th><th>비중</th></tr></thead>
+        <tbody id="skuBody"></tbody></table>
+      </div>
+    </div>
+  </div>
+  <div class="sd"><div class="sd-line"></div><span class="sd-lbl">심화 분석</span><div class="sd-line"></div></div>
+  <div class="g2">
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">판매수량 vs 불량률 분포</div><span class="bdg b-gray">Top 10 모델</span>
+      </div>
+      <div class="h240"><canvas id="cSkuScatter"></canvas></div>
+    </div>
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">모델별 발생 시점 분포</div><span class="bdg b-amber">Top 8</span>
+      </div>
+      <div class="h240"><canvas id="cSkuTiming"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ④ 불량유형 -->
+<div class="pg" id="pg-3">
+  <div class="sd"><div class="sd-line"></div><span class="sd-lbl">불량유형 분석</span><div class="sd-line"></div></div>
+  <div class="g2 mb16">
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">불량유형 순위 (전체)</div><span class="bdg b-red">건수 순 · 누적%</span>
+      </div>
+      <div id="ptFull"></div>
+    </div>
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">불량률 높은 유형 Top 10</div><span class="bdg b-amber">판매수량 대비</span>
+      </div>
+      <div id="ptByRate"></div>
+    </div>
+  </div>
+  <div class="card mb16">
+    <div class="card-hd"><div class="card-hd-title">불량유형 분포</div><span class="bdg b-blue">Top 12 · 건수 비중</span></div>
+    <div class="card-body"><div id="defectDistWrap" style="position:relative;"><canvas id="cDefectBar"></canvas></div></div>
+  </div>
+  <div class="sd"><div class="sd-line"></div><span class="sd-lbl">교차 분석</span><div class="sd-line"></div></div>
+  <div class="card mb16">
+    <div class="card-hd"><div class="card-hd-title">품목 × 불량유형 매트릭스</div><span class="bdg b-gray">셀 색상 = 강도</span></div>
+    <div class="card-body" style="padding:0 22px 18px;"><div class="tbl-wrap" id="matrixWrap"></div></div>
+  </div>
+  <div class="g2">
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">불량유형별 발생 시점</div><span class="bdg b-amber">Top 8</span>
+      </div>
+      <div class="h280"><canvas id="cDefectTiming"></canvas></div>
+    </div>
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">불량유형 × 채널</div><span class="bdg b-gray">Top 6 유형</span>
+      </div>
+      <div class="h280"><canvas id="cDefectChannel"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑤ 긴급·크리티컬 -->
+<div class="pg" id="pg-4">
+  <div class="kpi-grid" id="critKpiGrid"></div>
+  <div class="sd"><div class="sd-line"></div><span class="sd-lbl">크리티컬 불량 현황</span><div class="sd-line"></div></div>
+  <div class="g2 mb16">
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">크리티컬 유형별 건수</div><span class="bdg b-red">건수 기준</span>
+      </div>
+      <div id="critTypeWrap" style="position:relative;"><canvas id="cCritType"></canvas></div>
+    </div>
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">크리티컬 월별 추이</div><span class="bdg b-red">접수일 기준</span>
+      </div>
+      <div class="h240"><canvas id="cCritMonthly"></canvas></div>
+    </div>
+  </div>
+  <div class="sd"><div class="sd-line"></div><span class="sd-lbl">이상 급증 감지</span><div class="sd-line"></div></div>
+  <div class="card mb16">
+    <div class="card-hd"><div class="card-hd-title">⚡ 이상 급증 모델</div><span class="bdg b-red">전월 대비 200% 이상 증가</span></div>
+    <div class="card-body" style="padding:0 22px 18px;"><div id="spikeList"></div></div>
+  </div>
+  <div class="sd"><div class="sd-line"></div><span class="sd-lbl">크리티컬 상세</span><div class="sd-line"></div></div>
+  <div class="g2">
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">크리티컬 모델별 건수</div><span class="bdg b-gray">Top 10</span>
+      </div>
+      <div class="h280"><canvas id="cCritModel"></canvas></div>
+    </div>
+    <div class="card card-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">크리티컬 채널별 분포</div><span class="bdg b-gray">건수 · 비중</span>
+      </div>
+      <div class="h280"><canvas id="cCritChannel"></canvas></div>
+    </div>
+  </div>
+  <div class="sd" style="margin-top:16px;"><div class="sd-line"></div><span class="sd-lbl">크리티컬 발생시점 분포</span><div class="sd-line"></div></div>
+  <div class="card mb16">
+    <div class="card-hd"><div class="card-hd-title">크리티컬 불량 모델별 발생시점 분포</div><span class="bdg b-amber">건수 · 비율</span></div>
+    <div class="card-body"><div id="cCritModelTimingWrap" style="position:relative;"><canvas id="cCritModelTiming"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ⑥ 모델 상세 -->
+<div class="pg" id="pg-5">
+  <div class="model-search-wrap">
+    <input type="text" class="model-search-input" id="modelSearchInput" placeholder="모델명 검색..." oninput="filterModelOptions(this.value)">
+    <select class="model-search-select" id="modelSelect" onchange="onModelSelect(this.value)" size="1">
+      <option value="">모델을 선택하세요</option>
     </select>
-    <div class="period-sep"></div>
-    <button class="ptab" onclick="setPeriod('q1',this)">Q1</button>
-    <button class="ptab" onclick="setPeriod('q2',this)">Q2</button>
-    <button class="ptab" onclick="setPeriod('q3',this)">Q3</button>
-    <button class="ptab" onclick="setPeriod('q4',this)">Q4</button>
-    <div class="period-sep"></div>
-    <button class="ptab" onclick="setPeriod('h1',this)">상반기</button>
-    <button class="ptab" onclick="setPeriod('h2',this)">하반기</button>
-    <button class="ptab on" onclick="setPeriod('year',this)">연간</button>
-    <span class="period-label" id="periodLabel">2026년 연간</span>
+    <span id="modelDetailBadge" style="display:none;gap:6px;"></span>
   </div>
-
-  <!-- ① 종합 현황 -->
-  <div class="pg on" id="pg-0">
-    <div class="kpi-grid">
-      <div class="kpi-card"><div class="kpi-accent acc-red"></div><div class="kpi-lbl">총 불량 건수</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub">누적 접수 기준</div></div>
-      <div class="kpi-card"><div class="kpi-accent acc-amber"></div><div class="kpi-lbl">전체 불량률</div><div class="kpi-val" id="k-rate">—</div><div class="kpi-sub" id="k-rate-sub">—</div><div class="gauge-bar"><div class="gauge-fill" id="gFill"></div></div><div class="gauge-labels"><span>0%</span><span>목표 1%</span><span>3%</span></div></div>
-      <div class="kpi-card"><div class="kpi-accent acc-blue"></div><div class="kpi-lbl">관리 SKU 수</div><div class="kpi-val" id="k-skus">—</div><div class="kpi-sub">불량 발생 모델</div></div>
-      <div class="kpi-card"><div class="kpi-accent acc-purple"></div><div class="kpi-lbl">당월 불량</div><div class="kpi-val" id="k-monthly">—</div><div class="kpi-sub" id="k-monthly-sub">—</div></div>
-      <div class="kpi-card"><div class="kpi-accent acc-teal"></div><div class="kpi-lbl">1위 불량유형</div><div class="kpi-val sm" id="k-top-type">—</div><div class="kpi-sub" id="k-top-cnt">—</div></div>
-    </div>
-
+  <div id="modelDetailContent" style="display:none;">
+    <div class="kpi-grid" id="mdKpiGrid"></div>
     <div class="sd"><div class="sd-line"></div><span class="sd-lbl">월별 추이</span><div class="sd-line"></div></div>
-    <div class="g3 mb18">
+    <div class="g2 mb16">
       <div class="card card-inner">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">월별 불량 접수 추이 <span style="font-size:11px;color:var(--text3);font-weight:400;" id="bdgMonths"></span></div>
-          <span class="bdg b-red">건수 + 불량률</span>
+          <div style="font-size:14px;font-weight:700;color:var(--text);">월별 불량 추이</div><span class="bdg b-blue">건수 + 불량률</span>
         </div>
-        <div class="h280"><canvas id="cMonthLine"></canvas></div>
-      </div>
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">품목별 불량</div>
-          <span class="bdg b-gray">건수 · 비중 · 불량률</span>
-        </div>
-        <div class="h200"><canvas id="cCategory"></canvas></div>
-      </div>
-    </div>
-
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">불량 분포 분석</span><div class="sd-line"></div></div>
-    <div class="g3b mb18">
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">발생 시점 분포</div>
-          <span class="bdg b-amber">건수 · 비중</span>
-        </div>
-        <div class="h200"><canvas id="cTiming"></canvas></div>
-      </div>
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">생산분류별</div>
-          <span class="bdg b-gray">건수 · 불량률</span>
-        </div>
-        <div class="mfg-cards" id="mfgCards"></div>
-      </div>
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">유통 채널별</div>
-          <span class="bdg b-gray">건수 · 비중</span>
-        </div>
-        <div class="h200"><canvas id="cChannelBar"></canvas></div>
-      </div>
-    </div>
-
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">Top 리스트</span><div class="sd-line"></div></div>
-    <div class="g3b">
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">불량유형 Top 10</div>
-          <span class="bdg b-red">건수 순</span>
-        </div>
-        <div id="ptShort"></div>
+        <div class="h260"><canvas id="cMdMonthly"></canvas></div>
       </div>
       <div class="card card-inner">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">불량건수 Top 10 SKU</div>
-          <span class="bdg b-gray">신호등 등급</span>
+          <div style="font-size:14px;font-weight:700;color:var(--text);">불량유형 분포</div><span class="bdg b-red">건수 순</span>
         </div>
-        <div id="skuSignal"></div>
+        <div id="mdPareto"></div>
+      </div>
+    </div>
+    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">상세 분석</span><div class="sd-line"></div></div>
+    <div class="g2 mb16">
+      <div class="card card-inner">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);">불량유형 × 월별 추이</div><span class="bdg b-gray">Top 6 유형</span>
+        </div>
+        <div class="h260"><canvas id="cMdTypeMonth"></canvas></div>
+      </div>
+      <div class="card card-inner">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);">발생시점 분포</div><span class="bdg b-amber">구매 후 경과월</span>
+        </div>
+        <div class="h260"><canvas id="cMdTiming"></canvas></div>
+      </div>
+    </div>
+    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">채널 · 크리티컬</span><div class="sd-line"></div></div>
+    <div class="g2 mb16">
+      <div class="card card-inner">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);">채널별 불량 분포</div><span class="bdg b-gray">건수 · 비중</span>
+        </div>
+        <div class="h220"><canvas id="cMdChannel"></canvas></div>
       </div>
       <div class="card card-inner">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">불량률 Top 10</div>
-          <span class="bdg b-amber">판매수량 대비</span>
+          <div style="font-size:14px;font-weight:700;color:var(--text);">크리티컬 불량 현황</div><span class="bdg b-red">위험 유형</span>
         </div>
-        <div id="rateShort"></div>
+        <div id="mdCritical"></div>
       </div>
+    </div>
+    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">크리티컬 월별 추이</span><div class="sd-line"></div></div>
+    <div class="card mb16">
+      <div class="card-hd"><div class="card-hd-title">크리티컬 불량 월별 접수 추이</div><span class="bdg b-red">위험 유형 합산</span></div>
+      <div class="card-body"><div class="h220"><canvas id="cMdCritMonthly"></canvas></div></div>
     </div>
   </div>
-
-  <!-- ② 월별 트렌드 -->
-  <div class="pg" id="pg-1">
-    <div class="kpi-grid">
-      <div class="kpi-card"><div class="kpi-accent acc-red"></div><div class="kpi-lbl">최다 불량 월</div><div class="kpi-val sm" id="t-peak">—</div><div class="kpi-sub" id="t-peak-cnt">—</div></div>
-      <div class="kpi-card"><div class="kpi-accent acc-amber"></div><div class="kpi-lbl">월 평균 불량</div><div class="kpi-val" id="t-avg">—</div><div class="kpi-sub">건/월</div></div>
-      <div class="kpi-card"><div class="kpi-accent acc-blue"></div><div class="kpi-lbl">최근 월 불량</div><div class="kpi-val" id="t-latest">—</div><div class="kpi-sub" id="t-latest-sub">—</div></div>
-      <div class="kpi-card"><div class="kpi-accent acc-green"></div><div class="kpi-lbl">전월 대비</div><div class="kpi-val" id="t-mom">—</div><div class="kpi-sub" id="t-mom-sub">—</div></div>
-      <div class="kpi-card"><div class="kpi-accent acc-purple"></div><div class="kpi-lbl">누적 불량</div><div class="kpi-val" id="t-total">—</div><div class="kpi-sub">전체 기간</div></div>
-    </div>
-
-    <!-- 추이 분석 좌우 -->
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">추이 분석</span><div class="sd-line"></div></div>
-    <div class="g2 mb18">
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">월별 불량건수 + 추세선</div>
-          <span class="bdg b-gray">선형 회귀</span>
-        </div>
-        <div class="h280"><canvas id="cTrendLine"></canvas></div>
-      </div>
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">월별 MoM 변화</div>
-          <span class="bdg b-gray">전월 대비</span>
-        </div>
-        <div id="momList" style="max-height:280px;overflow-y:auto;"></div>
-      </div>
-    </div>
-
-    <!-- 품목별 월별 — 2x2 -->
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">품목별 월별 불량</span><div class="sd-line"></div></div>
-    <div class="g2 mb18">
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">📦 스타일러 · 월별 불량</div>
-          <span class="bdg b-blue">건수 + 불량률</span>
-        </div>
-        <div class="h240"><canvas id="cMonthCatStyler"></canvas></div>
-      </div>
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">💨 드라이기 · 월별 불량</div>
-          <span class="bdg b-red">건수 + 불량률</span>
-        </div>
-        <div class="h240"><canvas id="cMonthCatDryer"></canvas></div>
-      </div>
-    </div>
-    <div class="g2 mb18">
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">🌀 가전-선풍기 · 월별 불량</div>
-          <span class="bdg b-teal">건수 + 불량률</span>
-        </div>
-        <div class="h240"><canvas id="cMonthCatFan"></canvas></div>
-      </div>
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">🛁 가전-바디드라이어 · 월별 불량</div>
-          <span class="bdg b-purple">건수 + 불량률</span>
-        </div>
-        <div class="h240"><canvas id="cMonthCatBody"></canvas></div>
-      </div>
-    </div>
-
-    <!-- 불량건수 Top10 / 불량률 Top10 좌우 -->
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">모델별 추이</span><div class="sd-line"></div></div>
-    <div class="g2 mb18">
-      <div class="card">
-        <div class="card-hd">
-          <div class="card-hd-title">불량건수 Top 10 · 월별</div>
-          <span class="bdg b-red">건수 기준</span>
-        </div>
-        <div class="card-body" id="topCntModelWrap" style="display:flex;flex-direction:column;gap:10px;"></div>
-      </div>
-      <div class="card">
-        <div class="card-hd">
-          <div class="card-hd-title">불량률 Top 10 · 월별</div>
-          <span class="bdg b-amber">불량률 % 기준</span>
-        </div>
-        <div class="card-body" id="topRateModelWrap" style="display:flex;flex-direction:column;gap:10px;"></div>
-      </div>
-    </div>
-
-    <!-- 불량유형 추이 — 좌1~5위 / 우6~10위 개별차트 -->
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">불량유형별 추이</span><div class="sd-line"></div></div>
-    <div class="g2 mb18">
-      <div class="card">
-        <div class="card-hd">
-          <div class="card-hd-title">불량유형 1~5위 · 월별</div>
-          <span class="bdg b-red">개별 추이</span>
-        </div>
-        <div class="card-body" id="typeChartLeft" style="display:flex;flex-direction:column;gap:10px;"></div>
-      </div>
-      <div class="card">
-        <div class="card-hd">
-          <div class="card-hd-title">불량유형 6~10위 · 월별</div>
-          <span class="bdg b-gray">개별 추이</span>
-        </div>
-        <div class="card-body" id="typeChartRight" style="display:flex;flex-direction:column;gap:10px;"></div>
-      </div>
-    </div>
+  <div id="modelDetailEmpty" style="text-align:center;padding:80px 0;color:var(--text4);">
+    <div style="font-size:48px;margin-bottom:16px;opacity:.4;">◎</div>
+    <div style="font-size:16px;font-weight:700;color:var(--text3);">모델을 선택하세요</div>
+    <div style="font-size:13px;color:var(--text4);margin-top:8px;line-height:1.8;">좌측 검색창에 모델명을 입력하거나<br>카테고리별 드롭다운에서 선택하면<br>해당 모델의 세부 불량 분석을 확인할 수 있습니다</div>
   </div>
-
-  <!-- ③ SKU 분석 -->
-  <div class="pg" id="pg-2">
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">모델별 불량</span><div class="sd-line"></div></div>
-    <div class="g4 mb18">
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">모델별 불량 건수 Top 15</div>
-          <span class="bdg b-red">상위 3개 강조</span>
-        </div>
-        <div class="h320"><canvas id="cSkuBar"></canvas></div>
-      </div>
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">불량률 상위 모델</div>
-          <span class="bdg b-amber">판매 대비 %</span>
-        </div>
-        <div class="h320"><canvas id="cDefectRate"></canvas></div>
-      </div>
-    </div>
-
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">상세 현황</span><div class="sd-line"></div></div>
-    <div class="card mb18">
-      <div class="card-hd">
-        <div class="card-hd-title">모델별 불량 상세</div>
-        <span class="bdg b-red">🔴 ≥3%</span>
-        <span class="bdg b-amber">🟡 1~3%</span>
-        <span class="bdg b-green">🟢 &lt;1%</span>
-      </div>
-      <div class="card-body" style="padding:0;">
-        <div class="tbl-wrap">
-          <table>
-            <thead><tr><th>순위</th><th>모델명</th><th>품목</th><th>분류</th><th class="tr">불량건수</th><th class="tr">판매수량</th><th class="tr">불량률</th><th>등급</th><th>비중</th></tr></thead>
-            <tbody id="skuBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">심화 분석</span><div class="sd-line"></div></div>
-    <div class="g2">
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">판매수량 vs 불량률 분포</div>
-          <span class="bdg b-gray">Top 10 모델</span>
-        </div>
-        <div class="h240"><canvas id="cSkuScatter"></canvas></div>
-      </div>
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">모델별 발생 시점 분포</div>
-          <span class="bdg b-amber">Top 8</span>
-        </div>
-        <div class="h240"><canvas id="cSkuTiming"></canvas></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ④ 불량유형 -->
-  <div class="pg" id="pg-3">
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">불량유형 분석</span><div class="sd-line"></div></div>
-    <div class="g2 mb18">
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">불량유형 순위 (전체)</div>
-          <span class="bdg b-red">건수 순 · 누적%</span>
-        </div>
-        <div id="ptFull"></div>
-      </div>
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">불량률 높은 유형 Top 10</div>
-          <span class="bdg b-amber">판매수량 대비</span>
-        </div>
-        <div id="ptByRate"></div>
-      </div>
-    </div>
-    <div class="card mb18">
-      <div class="card-hd">
-        <div class="card-hd-title">불량유형 분포</div>
-        <span class="bdg b-blue">Top 12 · 건수 비중</span>
-      </div>
-      <div class="card-body">
-        <div id="defectDistWrap" style="position:relative;"><canvas id="cDefectBar"></canvas></div>
-      </div>
-    </div>
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">교차 분석</span><div class="sd-line"></div></div>
-    <div class="card mb18">
-      <div class="card-hd">
-        <div class="card-hd-title">품목 × 불량유형 매트릭스</div>
-        <span class="bdg b-gray">셀 색상 = 강도</span>
-      </div>
-      <div class="card-body" style="padding:0 22px 18px;">
-        <div class="tbl-wrap" id="matrixWrap"></div>
-      </div>
-    </div>
-    <div class="g2">
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">불량유형별 발생 시점</div>
-          <span class="bdg b-amber">Top 8</span>
-        </div>
-        <div class="h280"><canvas id="cDefectTiming"></canvas></div>
-      </div>
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">불량유형 × 채널</div>
-          <span class="bdg b-gray">Top 6 유형</span>
-        </div>
-        <div class="h280"><canvas id="cDefectChannel"></canvas></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ⑤ 긴급·크리티컬 -->
-  <div class="pg" id="pg-4">
-    <div class="kpi-grid" id="critKpiGrid"></div>
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">크리티컬 불량 현황</span><div class="sd-line"></div></div>
-    <div class="g2 mb18">
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">크리티컬 유형별 건수</div>
-          <span class="bdg b-red">건수 기준</span>
-        </div>
-        <div id="critTypeWrap" style="position:relative;"><canvas id="cCritType"></canvas></div>
-      </div>
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">크리티컬 월별 추이</div>
-          <span class="bdg b-red">접수일 기준</span>
-        </div>
-        <div class="h240"><canvas id="cCritMonthly"></canvas></div>
-      </div>
-    </div>
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">이상 급증 감지</span><div class="sd-line"></div></div>
-    <div class="card mb18">
-      <div class="card-hd">
-        <div class="card-hd-title">⚡ 이상 급증 모델</div>
-        <span class="bdg b-red">전월 대비 200% 이상 증가</span>
-      </div>
-      <div class="card-body" style="padding:0 22px 18px;"><div id="spikeList"></div></div>
-    </div>
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">크리티컬 상세</span><div class="sd-line"></div></div>
-    <div class="g2">
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">크리티컬 모델별 건수</div>
-          <span class="bdg b-gray">Top 10</span>
-        </div>
-        <div class="h280"><canvas id="cCritModel"></canvas></div>
-      </div>
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:800;color:var(--text);">크리티컬 채널별 분포</div>
-          <span class="bdg b-gray">건수 · 비중</span>
-        </div>
-        <div class="h280"><canvas id="cCritChannel"></canvas></div>
-      </div>
-    </div>
-
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">크리티컬 발생시점 분포</span><div class="sd-line"></div></div>
-    <div class="card mb18">
-      <div class="card-hd">
-        <div class="card-hd-title">크리티컬 불량 모델별 발생시점 분포</div>
-        <span class="bdg b-amber">건수 · 비율</span>
-      </div>
-      <div class="card-body">
-        <div id="cCritModelTimingWrap" style="position:relative;"><canvas id="cCritModelTiming"></canvas></div>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- ⑥ 모델 상세 -->
-  <div class="pg" id="pg-5">
-    <div style="margin-bottom:18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-      <select id="modelSelect" onchange="onModelSelect(this.value)"
-        style="padding:8px 18px;border-radius:10px;border:1.5px solid rgba(123,45,139,.2);background:#fff;color:var(--text);font-size:14px;font-weight:700;font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;cursor:pointer;outline:none;height:40px;min-width:240px;">
-        <option value="">모델을 선택하세요</option>
-      </select>
-      <span id="modelDetailBadge" style="display:none;"></span>
-    </div>
-    <div id="modelDetailContent" style="display:none;">
-      <!-- KPI -->
-      <div class="kpi-grid" id="mdKpiGrid"></div>
-      <!-- 월별 추이 + 불량유형 파레토 -->
-      <div class="sd"><div class="sd-line"></div><span class="sd-lbl">월별 추이</span><div class="sd-line"></div></div>
-      <div class="g2 mb18">
-        <div class="card card-inner">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-            <div style="font-size:14px;font-weight:800;color:var(--text);">월별 불량 추이</div>
-            <span class="bdg b-blue">건수 + 불량률</span>
-          </div>
-          <div class="h260"><canvas id="cMdMonthly"></canvas></div>
-        </div>
-        <div class="card card-inner">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-            <div style="font-size:14px;font-weight:800;color:var(--text);">불량유형 분포</div>
-            <span class="bdg b-red">건수 순</span>
-          </div>
-          <div id="mdPareto"></div>
-        </div>
-      </div>
-      <!-- 불량유형 x 월별 + 발생시점 -->
-      <div class="sd"><div class="sd-line"></div><span class="sd-lbl">상세 분석</span><div class="sd-line"></div></div>
-      <div class="g2 mb18">
-        <div class="card card-inner">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-            <div style="font-size:14px;font-weight:800;color:var(--text);">불량유형 × 월별 추이</div>
-            <span class="bdg b-gray">Top 6 유형</span>
-          </div>
-          <div class="h260"><canvas id="cMdTypeMonth"></canvas></div>
-        </div>
-        <div class="card card-inner">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-            <div style="font-size:14px;font-weight:800;color:var(--text);">발생시점 분포</div>
-            <span class="bdg b-amber">구매 후 경과월</span>
-          </div>
-          <div class="h260"><canvas id="cMdTiming"></canvas></div>
-        </div>
-      </div>
-      <!-- 채널별 -->
-      <div class="sd"><div class="sd-line"></div><span class="sd-lbl">채널 분석</span><div class="sd-line"></div></div>
-      <div class="g2 mb18">
-        <div class="card card-inner">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-            <div style="font-size:14px;font-weight:800;color:var(--text);">채널별 불량 분포</div>
-            <span class="bdg b-gray">건수 · 비중</span>
-          </div>
-          <div class="h220"><canvas id="cMdChannel"></canvas></div>
-        </div>
-        <div class="card card-inner">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-            <div style="font-size:14px;font-weight:800;color:var(--text);">크리티컬 불량 현황</div>
-            <span class="bdg b-red">위험 유형</span>
-          </div>
-          <div id="mdCritical"></div>
-        </div>
-      </div>
-    </div>
-    <div id="modelDetailEmpty" style="text-align:center;padding:80px 0;color:var(--text4);">
-      <div style="font-size:48px;margin-bottom:16px;">🔎</div>
-      <div style="font-size:16px;font-weight:600;">상단에서 모델을 선택하세요</div>
-      <div style="font-size:13px;margin-top:8px;">불량건수 순으로 정렬된 모델 목록에서 선택하면<br>해당 모델의 세부 불량 분석을 확인할 수 있습니다</div>
-    </div>
-  </div>
+</div>
 
 </div><!-- /main -->
 
+<!-- 로딩 카운트다운 (숨김 - 상단바로 대체) -->
+<div id="loading-wrap" style="display:none;"></div>
+<div id="loading-msg" style="display:none;"></div>
+<div id="loading-sec" style="display:none;"></div>
+<div id="loading-bar-wrap" style="display:none;"></div>
+<!-- 사이드바 KPI (JS 호환용) -->
+<span id="sb-total" style="display:none;"></span>
+<span id="sb-rate" style="display:none;"></span>
+
 <script>
+
 Chart.register(ChartDataLabels);
 
 const APPS_URL='https://script.google.com/macros/s/AKfycbxptR6SFm9KRqPm6KA5KQZiDWZoQqyQAPvDq1WZ-3mCq5ocpQGFpCvad8B-fI88MsHw/exec';
@@ -766,31 +632,19 @@ const FILTER={year:'all',quarter:'all',month:'all'};
 // ── 로딩 카운트다운 ──
 let loadTimer=null;
 function startLoadingUI(){
-  const wrap=document.getElementById('loading-wrap');
-  wrap.style.display='block';
+  const overlay=document.getElementById('loading-overlay');
   const bar=document.getElementById('loading-bar');
-  const sec=document.getElementById('loading-sec');
-  const msgs=['📡 Google Sheets 연결 중...','⚙️ 데이터 처리 중...','📊 차트 렌더링 준비...','✅ 거의 완료...'];
-  let elapsed=0; const total=20;
-  bar.style.transition='none'; bar.style.width='0%';
-  setTimeout(()=>{ bar.style.transition='width .9s linear'; },50);
-  let mi=0;
-  document.getElementById('loading-msg').textContent=msgs[0];
-  loadTimer=setInterval(()=>{
-    elapsed++;
-    const pct=Math.min(elapsed/total*100,98);
-    bar.style.width=pct+'%';
-    sec.textContent=(total-elapsed)>0?(total-elapsed)+'s':'...';
-    const ni=Math.floor(elapsed/(total/msgs.length));
-    if(ni!==mi&&ni<msgs.length){ mi=ni; document.getElementById('loading-msg').textContent=msgs[ni]; }
-    if(elapsed>=total) clearInterval(loadTimer);
-  },1000);
+  if(overlay) overlay.style.display='block';
+  if(bar){ bar.style.transition='none'; bar.style.width='0%';
+    setTimeout(()=>{ bar.style.transition='width 18s linear'; bar.style.width='90%'; },50); }
+  loadTimer=setTimeout(()=>{},20000);
 }
 function stopLoadingUI(){
-  if(loadTimer) clearInterval(loadTimer);
+  if(loadTimer) clearTimeout(loadTimer);
+  const overlay=document.getElementById('loading-overlay');
   const bar=document.getElementById('loading-bar');
-  bar.style.transition='width .3s ease'; bar.style.width='100%';
-  setTimeout(()=>{ document.getElementById('loading-wrap').style.display='none'; bar.style.width='0%'; },600);
+  if(bar){ bar.style.transition='width .2s ease'; bar.style.width='100%'; }
+  setTimeout(()=>{ if(overlay) overlay.style.display='none'; if(bar) bar.style.width='0%'; },400);
 }
 
 // ── 데이터 로드 ──
@@ -820,8 +674,7 @@ function getPageRender(i){ return[renderOverview,renderTrend,renderSKU,renderDef
 
 function showPg(i,el){
   document.querySelectorAll('.pg').forEach((p,j)=>p.classList.toggle('on',i===j));
-  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',i===j));
-  document.getElementById('topTitle').innerHTML=PG_TITLES[i]+' <span id="topSub"></span>';
+  document.querySelectorAll('.nav-tab').forEach((b,j)=>b.classList.toggle('on',i===j));
   renderWithFilter(getPageRender(i));
 }
 
@@ -1602,12 +1455,40 @@ function buildModelSelect(){
   if(!sel||!G) return;
   const cur=sel.value;
   sel.innerHTML='<option value="">모델을 선택하세요</option>';
+  const mcat=buildModelCat();
+  const catGroups={};
   Object.keys(G.summary.byModel).forEach(m=>{
-    const opt=document.createElement('option');
-    opt.value=m; opt.textContent=m+' ('+G.summary.byModel[m]+'건)';
-    sel.appendChild(opt);
+    const cat=mcat[m]||'기타';
+    if(!catGroups[cat]) catGroups[cat]=[];
+    catGroups[cat].push(m);
+  });
+  Object.keys(catGroups).sort().forEach(cat=>{
+    const grp=document.createElement('optgroup');
+    grp.label=cat+' ('+catGroups[cat].length+'개)';
+    catGroups[cat].forEach(m=>{
+      const opt=document.createElement('option');
+      opt.value=m; opt.textContent=m+' ('+G.summary.byModel[m]+'건)';
+      grp.appendChild(opt);
+    });
+    sel.appendChild(grp);
   });
   if(cur) sel.value=cur;
+  // 검색 필터 연동
+  filterModelOptions('');
+}
+
+function filterModelOptions(q){
+  const sel=document.getElementById('modelSelect');
+  if(!sel) return;
+  const query=q.toLowerCase();
+  Array.from(sel.querySelectorAll('option')).forEach(opt=>{
+    if(!opt.value){opt.style.display='';return;}
+    opt.style.display=(!query||opt.value.toLowerCase().includes(query)||opt.textContent.toLowerCase().includes(query))?'':'none';
+  });
+  Array.from(sel.querySelectorAll('optgroup')).forEach(grp=>{
+    const visible=Array.from(grp.querySelectorAll('option')).some(o=>o.style.display!=='none');
+    grp.style.display=visible?'':'none';
+  });
 }
 
 function onModelSelect(model){
@@ -1741,8 +1622,30 @@ function renderModelDetail(s, selectedModel){
 
   const critItems=typeSorted.filter(([t])=>CRITICAL_TYPES.includes(t));
   document.getElementById('mdCritical').innerHTML=critItems.length
-    ?critItems.map(([t,v])=>'<div style="display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--border2);"><span style="font-size:18px;">⚡</span><div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--red)">'+t+'</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">'+v+'건 · 전체의 '+pct(v,total)+'%</div></div><span class="bdg b-red">'+v+'건</span></div>').join('')
+    ?critItems.map(([t,v])=>'<div style="display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--border2);"><span style="font-size:16px;">⚡</span><div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--red)">'+t+'</div><div style="font-size:12px;color:var(--text3);margin-top:2px;">'+v+'건 · 전체의 '+pct(v,total)+'%</div></div><span class="bdg b-red">'+v+'건</span></div>').join('')
     :'<div style="padding:20px;text-align:center;color:var(--green);font-weight:600;">✅ 크리티컬 불량 없음</div>';
+
+  // 크리티컬 월별 추이
+  dpg(['cMdCritMonthly']);
+  const critMonData={}; months.forEach(m=>{critMonData[m]=0;});
+  mDefects.filter(d=>CRITICAL_TYPES.includes(d.defectDetail)).forEach(d=>{
+    if(!d.receiptDate) return;
+    const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
+    if(critMonData[ym]!==undefined) critMonData[ym]+=d.qty;
+  });
+  const critMonVals=months.map(m=>critMonData[m]||0);
+  const ctxCM=document.getElementById('cMdCritMonthly');
+  if(ctxCM){ charts['cMdCritMonthly']=new Chart(ctxCM,{type:'bar',data:{labels:mL,datasets:[{
+    data:critMonVals,backgroundColor:'rgba(192,57,43,0.75)',borderRadius:5,
+    datalabels:{display:true,anchor:'end',align:'end',clamp:true,offset:3,
+      color:'#C0392B',font:{family:'JetBrains Mono',weight:'700',size:11},
+      formatter:v=>v>0?fmt(v):''}
+  }]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},
+    plugins:{legend:{display:false},datalabels:{}},
+    scales:{x:{grid:{display:false},ticks:{font:{family:'Pretendard',size:10}}},
+      y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}},
+        suggestedMax:Math.max(...critMonVals,1)*1.5}},
+    layout:{padding:{top:24,right:8}}}}); }
 }
 // ── 불량률 Top 리스트 ──
 function renderRateTop(elId,s,limit){
@@ -1996,6 +1899,7 @@ function getMock(){
 }
 setInterval(loadData, REFRESH_MIN*60*1000);
 window.addEventListener('DOMContentLoaded', ()=>{ loadData(); });
+
 </script>
 </body>
 </html>
