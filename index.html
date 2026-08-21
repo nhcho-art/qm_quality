@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v5.5</title>
+<title>JMW Quality Dashboard v5.6</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -175,10 +175,10 @@ tbody tr:hover td{background:#FDFCFE;}
 .mfg-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}
 .mfg-card{background:#FDFCFE;border:1px solid var(--border);border-radius:10px;padding:12px 14px;text-align:center;display:flex;flex-direction:column;align-items:center;}
 .mfg-name{font-size:11px;color:var(--text3);font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.3px;}
-.mfg-donut-wrap{position:relative;width:80px;height:80px;margin:0 auto;}
-.mfg-donut-wrap canvas{width:80px!important;height:80px!important;}
+.mfg-donut-wrap{position:relative;width:110px;height:110px;margin:0 auto;}
+.mfg-donut-wrap canvas{width:110px!important;height:110px!important;}
 .mfg-donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;}
-.mfg-donut-cnt{font-size:16px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;color:var(--text);}
+.mfg-donut-cnt{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;color:var(--text);}
 .mfg-donut-label{font-size:9px;color:var(--text4);font-weight:600;margin-top:2px;}
 .mfg-rate-row{margin-top:8px;display:flex;flex-direction:column;gap:2px;width:100%;}
 .mfg-rate-item{display:flex;justify-content:space-between;align-items:center;font-size:11px;}
@@ -278,7 +278,7 @@ tbody tr:hover td{background:#FDFCFE;}
   <span class="flabel" id="periodLabel">연간</span>
   <div class="ver-dropdown-wrap">
     <div class="ver-chip" onclick="toggleVerDropdown(this)" id="verChip">
-      <span>v5.5</span>
+      <span>v5.6</span>
       <span class="ver-arrow">▼</span>
     </div>
     <div class="ver-dropdown" id="verDropdown">
