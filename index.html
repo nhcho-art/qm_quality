@@ -3,80 +3,83 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v3.8</title>
+<title>JMW Quality Dashboard v4.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --navy:#0F1E3C;--blue:#2563EB;--teal:#0D9488;--amber:#D97706;
-  --red:#DC2626;--green:#16A34A;--purple:#7C3AED;--orange:#EA580C;
-  --bg:#F0F4F8;--card:#FFFFFF;--card2:#F8FAFC;
-  --border:#CBD5E1;--border2:#E2E8F0;
-  --text:#0F172A;--text2:#334155;--text3:#64748B;--text4:#94A3B8;
-  --sb-w:220px;--sh:0 1px 4px rgba(0,0,0,.08),0 6px 20px rgba(0,0,0,.05);--r:14px;
+  --navy:#1A0A2E;--blue:#2563EB;--teal:#0D9488;--amber:#D97706;
+  --red:#C0392B;--green:#16A34A;--purple:#7B2D8B;--purple2:#9B4DB0;--purple3:#F3E8F7;
+  --orange:#EA580C;
+  --bg:#F5F4F8;--card:#FFFFFF;--card2:#FAFAFA;
+  --border:rgba(0,0,0,.07);--border2:rgba(0,0,0,.04);
+  --text:#1A0A2E;--text2:#3D2B50;--text3:#7B6B8D;--text4:#B0A0C0;
+  --sb-w:220px;
+  --sh:0 2px 12px rgba(123,45,139,.07),0 1px 3px rgba(0,0,0,.04);
+  --r:14px;
 }
-body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;display:flex;min-height:100vh;overflow-x:hidden;}
+body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;display:flex;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
 
 /* ── 사이드바 ── */
-.sidebar{width:var(--sb-w);min-height:100vh;background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;overflow-y:auto;}
-.sb-logo{padding:24px 20px 16px;border-bottom:1px solid rgba(255,255,255,.1);}
-.sb-logo .brand{font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:9px;}
-.sb-logo .dot{width:9px;height:9px;background:var(--red);border-radius:50%;box-shadow:0 0 10px rgba(220,38,38,.7);}
-.sb-logo .sub{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;font-family:'JetBrains Mono',monospace;}
-.sb-nav{flex:1;padding:10px;display:flex;flex-direction:column;gap:2px;}
-.sb-sec{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1.2px;text-transform:uppercase;padding:12px 10px 5px;}
-.nb{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:9px;border:none;background:transparent;color:rgba(255,255,255,.55);font-size:13px;font-weight:500;font-family:'Noto Sans KR',sans-serif;cursor:pointer;transition:all .15s;width:100%;text-align:left;}
-.nb:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9);}
-.nb.on{background:rgba(220,38,38,.22);color:#fff;font-weight:700;}
-.nb.on .nbi{color:#FCA5A5;}
-.nbi{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.sidebar{width:var(--sb-w);min-height:100vh;background:#fff;border-right:1px solid rgba(123,45,139,.1);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;overflow-y:auto;}
+.sb-logo{padding:22px 18px 14px;border-bottom:1px solid rgba(123,45,139,.08);}
+.sb-logo .brand{font-size:16px;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:9px;}
+.sb-logo .dot{width:8px;height:8px;background:var(--purple);border-radius:50%;box-shadow:0 0 8px rgba(123,45,139,.5);}
+.sb-logo .sub{font-size:10px;color:var(--text4);margin-top:3px;font-family:'JetBrains Mono',monospace;}
+.sb-nav{flex:1;padding:10px;display:flex;flex-direction:column;gap:1px;}
+.sb-sec{font-size:9px;font-weight:700;color:var(--text4);letter-spacing:1.4px;text-transform:uppercase;padding:14px 10px 5px;}
+.nb{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;border:none;background:transparent;color:var(--text3);font-size:13px;font-weight:500;font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;cursor:pointer;transition:all .15s;width:100%;text-align:left;}
+.nb:hover{background:var(--purple3);color:var(--purple);}
+.nb.on{background:var(--purple3);color:var(--purple);font-weight:700;}
+.nb.on .nbi{color:var(--purple);}
+.nbi{font-size:14px;width:20px;text-align:center;flex-shrink:0;}
 
 /* 사이드바 로딩 카운트다운 */
-#loading-wrap{margin:10px 4px 0;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;display:none;}
+#loading-wrap{margin:10px 4px 0;padding:10px 12px;background:var(--purple3);border:1px solid rgba(123,45,139,.12);border-radius:10px;display:none;}
 #loading-wrap .lw-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
-#loading-msg{font-size:10px;color:rgba(255,255,255,.5);font-family:'Noto Sans KR',sans-serif;line-height:1.4;flex:1;}
-#loading-sec{font-size:12px;font-weight:700;color:rgba(255,255,255,.7);font-family:'JetBrains Mono',monospace;flex-shrink:0;margin-left:6px;}
-#loading-bar-wrap{height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+#loading-msg{font-size:10px;color:var(--text3);font-family:'Noto Sans KR',sans-serif;line-height:1.4;flex:1;}
+#loading-sec{font-size:12px;font-weight:700;color:var(--purple);font-family:'JetBrains Mono',monospace;flex-shrink:0;margin-left:6px;}
+#loading-bar-wrap{height:8px;background:rgba(123,45,139,.1);border-radius:4px;overflow:hidden;}
 #loading-bar{height:100%;width:0%;border-radius:4px;background:linear-gradient(90deg,#1D4ED8 0%,#2563EB 20%,#06B6D4 40%,#10B981 55%,#84CC16 68%,#FACC15 78%,#F97316 88%,#EF4444 100%);transition:width .9s linear;}
 
 /* 버전 히스토리 */
 .sb-ver{padding:10px 12px;border-top:1px solid rgba(255,255,255,.08);}
-.ver-latest{background:rgba(220,38,38,.2);border:1px solid rgba(220,38,38,.4);border-radius:8px;padding:8px 10px;margin-bottom:6px;}
-.ver-tag{font-size:10px;font-weight:800;color:#FCA5A5;font-family:'JetBrains Mono',monospace;}
-.ver-new{font-size:9px;background:rgba(220,38,38,.5);color:#fff;padding:1px 6px;border-radius:10px;font-weight:700;margin-left:4px;}
+.ver-latest{background:var(--purple3);border:1px solid rgba(123,45,139,.2);border-radius:8px;padding:8px 10px;margin-bottom:6px;}
+.ver-tag{font-size:10px;font-weight:800;color:var(--purple);font-family:'JetBrains Mono',monospace;}
+.ver-new{font-size:9px;background:var(--purple);color:#fff;padding:1px 6px;border-radius:10px;font-weight:700;margin-left:4px;}
 .ver-desc{font-size:10px;color:rgba(255,255,255,.8);font-weight:700;margin-top:2px;}
-.ver-hist-btn{width:100%;display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px 10px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
-.ver-hist-btn span{font-size:10px;color:rgba(255,255,255,.5);font-weight:700;}
+.ver-hist-btn{width:100%;display:flex;justify-content:space-between;align-items:center;background:var(--card2);border:1px solid rgba(123,45,139,.1);border-radius:7px;padding:6px 10px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.ver-hist-btn span{font-size:10px;color:var(--text3);font-weight:700;}
 .ver-hist-btn .arrow{font-size:9px;color:rgba(255,255,255,.4);}
-.ver-hist-body{display:none;margin-top:4px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:8px 10px;font-size:9px;color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;line-height:1.8;}
-.ver-hist-body .vh{color:rgba(255,255,255,.6);font-weight:700;margin-bottom:3px;}
+.ver-hist-body{display:none;margin-top:4px;background:var(--card2);border:1px solid rgba(123,45,139,.08);border-radius:7px;padding:8px 10px;font-size:9px;color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;line-height:1.8;color:var(--text3)}
+.ver-hist-body .vh{color:var(--purple);font-weight:700;margin-bottom:3px;}
 .ver-hist-body .vh+.vh{margin-top:6px;}
 
 /* 사이드바 푸터 */
 .sb-footer{padding:14px 16px;border-top:1px solid rgba(255,255,255,.1);}
 .sb-kpi{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;}
-.sb-kpi-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 10px;}
-.sb-kpi-v{font-size:15px;font-weight:700;color:#fff;font-family:'JetBrains Mono',monospace;display:block;}
-.sb-kpi-l{font-size:9px;color:rgba(255,255,255,.35);display:block;margin-top:2px;}
-.sb-updated{font-size:10px;color:rgba(255,255,255,.22);text-align:center;font-family:'JetBrains Mono',monospace;}
-.sb-auto{font-size:9px;color:rgba(255,255,255,.18);text-align:center;margin-top:3px;font-family:'JetBrains Mono',monospace;}
+.sb-kpi-item{background:var(--purple3);border:1px solid rgba(123,45,139,.12);border-radius:8px;padding:8px 10px;}
+.sb-kpi-v{font-size:15px;font-weight:700;color:var(--purple);font-family:'JetBrains Mono',monospace;display:block;}
+.sb-kpi-l{font-size:9px;color:var(--text3);display:block;margin-top:2px;}
+.sb-updated{font-size:10px;color:var(--text4);text-align:center;font-family:'JetBrains Mono',monospace;}
+.sb-auto{font-size:9px;color:var(--text4);text-align:center;margin-top:3px;font-family:'JetBrains Mono',monospace;}
 
 /* ── 메인 ── */
 .main{margin-left:var(--sb-w);flex:1;display:flex;flex-direction:column;}
-.topbar{background:var(--card);border-bottom:2px solid var(--border);padding:0 28px;display:flex;align-items:center;gap:10px;height:56px;position:sticky;top:0;z-index:50;box-shadow:var(--sh);}
+.topbar{background:#fff;border-bottom:1px solid rgba(123,45,139,.08);padding:0 28px;display:flex;align-items:center;gap:10px;height:52px;position:sticky;top:0;z-index:50;box-shadow:0 1px 8px rgba(123,45,139,.06);}
 .topbar-title{font-size:15px;font-weight:800;color:var(--text);flex:1;}
 .topbar-title span{color:var(--text3);font-weight:400;font-size:12px;margin-left:6px;}
 .tbtn{padding:6px 14px;border-radius:7px;border:1.5px solid var(--border);background:transparent;color:var(--text2);font-size:12px;font-family:'Noto Sans KR',sans-serif;cursor:pointer;font-weight:600;}
-.tbtn.primary{background:var(--navy);color:#fff;border-color:var(--navy);}
+.tbtn.primary{background:var(--purple);color:#fff;border-color:var(--purple);}
 
 /* 필터 period-bar */
-.period-bar{background:var(--card);border-bottom:1.5px solid var(--border);padding:0 28px;display:flex;align-items:center;gap:4px;height:44px;}
+.period-bar{background:#fff;border-bottom:1px solid rgba(123,45,139,.06);padding:0 28px;display:flex;align-items:center;gap:4px;height:44px;}
 .ptab{padding:5px 14px;border-radius:20px;border:1.5px solid transparent;font-size:13px;font-weight:600;font-family:'Noto Sans KR',sans-serif;cursor:pointer;background:transparent;color:var(--text3);transition:all .15s;}
 .ptab:hover{background:#F1F5F9;color:var(--text2);}
-.ptab.on{background:var(--red);color:#fff;border-color:var(--red);}
+.ptab.on{background:var(--purple);color:#fff;border-color:var(--purple);}
 .period-label{font-size:12px;color:var(--text3);margin-left:auto;font-family:'JetBrains Mono',monospace;}
 .period-sep{width:1px;height:20px;background:var(--border2);margin:0 4px;}
 
@@ -85,9 +88,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .pg.on{display:block;}
 
 /* 카드 */
-.card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);}
+.card{background:#fff;border:1px solid rgba(123,45,139,.07);border-radius:var(--r);box-shadow:var(--sh);}
 .card-inner{padding:20px 22px;}
-.card-hd{padding:14px 22px 12px;background:var(--card2);border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.card-hd{padding:14px 22px 12px;background:#FDFCFE;border-bottom:1px solid rgba(123,45,139,.06);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .card-hd-title{font-size:14px;font-weight:800;color:var(--text);flex:1;}
 .card-body{padding:18px 22px;}
 
@@ -117,10 +120,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 
 /* KPI 그리드 */
 .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:18px;}
-.kpi-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);padding:16px 18px;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s;}
-.kpi-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(15,30,60,.14);}
+.kpi-card{background:#fff;border:1px solid rgba(123,45,139,.07);border-radius:var(--r);box-shadow:var(--sh);padding:16px 18px;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s;}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(123,45,139,.13);}
 .kpi-accent{position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0;}
-.acc-red{background:var(--red)}.acc-amber{background:var(--amber)}.acc-blue{background:var(--blue)}
+.acc-red{background:#C0392B}.acc-amber{background:var(--amber)}.acc-blue{background:var(--blue)}
 .acc-green{background:var(--green)}.acc-purple{background:var(--purple)}.acc-teal{background:var(--teal)}
 .kpi-lbl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;}
 .kpi-val{font-size:26px;font-weight:800;color:var(--text);font-family:'JetBrains Mono',monospace;line-height:1;}
@@ -150,13 +153,13 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 /* 섹션 구분선 */
 .sd{display:flex;align-items:center;gap:10px;margin:4px 0 14px;}
 .sd-line{flex:1;height:1.5px;background:var(--border2);}
-.sd-lbl{font-size:10.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;}
+.sd-lbl{font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;opacity:.8;}
 
 /* 테이블 */
 .tbl-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:13px;}
-thead th{background:var(--card2);padding:9px 13px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text3);border-bottom:2px solid var(--border);white-space:nowrap;}
-tbody td{padding:9px 13px;border-bottom:1.5px solid var(--border2);}
+thead th{background:#FDFCFE;padding:9px 13px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text3);border-bottom:1px solid rgba(123,45,139,.1);white-space:nowrap;}
+tbody td{padding:9px 13px;border-bottom:1px solid var(--border2);}
 tbody tr:last-child td{border-bottom:none;}
 tbody tr:hover td{background:var(--card2);}
 .mono{font-family:'JetBrains Mono',monospace;font-weight:700;}
@@ -167,7 +170,7 @@ tbody tr:hover td{background:var(--card2);}
 .pt-item:last-child{border-bottom:none;}
 .pt-name{font-size:12px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text2);}
 .pt-bar{flex:1.2;height:5px;background:var(--border2);border-radius:3px;overflow:hidden;}
-.pt-fill{height:100%;background:var(--red);border-radius:3px;}
+.pt-fill{height:100%;background:var(--purple);border-radius:3px;}
 .pt-cnt{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;min-width:26px;text-align:right;}
 .pt-pct{font-size:10.5px;color:var(--text3);font-family:'JetBrains Mono',monospace;min-width:36px;text-align:right;}
 .pt-cum{font-size:10.5px;color:var(--blue);font-family:'JetBrains Mono',monospace;min-width:38px;text-align:right;}
@@ -188,7 +191,7 @@ tbody tr:hover td{background:var(--card2);}
 
 /* 생산분류 카드 */
 .mfg-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}
-.mfg-card{background:var(--card2);border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center;}
+.mfg-card{background:#FDFCFE;border:1px solid rgba(123,45,139,.08);border-radius:10px;padding:14px 16px;text-align:center;}
 .mfg-name{font-size:11px;color:var(--text3);font-weight:700;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;}
 .mfg-cnt{font-size:28px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;}
 .mfg-rate{font-size:11px;color:var(--text4);margin-top:4px;}
@@ -196,7 +199,7 @@ tbody tr:hover td{background:var(--card2);}
 /* 스크롤바 */
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+::-webkit-scrollbar-thumb{background:rgba(123,45,139,.2);border-radius:3px;}
 
 @media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(3,1fr);}}
 @media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.g2,.g3,.g3b,.g4{grid-template-columns:1fr;}}
@@ -207,7 +210,7 @@ tbody tr:hover td{background:var(--card2);}
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="brand"><span class="dot"></span>JMW Quality</div>
-    <div class="sub">Quality Dashboard v3.8</div>
+    <div class="sub">Quality Dashboard v4.0</div>
   </div>
   <nav class="sb-nav">
     <div class="sb-sec">품질 모니터링</div>
@@ -216,6 +219,7 @@ tbody tr:hover td{background:var(--card2);}
     <button class="nb" onclick="showPg(2,this)"><span class="nbi">🔍</span>SKU 분석</button>
     <button class="nb" onclick="showPg(3,this)"><span class="nbi">⚠️</span>불량유형</button>
     <button class="nb" onclick="showPg(4,this)"><span class="nbi">🚨</span>긴급·크리티컬</button>
+    <button class="nb" onclick="showPg(5,this)"><span class="nbi">🔎</span>모델 상세</button>
 
     <!-- 로딩 카운트다운 -->
     <div id="loading-wrap">
@@ -231,16 +235,23 @@ tbody tr:hover td{background:var(--card2);}
   <div class="sb-ver">
     <div class="ver-latest">
       <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;">
-        <span class="ver-tag">v3.8</span>
+        <span class="ver-tag">v4.0</span>
         <span class="ver-new">NEW</span>
       </div>
-      <div class="ver-desc">🔧 발생시점 datalabel 버그 수정</div>
+      <div class="ver-desc">✨ 전체 디자인 리뉴얼 + 데이터 확장 + 모델 상세 탭</div>
     </div>
     <button class="ver-hist-btn" onclick="const b=this.nextElementSibling;b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.arrow').textContent=b.style.display==='block'?'▲':'▼';">
       <span>📋 전체 업데이트 내역</span>
       <span class="arrow">▼</span>
     </button>
     <div class="ver-hist-body">
+      <div class="vh">v4.0 · 2026.08</div>
+      <div>· 전체 디자인 리뉴얼 (보라 아이덴티티)</div>
+      <div>· Pretendard 폰트 · 차트 그리드 제거</div>
+      <div>· 실데이터 모델/품목/불량유형 반영</div>
+      <div>· 가전-선풍기/바디드라이어 탭 추가</div>
+      <div>· 모델 상세 탭 신설</div>
+      <div>· CRITICAL_TYPES 3개 추가</div>
       <div class="vh">v3.8 · 2026.06</div>
       <div>· 발생시점 datalabel display:false 버그 수정</div>
       <div>· 건수(비율%) 바 안/바깥 자동 분기</div>
@@ -415,7 +426,7 @@ tbody tr:hover td{background:var(--card2);}
       </div>
     </div>
 
-    <!-- 스타일러 / 드라이기 좌우 -->
+    <!-- 품목별 월별 — 2x2 -->
     <div class="sd"><div class="sd-line"></div><span class="sd-lbl">품목별 월별 불량</span><div class="sd-line"></div></div>
     <div class="g2 mb18">
       <div class="card card-inner">
@@ -431,6 +442,22 @@ tbody tr:hover td{background:var(--card2);}
           <span class="bdg b-red">건수 + 불량률</span>
         </div>
         <div class="h240"><canvas id="cMonthCatDryer"></canvas></div>
+      </div>
+    </div>
+    <div class="g2 mb18">
+      <div class="card card-inner">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:14px;font-weight:800;color:var(--text);">🌀 가전-선풍기 · 월별 불량</div>
+          <span class="bdg b-teal">건수 + 불량률</span>
+        </div>
+        <div class="h240"><canvas id="cMonthCatFan"></canvas></div>
+      </div>
+      <div class="card card-inner">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:14px;font-weight:800;color:var(--text);">🛁 가전-바디드라이어 · 월별 불량</div>
+          <span class="bdg b-purple">건수 + 불량률</span>
+        </div>
+        <div class="h240"><canvas id="cMonthCatBody"></canvas></div>
       </div>
     </div>
 
@@ -644,6 +671,81 @@ tbody tr:hover td{background:var(--card2);}
     </div>
   </div>
 
+
+  <!-- ⑥ 모델 상세 -->
+  <div class="pg" id="pg-5">
+    <div style="margin-bottom:18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <select id="modelSelect" onchange="onModelSelect(this.value)"
+        style="padding:8px 18px;border-radius:10px;border:1.5px solid rgba(123,45,139,.2);background:#fff;color:var(--text);font-size:14px;font-weight:700;font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;cursor:pointer;outline:none;height:40px;min-width:240px;">
+        <option value="">모델을 선택하세요</option>
+      </select>
+      <span id="modelDetailBadge" style="display:none;"></span>
+    </div>
+    <div id="modelDetailContent" style="display:none;">
+      <!-- KPI -->
+      <div class="kpi-grid" id="mdKpiGrid"></div>
+      <!-- 월별 추이 + 불량유형 파레토 -->
+      <div class="sd"><div class="sd-line"></div><span class="sd-lbl">월별 추이</span><div class="sd-line"></div></div>
+      <div class="g2 mb18">
+        <div class="card card-inner">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div style="font-size:14px;font-weight:800;color:var(--text);">월별 불량 추이</div>
+            <span class="bdg b-blue">건수 + 불량률</span>
+          </div>
+          <div class="h260"><canvas id="cMdMonthly"></canvas></div>
+        </div>
+        <div class="card card-inner">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div style="font-size:14px;font-weight:800;color:var(--text);">불량유형 분포</div>
+            <span class="bdg b-red">건수 순</span>
+          </div>
+          <div id="mdPareto"></div>
+        </div>
+      </div>
+      <!-- 불량유형 x 월별 + 발생시점 -->
+      <div class="sd"><div class="sd-line"></div><span class="sd-lbl">상세 분석</span><div class="sd-line"></div></div>
+      <div class="g2 mb18">
+        <div class="card card-inner">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div style="font-size:14px;font-weight:800;color:var(--text);">불량유형 × 월별 추이</div>
+            <span class="bdg b-gray">Top 6 유형</span>
+          </div>
+          <div class="h260"><canvas id="cMdTypeMonth"></canvas></div>
+        </div>
+        <div class="card card-inner">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div style="font-size:14px;font-weight:800;color:var(--text);">발생시점 분포</div>
+            <span class="bdg b-amber">구매 후 경과월</span>
+          </div>
+          <div class="h260"><canvas id="cMdTiming"></canvas></div>
+        </div>
+      </div>
+      <!-- 채널별 -->
+      <div class="sd"><div class="sd-line"></div><span class="sd-lbl">채널 분석</span><div class="sd-line"></div></div>
+      <div class="g2 mb18">
+        <div class="card card-inner">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div style="font-size:14px;font-weight:800;color:var(--text);">채널별 불량 분포</div>
+            <span class="bdg b-gray">건수 · 비중</span>
+          </div>
+          <div class="h220"><canvas id="cMdChannel"></canvas></div>
+        </div>
+        <div class="card card-inner">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div style="font-size:14px;font-weight:800;color:var(--text);">크리티컬 불량 현황</div>
+            <span class="bdg b-red">위험 유형</span>
+          </div>
+          <div id="mdCritical"></div>
+        </div>
+      </div>
+    </div>
+    <div id="modelDetailEmpty" style="text-align:center;padding:80px 0;color:var(--text4);">
+      <div style="font-size:48px;margin-bottom:16px;">🔎</div>
+      <div style="font-size:16px;font-weight:600;">상단에서 모델을 선택하세요</div>
+      <div style="font-size:13px;margin-top:8px;">불량건수 순으로 정렬된 모델 목록에서 선택하면<br>해당 모델의 세부 불량 분석을 확인할 수 있습니다</div>
+    </div>
+  </div>
+
 </div><!-- /main -->
 
 <script>
@@ -651,12 +753,12 @@ Chart.register(ChartDataLabels);
 
 const APPS_URL='https://script.google.com/macros/s/AKfycbxptR6SFm9KRqPm6KA5KQZiDWZoQqyQAPvDq1WZ-3mCq5ocpQGFpCvad8B-fI88MsHw/exec';
 const REFRESH_MIN=10;
-const P={blue:'#2563EB',teal:'#0D9488',amber:'#D97706',red:'#DC2626',green:'#16A34A',purple:'#7C3AED',orange:'#EA580C'};
+const P={blue:'#2563EB',teal:'#0D9488',amber:'#D97706',red:'#C0392B',green:'#16A34A',purple:'#7B2D8B',orange:'#EA580C'};
 const PAL=['#2563EB','#DC2626','#D97706','#16A34A','#7C3AED','#0D9488','#EA580C','#78350F','#065F46','#4C1D95','#0369A1','#BE185D'];
 const TK=['1M','2M','3M','4M~12M','1Y이후'];
 const TC=[P.blue,P.teal,P.amber,P.red,'#64748B'];
-const CRITICAL_TYPES=['터짐 불량','타는 냄새','발열 현상','전원코드 파손','열변형','제품 파손'];
-const PG_TITLES=['종합 현황','월별 트렌드','SKU 분석','불량유형 분석','긴급·크리티컬'];
+const CRITICAL_TYPES=['터짐 불량','타는 냄새','발열 현상','전원코드 파손','열변형','제품 파손','누설 전류','전원 스파크','제품 스파크'];
+const PG_TITLES=['종합 현황','월별 트렌드','SKU 분석','불량유형 분석','긴급·크리티컬','모델 상세'];
 
 let G=null, charts={};
 const FILTER={year:'all',quarter:'all',month:'all'};
@@ -831,7 +933,7 @@ function renderOverview(s){
       datalabels:{}
     },
     scales:{
-      y:{beginAtZero:true,position:'left',grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}},
+      y:{beginAtZero:true,position:'left',grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}},
          suggestedMax:maxV*1.5},
       y2:{beginAtZero:true,position:'right',grid:{display:false},ticks:{font:{family:'JetBrains Mono',size:10},callback:v=>v.toFixed(2)+'%'}},
       x:{grid:{display:false},ticks:{font:{family:'JetBrains Mono',size:11}}}
@@ -864,7 +966,7 @@ function renderOverview(s){
     plugins:{legend:{display:false},datalabels:{}},
     scales:{
       x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:12}}},
-      y:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}},
+      y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}},
          suggestedMax:Math.max(...catV)*1.5}
     },
     layout:{padding:{top:52,right:8}}
@@ -885,7 +987,7 @@ function renderOverview(s){
     plugins:{legend:{display:false},datalabels:{}},
     scales:{
       x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}},
-      y:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}},
+      y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}},
          suggestedMax:tMax*1.5}
     },
     layout:{padding:{top:52,right:8}}
@@ -912,7 +1014,7 @@ function renderOverview(s){
       color:(ctx)=>chColors[ctx.dataIndex]||P.blue,font:{family:'JetBrains Mono',weight:'700',size:11},
       formatter:v=>fmt(v)+' ('+pct(v,chTotal)+'%)'}}]
   },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
-    scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
+    scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:9}}},
             y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}},
     layout:{padding:{right:120,top:4}}});
 
@@ -942,7 +1044,7 @@ function renderOverview(s){
 // ── 트렌드 ──
 function renderTrend(s){
   if(!s||!s.byReceiptMonth) return;
-  dpg(['cTrendLine','cMonthCatStyler','cMonthCatDryer']);
+  dpg(['cTrendLine','cMonthCatStyler','cMonthCatDryer','cMonthCatFan','cMonthCatBody']);
 
   const months=Object.keys(s.byReceiptMonth).sort();
   const mL=months.map(m=>m.slice(0,4)+'.'+m.slice(4));
@@ -965,7 +1067,7 @@ function renderTrend(s){
       borderDash:[6,4],pointRadius:0,backgroundColor:'transparent',datalabels:{display:false}}
   ]},{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:12,boxWidth:10}},datalabels:{}},
     scales:{x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}},
-            y:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}},suggestedMax:maxVal*1.3}},
+            y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}},suggestedMax:maxVal*1.3}},
     layout:{padding:{top:28}}});
 
   // ── MoM ──
@@ -1021,7 +1123,7 @@ function renderTrend(s){
     ]},{
       plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:11},padding:10,boxWidth:10}},datalabels:{}},
       scales:{
-        y:{beginAtZero:true,position:'left',grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}},suggestedMax:catMax*1.5},
+        y:{beginAtZero:true,position:'left',grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}},suggestedMax:catMax*1.5},
         y2:{beginAtZero:true,position:'right',grid:{display:false},ticks:{font:{family:'JetBrains Mono',size:9},callback:v=>v.toFixed(2)+'%'}},
         x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}
       },
@@ -1030,6 +1132,8 @@ function renderTrend(s){
   }
   renderCatSimpleChart('cMonthCatStyler','스타일러','rgba(37,99,235,0.7)','rgba(6,182,212,1)');
   renderCatSimpleChart('cMonthCatDryer','드라이기','rgba(220,38,38,0.7)','rgba(217,119,6,1)');
+  renderCatSimpleChart('cMonthCatFan','가전-선풍기','rgba(13,148,136,0.7)','rgba(13,148,136,1)');
+  renderCatSimpleChart('cMonthCatBody','가전-바디드라이어','rgba(124,58,237,0.7)','rgba(124,58,237,1)');
 
   // ── 불량건수 Top10 — 가로형 라인 ──
   const top10Cnt=Object.keys(s.byModel).slice(0,10);
@@ -1179,7 +1283,7 @@ function renderSKU(s){
     datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,
       color:(ctx)=>ctx.dataIndex<3?P.red:P.blue,font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>fmt(v)}}]
   },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
-    scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}},
+    scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}}},
             y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}}},
     layout:{padding:{right:60,top:4}}});
 
@@ -1192,7 +1296,7 @@ function renderSKU(s){
       color:(ctx)=>{ const r=rI[ctx.dataIndex][1].rate; return r>=3?P.red:r>=1?P.amber:P.green; },
       font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v.toFixed(2)+'%'}}]
   },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
-    scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9},callback:v=>v+'%'}},
+    scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:9},callback:v=>v+'%'}},
             y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}}},
     layout:{padding:{right:60,top:4}}});
 
@@ -1228,8 +1332,8 @@ function renderSKU(s){
       font:{family:'JetBrains Mono',weight:'700',size:9},formatter:()=>m}
   }))},{plugins:{legend:{display:false},datalabels:{},
     tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: 판매 ${fmt(ctx.raw.x)} / 불량률 ${ctx.raw.y.toFixed(2)}%`}}},
-    scales:{x:{title:{display:true,text:'판매수량',font:{family:'Noto Sans KR',size:10}},grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
-            y:{title:{display:true,text:'불량률(%)',font:{family:'Noto Sans KR',size:10}},beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9},callback:v=>v+'%'}}},
+    scales:{x:{title:{display:true,text:'판매수량',font:{family:'Noto Sans KR',size:10}},grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:9}}},
+            y:{title:{display:true,text:'불량률(%)',font:{family:'Noto Sans KR',size:10}},beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:9},callback:v=>v+'%'}}},
     layout:{padding:{top:20,right:8}}});
 
   // 발생시점 스택바
@@ -1244,7 +1348,7 @@ function renderSKU(s){
     datalabels:{display:(ctx)=>ctx.raw>0,anchor:'center',align:'center',color:'#fff',font:{weight:'700',size:9},formatter:v=>v}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:10},padding:8,boxWidth:8}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}},
-            y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
+            y:{stacked:true,beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 }
 
 // ── 불량유형 ── (ptByRate 렌더링 버그 수정: 여기서 렌더링)
@@ -1277,7 +1381,7 @@ function renderDefect(s){
       color:(ctx)=>PAL[ctx.dataIndex],font:{family:'JetBrains Mono',weight:'700',size:10},
       formatter:v=>fmt(v)+' ('+pct(v,defTotal)+'%)'}}]
   },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
-    scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
+    scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:9}}},
             y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}}},
     layout:{padding:{right:120,top:4}}});
 
@@ -1305,7 +1409,7 @@ function renderDefect(s){
     datalabels:{display:(ctx)=>ctx.raw>0,anchor:'center',align:'center',color:'#fff',font:{weight:'700',size:9},formatter:v=>v}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:10},padding:8,boxWidth:8}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}},
-            y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
+            y:{stacked:true,beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
   const chK=Object.keys(s.byChannel||{}), top6t=types.slice(0,6), dtChD={};
   chK.forEach(ch=>{ dtChD[ch]={}; top6t.forEach(t=>{ dtChD[ch][t]=0; }); });
@@ -1314,7 +1418,7 @@ function renderDefect(s){
     data:chK.map(ch=>dtChD[ch][t]||0),backgroundColor:PAL[i],borderRadius:2,
     datalabels:{display:(ctx)=>ctx.raw>0,anchor:'center',align:'center',color:'#fff',font:{weight:'700',size:9},formatter:v=>v}}))
   },{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:10},padding:8,boxWidth:8}},datalabels:{}},
-    scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
+    scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 }
 
 // ── 크리티컬 ── (ptByRate 참조 제거)
@@ -1352,7 +1456,7 @@ function renderCritical(s){
       color:(ctx)=>critTextColors[ctx.dataIndex]||P.red,font:{family:'JetBrains Mono',weight:'700',size:11},
       formatter:v=>fmt(v)+' ('+pct(v,total)+'%)'}}]
   },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
-    scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
+    scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:9}}},
             y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}},
     layout:{padding:{right:130,top:4}}});
 
@@ -1365,7 +1469,7 @@ function renderCritical(s){
     datalabels:{anchor:'end',align:'end',clamp:true,offset:3,color:P.red,font:{family:'JetBrains Mono',weight:'700',size:11},formatter:v=>v>0?fmt(v):''}}]
   },{plugins:{legend:{display:false},datalabels:{}},
     scales:{x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}},
-            y:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:10}}}},
+            y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}}}},
     layout:{padding:{top:24}}});
 
   // 이상 급증
@@ -1398,7 +1502,7 @@ function renderCritical(s){
     datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,
       color:(ctx)=>ctx.dataIndex<3?P.red:P.blue,font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>fmt(v)}}]
   },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
-    scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
+    scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:9}}},
             y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}}},
     layout:{padding:{right:50,top:4}}});
 
@@ -1411,7 +1515,7 @@ function renderCritical(s){
       color:(ctx)=>chColors[ctx.dataIndex]||P.blue,font:{family:'JetBrains Mono',weight:'700',size:11},
       formatter:v=>fmt(v)+' ('+pct(v,chTotal)+'%)'}}]
   },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
-    scales:{x:{beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
+    scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:9}}},
             y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}},
     layout:{padding:{right:110,top:4}}});
 
@@ -1483,7 +1587,7 @@ function renderCritical(s){
         }
       },
       scales:{
-        x:{stacked:true,beginAtZero:true,grid:{color:'#E2E8F0'},ticks:{font:{family:'JetBrains Mono',size:9}}},
+        x:{stacked:true,beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:9}}},
         y:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}
       },
       layout:{padding:{right:8,top:4}}
@@ -1491,6 +1595,155 @@ function renderCritical(s){
   });}
 }
 
+
+// ── 모델 상세 셀렉트 빌드 ──
+function buildModelSelect(){
+  const sel=document.getElementById('modelSelect');
+  if(!sel||!G) return;
+  const cur=sel.value;
+  sel.innerHTML='<option value="">모델을 선택하세요</option>';
+  Object.keys(G.summary.byModel).forEach(m=>{
+    const opt=document.createElement('option');
+    opt.value=m; opt.textContent=m+' ('+G.summary.byModel[m]+'건)';
+    sel.appendChild(opt);
+  });
+  if(cur) sel.value=cur;
+}
+
+function onModelSelect(model){
+  if(!model){
+    document.getElementById('modelDetailContent').style.display='none';
+    document.getElementById('modelDetailEmpty').style.display='block';
+    return;
+  }
+  document.getElementById('modelDetailContent').style.display='block';
+  document.getElementById('modelDetailEmpty').style.display='none';
+  renderModelDetail(G.summary, model);
+}
+
+// ── 모델 상세 렌더 ──
+function renderModelDetail(s, selectedModel){
+  if(!G||!G.rawDefects) return;
+  const model=selectedModel||document.getElementById('modelSelect')?.value;
+  if(!model) return;
+  dpg(['cMdMonthly','cMdTypeMonth','cMdTiming','cMdChannel']);
+  const mDefects=G.rawDefects.filter(d=>d.model===model);
+  const total=mDefects.reduce((a,d)=>a+d.qty,0);
+  const mcat=buildModelCat(), mmfg=buildModelMfg();
+  const cat=mcat[model]||'—', mfg=mmfg[model]||'—';
+  const dr=s.defectRateByModel[model]||{};
+  const rate=dr.rate, sales=dr.sales||0;
+  const isCrit=mDefects.filter(d=>CRITICAL_TYPES.includes(d.defectDetail)).reduce((a,d)=>a+d.qty,0);
+
+  const badge=document.getElementById('modelDetailBadge');
+  badge.style.display='inline-flex';
+  badge.style.gap='6px';
+  badge.innerHTML='<span class="bdg b-blue">'+cat+'</span><span class="bdg b-gray">'+mfg+'</span>';
+
+  const rateColor=rate==null?'var(--text3)':rate>=3?'var(--red)':rate>=1?'var(--amber)':'var(--green)';
+  document.getElementById('mdKpiGrid').innerHTML=
+    '<div class="kpi-card"><div class="kpi-accent acc-purple"></div><div class="kpi-lbl">총 불량건수</div><div class="kpi-val">'+fmt(total)+'</div><div class="kpi-sub">누적 접수 기준</div></div>'+
+    '<div class="kpi-card"><div class="kpi-accent acc-amber"></div><div class="kpi-lbl">불량률</div><div class="kpi-val" style="color:'+rateColor+'">'+(rate!=null?rate.toFixed(2)+'%':'—')+'</div><div class="kpi-sub">판매 '+fmt(sales)+'개 대비</div></div>'+
+    '<div class="kpi-card"><div class="kpi-accent acc-red"></div><div class="kpi-lbl">크리티컬 건수</div><div class="kpi-val">'+fmt(isCrit)+'</div><div class="kpi-sub">전체의 '+pct(isCrit,total)+'%</div></div>'+
+    '<div class="kpi-card"><div class="kpi-accent acc-blue"></div><div class="kpi-lbl">불량유형 수</div><div class="kpi-val">'+[...new Set(mDefects.map(d=>d.defectDetail))].length+'</div><div class="kpi-sub">발생 유형 종류</div></div>'+
+    '<div class="kpi-card"><div class="kpi-accent acc-teal"></div><div class="kpi-lbl">채널 수</div><div class="kpi-val">'+[...new Set(mDefects.map(d=>d.channel))].length+'</div><div class="kpi-sub">발생 채널</div></div>';
+
+  const months=Object.keys(s.byReceiptMonth).sort();
+  const mL=months.map(m=>m.slice(0,4)+'.'+m.slice(4));
+  const mData={}; months.forEach(m=>{mData[m]=0;});
+  mDefects.forEach(d=>{
+    if(!d.receiptDate) return;
+    const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
+    if(mData[ym]!==undefined) mData[ym]+=d.qty;
+  });
+  const mVals=months.map(m=>mData[m]||0);
+  const maxMV=Math.max(...mVals,1);
+  const mRates=months.map(m=>sales>0?+(mData[m]/sales*100).toFixed(2):0);
+
+  const ctxMM=document.getElementById('cMdMonthly');
+  if(ctxMM){ charts['cMdMonthly']=new Chart(ctxMM,{type:'bar',data:{labels:mL,datasets:[
+    {type:'bar',label:'불량건수',data:mVals,backgroundColor:'rgba(123,45,139,0.7)',borderRadius:6,yAxisID:'y',order:2,
+      datalabels:{display:true,anchor:'end',align:'end',clamp:true,offset:3,color:P.purple,font:{family:'JetBrains Mono',weight:'700',size:11},formatter:(v)=>v>0?fmt(v):''}},
+    {type:'line',label:'불량률%',data:mRates,borderColor:P.amber,backgroundColor:'rgba(217,119,6,.05)',
+      pointBackgroundColor:'#fff',pointBorderColor:P.amber,pointBorderWidth:2.5,pointRadius:5,borderWidth:2.5,tension:0.35,yAxisID:'y2',order:1,datalabels:{display:false}}
+  ]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},
+    plugins:{legend:{position:'top',labels:{font:{family:'Pretendard',size:11},padding:12,boxWidth:10}},tooltip:{},datalabels:{}},
+    scales:{y:{beginAtZero:true,position:'left',grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}},suggestedMax:maxMV*1.5},
+      y2:{beginAtZero:true,position:'right',grid:{display:false},ticks:{font:{family:'JetBrains Mono',size:10},callback:v=>v.toFixed(2)+'%'}},
+      x:{grid:{display:false},ticks:{font:{family:'Pretendard',size:11}}}},
+    layout:{padding:{top:28,right:8}}}}); }
+
+  const typeMap={};
+  mDefects.forEach(d=>{typeMap[d.defectDetail]=(typeMap[d.defectDetail]||0)+d.qty;});
+  const typeSorted=Object.entries(typeMap).sort(([,a],[,b])=>b-a);
+  const maxT=typeSorted[0]?typeSorted[0][1]:1;
+  let cum=0;
+  document.getElementById('mdPareto').innerHTML=typeSorted.map(([t,v],i)=>{
+    cum+=v;
+    const rC=i===0?'r1':i===1?'r2':i===2?'r3':'rn';
+    return '<div class="pt-item"><span class="rank '+rC+'">'+(i+1)+'</span><span class="pt-name">'+t+'</span><div class="pt-bar"><div class="pt-fill" style="width:'+(v/maxT*100).toFixed(1)+'%"></div></div><span class="pt-cnt">'+v+'</span><span class="pt-pct">'+pct(v,total)+'%</span><span class="pt-cum">▲'+(cum/total*100).toFixed(0)+'%</span></div>';
+  }).join('');
+
+  const top6Types=typeSorted.slice(0,6).map(([t])=>t);
+  const ctxTM=document.getElementById('cMdTypeMonth');
+  if(ctxTM){ charts['cMdTypeMonth']=new Chart(ctxTM,{type:'bar',data:{labels:mL,datasets:top6Types.map((t,i)=>{
+    const tData={}; months.forEach(m=>{tData[m]=0;});
+    mDefects.filter(d=>d.defectDetail===t).forEach(d=>{
+      if(!d.receiptDate) return;
+      const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
+      if(tData[ym]!==undefined) tData[ym]+=d.qty;
+    });
+    return{label:t,data:months.map(m=>tData[m]||0),backgroundColor:PAL[i],borderRadius:2,
+      datalabels:{display:(ctx)=>ctx.raw>0,anchor:'center',align:'center',color:'#fff',font:{weight:'700',size:9},formatter:v=>v}};
+  })},options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},
+    plugins:{legend:{position:'top',labels:{font:{family:'Pretendard',size:10},padding:8,boxWidth:8}},datalabels:{}},
+    scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Pretendard',size:10}}},
+      y:{stacked:true,beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}}}},
+    layout:{padding:{top:4}}}}); }
+
+  const tTiming={1:0,2:0,3:0,12:0,99:0};
+  mDefects.forEach(d=>{
+    const mo=d.monthsToReceipt||0;
+    if(mo<=1)tTiming[1]+=d.qty; else if(mo<=2)tTiming[2]+=d.qty;
+    else if(mo<=3)tTiming[3]+=d.qty; else if(mo<=12)tTiming[12]+=d.qty; else tTiming[99]+=d.qty;
+  });
+  const tVals=[tTiming[1],tTiming[2],tTiming[3],tTiming[12],tTiming[99]];
+  const tTotal2=tVals.reduce((a,b)=>a+b,0);
+  const ctxMT=document.getElementById('cMdTiming');
+  if(ctxMT){ charts['cMdTiming']=new Chart(ctxMT,{type:'bar',data:{labels:TK,datasets:[{
+    data:tVals,backgroundColor:TC,borderRadius:6,borderSkipped:false,
+    datalabels:{display:true,anchor:'end',align:'end',clamp:true,offset:4,
+      color:(ctx)=>TC[ctx.dataIndex],font:{family:'JetBrains Mono',weight:'700',size:11},
+      formatter:(v,ctx)=>v>0?v+'건\n'+pct(v,tTotal2)+'%':''}
+  }]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},
+    plugins:{legend:{display:false},datalabels:{}},
+    scales:{x:{grid:{display:false},ticks:{font:{family:'Pretendard',size:11}}},
+      y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}},suggestedMax:Math.max(...tVals)*1.5}},
+    layout:{padding:{top:48,right:8}}}}); }
+
+  const chMap={};
+  mDefects.forEach(d=>{chMap[d.channel]=(chMap[d.channel]||0)+d.qty;});
+  const chKeys2=Object.keys(chMap).sort((a,b)=>chMap[b]-chMap[a]);
+  const chTotal2=Object.values(chMap).reduce((a,b)=>a+b,0);
+  const chColors=[P.blue,P.amber,P.green,P.purple,P.teal];
+  const ctxMC=document.getElementById('cMdChannel');
+  if(ctxMC){ charts['cMdChannel']=new Chart(ctxMC,{type:'bar',data:{labels:chKeys2,datasets:[{
+    data:chKeys2.map(c=>chMap[c]),backgroundColor:chKeys2.map((_,i)=>chColors[i]||P.blue),borderRadius:5,
+    datalabels:{display:true,anchor:'end',align:'right',clamp:true,clip:false,offset:4,
+      color:(ctx)=>chColors[ctx.dataIndex]||P.blue,font:{family:'JetBrains Mono',weight:'700',size:11},
+      formatter:v=>fmt(v)+' ('+pct(v,chTotal2)+'%)'}
+  }]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},
+    indexAxis:'y',
+    plugins:{legend:{display:false},datalabels:{}},
+    scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:9}}},
+      y:{grid:{display:false},ticks:{font:{family:'Pretendard',size:11}}}},
+    layout:{padding:{right:130,top:4}}}}); }
+
+  const critItems=typeSorted.filter(([t])=>CRITICAL_TYPES.includes(t));
+  document.getElementById('mdCritical').innerHTML=critItems.length
+    ?critItems.map(([t,v])=>'<div style="display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--border2);"><span style="font-size:18px;">⚡</span><div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--red)">'+t+'</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">'+v+'건 · 전체의 '+pct(v,total)+'%</div></div><span class="bdg b-red">'+v+'건</span></div>').join('')
+    :'<div style="padding:20px;text-align:center;color:var(--green);font-weight:600;">✅ 크리티컬 불량 없음</div>';
+}
 // ── 불량률 Top 리스트 ──
 function renderRateTop(elId,s,limit){
   const totalSalesAll=Object.values(s.monthlySalesTotals||{}).reduce((a,b)=>a+b,0);
@@ -1606,6 +1859,7 @@ function getFilteredSummary(){ const {fs}=getFiltered(); return fs; }
 
 function initFilter(){
   buildMonthSelect();
+  buildModelSelect();
   applyFilter();
 }
 
@@ -1671,49 +1925,75 @@ function pct(n,t){ return t>0?(n/t*100).toFixed(1):'0.0'; }
 // ── 목업 데이터 ──
 function getMock(){
   const rawDefects=[];
-  const models=['SRB3A01A','SRB3A02B','SRI5A01A','SW3A01MA','MS6301A','M5001A PLUS PRO','SDU3A01A','M5001A PLUS PRO_W','SC1500A','SC1500B'];
-  const cats={'SRB3A01A':'스타일러','SRB3A02B':'스타일러','SRI5A01A':'스타일러','SW3A01MA':'스타일러','MS6301A':'드라이기','M5001A PLUS PRO':'드라이기','SDU3A01A':'드라이기','M5001A PLUS PRO_W':'드라이기','SC1500A':'드라이기','SC1500B':'드라이기'};
-  const mfgs={'SRB3A01A':'소싱','SRB3A02B':'소싱','SRI5A01A':'소싱','SW3A01MA':'소싱','MS6301A':'JMW','M5001A PLUS PRO':'JMW','SDU3A01A':'JMW','M5001A PLUS PRO_W':'JMW','SC1500A':'JMW','SC1500B':'JMW'};
-  const defTypes=['S/C','온도 제어 불량','배터리 성능 불량','충전 불량','터짐 불량','전원 불량','작동 불능','제품 조립 불량','패키지 외관불량','온도 상승 불량','타는 냄새','발열 현상'];
+  const modelInfo={
+    'SRB3A01A':{cat:'스타일러',mfg:'소싱'},'SRI5A01A':{cat:'스타일러',mfg:'소싱'},
+    'SW3A01MA':{cat:'스타일러',mfg:'소싱'},'MS6301A':{cat:'드라이기',mfg:'JMW'},
+    'SRB3A02B':{cat:'스타일러',mfg:'소싱'},'M5001A PLUS PRO':{cat:'드라이기',mfg:'JMW'},
+    'SDU3A01A':{cat:'드라이기',mfg:'소싱'},'CLS5A01A':{cat:'가전-선풍기',mfg:'소싱'},
+    'M5001A PLUS PRO_W':{cat:'드라이기',mfg:'JMW'},'SRB4A01A':{cat:'스타일러',mfg:'소싱'},
+    'SC1500A':{cat:'드라이기',mfg:'소싱'},'MS6301A-m':{cat:'드라이기',mfg:'JMW'},
+    'MCI8A01A':{cat:'드라이기',mfg:'JMW'},'JBD1900A':{cat:'가전-바디드라이어',mfg:'소싱'},
+    'SDA5A01A':{cat:'드라이기',mfg:'소싱'},'W2010ME':{cat:'스타일러',mfg:'JMW'},
+    'SC1500B':{cat:'드라이기',mfg:'JMW'},'W2010ME-C':{cat:'스타일러',mfg:'JMW'},
+    'MVF6A01A':{cat:'드라이기',mfg:'JMW'},'CMF1000A':{cat:'가전-선풍기',mfg:'소싱'},
+    'MCF5A02B':{cat:'드라이기',mfg:'JMW'},'MG1800 PLUS':{cat:'드라이기',mfg:'JMW'},
+    'SRB3A03C':{cat:'스타일러',mfg:'소싱'},'MCF5A01A':{cat:'드라이기',mfg:'JMW'},
+    'MG1800':{cat:'드라이기',mfg:'JMW'},'MF5001A':{cat:'드라이기',mfg:'JMW'}
+  };
+  const models=Object.keys(modelInfo);
+  const mW=[146,133,125,116,104,77,63,47,41,38,33,32,28,27,22,19,18,13,13,12,11,6,2,5,2,1];
+  const defTypes=['터짐 불량','온도 제어 불량','전원 불량','S/C','작동 불능','충전 불량',
+    '이물, 오염','제품 조립 불량','배터리 성능 불량','패키지 외관불량','온도 상승 불량',
+    '타는 냄새','패키지 파손불량','제품 파손','버튼, 스위치 불량','화면 출력 불량',
+    '구성품 누락','Gap, 단차 불량','발열 현상','누설 전류','전원 스파크','제품 스파크','전원코드 파손','열변형'];
   const channels=['제이엠더블유','엘리첸','자사몰'];
-  const mW=[78,72,66,61,39,32,18,13,13,8];
-  const mDates=[['2026-01-01','2026-01-31',0],['2026-02-01','2026-02-28',10],['2026-03-01','2026-03-31',251],['2026-04-01','2026-04-30',210]];
-  function wR(w){ const t=w.reduce((a,b)=>a+b,0); let r=Math.random()*t; for(let i=0;i<w.length;i++){ r-=w[i]; if(r<=0) return i; } return 0; }
-  function rD(s,e){ const sd=new Date(s).getTime(),ed=new Date(e).getTime(); return new Date(sd+Math.random()*(ed-sd)); }
-  function f2(d){ const dt=d instanceof Date?d:new Date(d); return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0'); }
+  const mDates=[['2025-10-01','2025-10-31',7],['2025-11-01','2025-11-30',3],['2025-12-01','2025-12-31',11],
+    ['2026-01-01','2026-01-31',24],['2026-02-01','2026-02-28',69],['2026-03-01','2026-03-31',260],
+    ['2026-04-01','2026-04-30',229],['2026-05-01','2026-05-31',196],['2026-06-01','2026-06-30',218],['2026-07-01','2026-07-31',209]];
+  function wR(w){const t=w.reduce((a,b)=>a+b,0);let r=Math.random()*t;for(let i=0;i<w.length;i++){r-=w[i];if(r<=0)return i;}return 0;}
+  function rD(s,e){const sd=new Date(s).getTime(),ed=new Date(e).getTime();return new Date(sd+Math.random()*(ed-sd));}
+  function f2(d){const dt=d instanceof Date?d:new Date(d);return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');}
   mDates.forEach(([s,e,cnt])=>{
     for(let i=0;i<cnt;i++){
-      const mI=wR(mW), m=models[mI], mo=Math.random()<0.3?Math.random()*1:Math.random()<0.5?1+Math.random()*2:3+Math.random()*9;
-      rawDefects.push({purchaseDate:f2(new Date(new Date(s).getTime()-mo*30*86400000)),receiptDate:f2(rD(s,e)),channel:channels[Math.floor(Math.random()*channels.length)],category:cats[m],mfgType:mfgs[m],model:m,qty:1,defectType:'작동 불량',defectDetail:defTypes[Math.floor(Math.random()*defTypes.length)],monthsToReceipt:mo});
+      const mI=wR(mW),m=models[mI]||models[0];
+      const mo=Math.random()<0.3?Math.random()*1:Math.random()<0.5?1+Math.random()*2:3+Math.random()*9;
+      rawDefects.push({purchaseDate:f2(new Date(new Date(s).getTime()-mo*30*86400000)),
+        receiptDate:f2(rD(s,e)),channel:channels[Math.floor(Math.random()*channels.length)],
+        category:modelInfo[m].cat,mfgType:modelInfo[m].mfg,model:m,qty:1,
+        defectType:'작동 불량',defectDetail:defTypes[Math.floor(Math.random()*defTypes.length)],monthsToReceipt:mo});
     }
   });
   const summary={totalDefects:rawDefects.length,uniqueModels:models.length,uniqueChannels:channels.length,
     byReceiptMonth:{},byCategory:{},byModel:{},byDefectDetail:{},byChannel:{},byMfgType:{},
     byTiming:{'1M':0,'2M':0,'3M':0,'4M~12M':0,'1Y이후':0},defectRateByModel:{},monthlySalesTotals:{},categoryDefectMatrix:{}};
-  const sales={'SRB3A01A':35683,'SRB3A02B':7858,'SRI5A01A':7259,'SW3A01MA':19130,'MS6301A':23907,'M5001A PLUS PRO':3186,'SDU3A01A':34754,'M5001A PLUS PRO_W':1830,'SC1500A':19664,'SC1500B':10671};
+  const sales={'SRB3A01A':35683,'SRI5A01A':7259,'SW3A01MA':19130,'MS6301A':23907,
+    'SRB3A02B':7858,'M5001A PLUS PRO':3186,'SDU3A01A':34754,'CLS5A01A':8000,
+    'M5001A PLUS PRO_W':1830,'SRB4A01A':5000,'SC1500A':19664,'MS6301A-m':4000,
+    'MCI8A01A':3000,'JBD1900A':2500,'SDA5A01A':2000,'W2010ME':3500,
+    'SC1500B':10671,'W2010ME-C':2000,'MVF6A01A':1500,'CMF1000A':2000,
+    'MCF5A02B':1000,'MG1800 PLUS':800,'SRB3A03C':500,'MCF5A01A':700,'MG1800':400,'MF5001A':300};
   rawDefects.forEach(d=>{
-    if(d.receiptDate){ const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7); summary.byReceiptMonth[ym]=(summary.byReceiptMonth[ym]||0)+d.qty; }
+    if(d.receiptDate){const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);summary.byReceiptMonth[ym]=(summary.byReceiptMonth[ym]||0)+d.qty;}
     summary.byCategory[d.category]=(summary.byCategory[d.category]||0)+d.qty;
     summary.byModel[d.model]=(summary.byModel[d.model]||0)+d.qty;
     summary.byDefectDetail[d.defectDetail]=(summary.byDefectDetail[d.defectDetail]||0)+d.qty;
     summary.byChannel[d.channel]=(summary.byChannel[d.channel]||0)+d.qty;
     summary.byMfgType[d.mfgType]=(summary.byMfgType[d.mfgType]||0)+d.qty;
     const mo=d.monthsToReceipt;
-    if(mo<=1)summary.byTiming['1M']++; else if(mo<=2)summary.byTiming['2M']++;
-    else if(mo<=3)summary.byTiming['3M']++; else if(mo<=12)summary.byTiming['4M~12M']++; else summary.byTiming['1Y이후']++;
-    if(!summary.categoryDefectMatrix[d.category]) summary.categoryDefectMatrix[d.category]={};
+    if(mo<=1)summary.byTiming['1M']++;else if(mo<=2)summary.byTiming['2M']++;
+    else if(mo<=3)summary.byTiming['3M']++;else if(mo<=12)summary.byTiming['4M~12M']++;else summary.byTiming['1Y이후']++;
+    if(!summary.categoryDefectMatrix[d.category])summary.categoryDefectMatrix[d.category]={};
     summary.categoryDefectMatrix[d.category][d.defectDetail]=(summary.categoryDefectMatrix[d.category][d.defectDetail]||0)+d.qty;
   });
-  ['202601','202602','202603','202604'].forEach(ym=>{
+  ['202510','202511','202512','202601','202602','202603','202604','202605','202606','202607'].forEach(ym=>{
     summary.monthlySalesTotals[ym]=Object.values(sales).reduce((a,b)=>a+b,0)+Math.floor(Math.random()*500);
   });
-  models.forEach(m=>{ const sq=sales[m]||0,dq=summary.byModel[m]||0; summary.defectRateByModel[m]={defects:dq,sales:sq,rate:sq>0?dq/sq*100:null}; });
+  models.forEach(m=>{const sq=sales[m]||0,dq=summary.byModel[m]||0;summary.defectRateByModel[m]={defects:dq,sales:sq,rate:sq>0?dq/sq*100:null};});
   const sO=o=>Object.fromEntries(Object.entries(o).sort(([,a],[,b])=>b-a));
-  summary.byCategory=sO(summary.byCategory); summary.byModel=sO(summary.byModel);
-  summary.byDefectDetail=sO(summary.byDefectDetail); summary.byChannel=sO(summary.byChannel); summary.byMfgType=sO(summary.byMfgType);
+  summary.byCategory=sO(summary.byCategory);summary.byModel=sO(summary.byModel);
+  summary.byDefectDetail=sO(summary.byDefectDetail);summary.byChannel=sO(summary.byChannel);summary.byMfgType=sO(summary.byMfgType);
   return{success:true,updatedAt:new Date().toISOString(),rawDefects,summary};
 }
-
 setInterval(loadData, REFRESH_MIN*60*1000);
 window.addEventListener('DOMContentLoaded', ()=>{ loadData(); });
 </script>
