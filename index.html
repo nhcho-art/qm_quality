@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v5.1</title>
+<title>JMW Quality Dashboard v5.5</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -32,10 +32,10 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 .nav-logo-brand{font-size:17px;font-weight:900;color:var(--navy);letter-spacing:-.4px;}
 .nav-logo-sub{font-size:11px;font-weight:700;color:var(--text4);letter-spacing:1.5px;text-transform:uppercase;margin-left:2px;}
 .nav-divider{width:1px;height:22px;background:var(--border);margin:0 28px;flex-shrink:0;}
-.nav-tabs{display:flex;align-items:center;gap:4px;flex:1;justify-content:center;}
-.nav-tab{padding:8px 18px;border-radius:0;border:none;border-bottom:2px solid transparent;background:transparent;color:var(--text3);font-size:13px;font-weight:600;font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;cursor:pointer;transition:all .15s;white-space:nowrap;letter-spacing:-.1px;}
-.nav-tab:hover{color:var(--purple);border-bottom-color:rgba(123,45,139,.3);}
-.nav-tab.on{color:var(--purple);font-weight:800;border-bottom-color:var(--purple);}
+.nav-tabs{display:flex;align-items:center;gap:6px;flex:1;justify-content:center;}
+.nav-tab{padding:8px 22px;border-radius:8px;border:1.5px solid transparent;background:transparent;color:var(--text3);font-size:13px;font-weight:600;font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;cursor:pointer;transition:all .15s;white-space:nowrap;letter-spacing:-.1px;}
+.nav-tab:hover{background:var(--purple3);color:var(--purple);border-color:rgba(123,45,139,.2);}
+.nav-tab.on{background:var(--purple3);color:var(--purple);font-weight:800;border-color:var(--purple);}
 .nav-right{display:flex;align-items:center;gap:12px;flex-shrink:0;}
 .nav-time{font-size:11px;color:var(--text4);font-family:'JetBrains Mono',monospace;}
 .nav-btn{padding:8px 20px;border-radius:8px;border:1.5px solid var(--purple);background:transparent;color:var(--purple);font-size:12px;font-weight:700;font-family:'Pretendard',sans-serif;cursor:pointer;transition:all .15s;}
@@ -172,10 +172,18 @@ tbody tr:hover td{background:#FDFCFE;}
 
 /* ── 생산분류 카드 ── */
 .mfg-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}
-.mfg-card{background:#FDFCFE;border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center;}
-.mfg-name{font-size:11px;color:var(--text3);font-weight:700;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;}
-.mfg-cnt{font-size:26px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;}
-.mfg-rate{font-size:12px;color:var(--text3);margin-top:4px;}
+.mfg-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}
+.mfg-card{background:#FDFCFE;border:1px solid var(--border);border-radius:10px;padding:12px 14px;text-align:center;display:flex;flex-direction:column;align-items:center;}
+.mfg-name{font-size:11px;color:var(--text3);font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.3px;}
+.mfg-donut-wrap{position:relative;width:80px;height:80px;margin:0 auto;}
+.mfg-donut-wrap canvas{width:80px!important;height:80px!important;}
+.mfg-donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;}
+.mfg-donut-cnt{font-size:16px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;color:var(--text);}
+.mfg-donut-label{font-size:9px;color:var(--text4);font-weight:600;margin-top:2px;}
+.mfg-rate-row{margin-top:8px;display:flex;flex-direction:column;gap:2px;width:100%;}
+.mfg-rate-item{display:flex;justify-content:space-between;align-items:center;font-size:11px;}
+.mfg-rate-item .mfg-ri-label{color:var(--text3);font-weight:600;}
+.mfg-rate-item .mfg-ri-val{font-family:'JetBrains Mono',monospace;font-weight:700;}
 
 /* ── MoM ── */
 .mom-item{display:flex;align-items:center;gap:8px;padding:8px 4px;border-bottom:1px solid var(--border2);}
@@ -270,7 +278,7 @@ tbody tr:hover td{background:#FDFCFE;}
   <span class="flabel" id="periodLabel">연간</span>
   <div class="ver-dropdown-wrap">
     <div class="ver-chip" onclick="toggleVerDropdown(this)" id="verChip">
-      <span>v5.1</span>
+      <span>v5.5</span>
       <span class="ver-arrow">▼</span>
     </div>
     <div class="ver-dropdown" id="verDropdown">
@@ -279,12 +287,12 @@ tbody tr:hover td{background:#FDFCFE;}
         <div class="ver-dropdown-hd-sub">JMW Quality Dashboard</div>
       </div>
       <div class="ver-dropdown-item">
-        <div><span class="ver-dropdown-item-tag">v5.1</span><span class="ver-dropdown-item-new">NEW</span></div>
-        <div class="ver-dropdown-item-desc">UI 전면 리뉴얼 · 네비게이터 스타일</div>
+        <div><span class="ver-dropdown-item-tag">v5.5</span><span class="ver-dropdown-item-new">NEW</span></div>
+        <div class="ver-dropdown-item-desc">불량유형 전체 월별 라인차트</div>
         <div class="ver-dropdown-item-list">
-          <div>· 상단 네비 확장 · 버전 드롭다운</div>
-          <div>· KPI 컬러 카드 · 스택바 차트</div>
-          <div>· 모델 상세 검색 · 카테고리별 셀렉트</div>
+          <div>· 불량유형 전체 라인차트 (C 레이아웃)</div>
+          <div>· 순위+건수+비율+월별 추이 한줄</div>
+          <div>· 크리티컬 유형 ⚡ 강조 표시</div>
         </div>
       </div>
       <div class="ver-dropdown-item">
@@ -516,19 +524,12 @@ tbody tr:hover td{background:#FDFCFE;}
 <!-- ④ 불량유형 -->
 <div class="pg" id="pg-3">
   <div class="sd"><div class="sd-line"></div><span class="sd-lbl">불량유형 분석</span><div class="sd-line"></div></div>
-  <div class="g2 mb16">
-    <div class="card card-inner">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div style="font-size:14px;font-weight:700;color:var(--text);">불량유형 순위 (전체)</div><span class="bdg b-red">건수 순 · 누적%</span>
-      </div>
-      <div id="ptFull"></div>
+  <div class="card mb16">
+    <div class="card-hd">
+      <div class="card-hd-title">불량유형 전체 · 월별 추이</div>
+      <span class="bdg b-red">건수 순 · 전체 유형</span>
     </div>
-    <div class="card card-inner">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div style="font-size:14px;font-weight:700;color:var(--text);">불량률 높은 유형 Top 10</div><span class="bdg b-amber">판매수량 대비</span>
-      </div>
-      <div id="ptByRate"></div>
-    </div>
+    <div class="card-body" id="defectTypeMonthWrap" style="display:flex;flex-direction:column;gap:4px;padding-top:12px;"></div>
   </div>
   <div class="card mb16">
     <div class="card-hd"><div class="card-hd-title">불량유형 분포</div><span class="bdg b-blue">Top 12 · 건수 비중</span></div>
@@ -570,7 +571,7 @@ tbody tr:hover td{background:#FDFCFE;}
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
         <div style="font-size:14px;font-weight:700;color:var(--text);">크리티컬 월별 추이</div><span class="bdg b-red">접수일 기준</span>
       </div>
-      <div class="h240"><canvas id="cCritMonthly"></canvas></div>
+      <div id="cCritMonthlyWrap" style="position:relative;"><canvas id="cCritMonthly"></canvas></div>
     </div>
   </div>
   <div class="sd"><div class="sd-line"></div><span class="sd-lbl">이상 급증 감지</span><div class="sd-line"></div></div>
@@ -827,20 +828,18 @@ function renderOverview(s){
   dpg(['cMonthLine','cCategory','cTiming','cChannelBar']);
   if(!s) return;
 
-  // 월별 추이 바+라인 — datalabel 겹침 해결: 건수는 바 위, 불량률은 라인 위
+  // 월별 추이 — 필터된 byReceiptMonth 기반 (연도 무관)
   const allMs=Object.keys(s.byReceiptMonth).sort();
-  const last2026=allMs.filter(m=>m.startsWith('2026')).slice(-1)[0]||'202604';
-  const lastN=parseInt(last2026.slice(4));
-  const m26=[]; for(let i=1;i<=lastN;i++) m26.push('2026'+String(i).padStart(2,'0'));
-  const mL=m26.map(m=>m.slice(4)+'월');
+  const m26=allMs; // 필터된 월 그대로 사용
+  const mL=m26.map(m=>m.slice(0,4)===new Date().getFullYear().toString()?m.slice(4)+'월':m.slice(2,4)+'.'+m.slice(4)+'월');
   const mV=m26.map(m=>s.byReceiptMonth[m]||0);
   const totalSales=Object.values(s.monthlySalesTotals||{}).reduce((a,b)=>a+b,0);
   const mR=m26.map(m=>{ const v=s.byReceiptMonth[m]||0,sv=s.monthlySalesTotals[m]||0; return sv>0?+(v/sv*100).toFixed(2):0; });
-  setEl('bdgMonths','2026년 '+m26.length+'개월');
+  setEl('bdgMonths',m26.length+'개월');
 
   // 건수 최대값 기준으로 padding 계산 (겹침 방지)
   const maxV=Math.max(...mV,1);
-  // 크리티컬 월별 분리
+  // 크리티컬 월별 분리 (필터된 rawDefects 사용)
   const critMonMap={};
   m26.forEach(m=>{critMonMap[m]=0;});
   if(G.rawDefects) G.rawDefects.forEach(d=>{
@@ -848,9 +847,9 @@ function renderOverview(s){
     const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
     if(critMonMap[ym]!==undefined) critMonMap[ym]+=d.qty;
   });
+  // critV, normV — m26 기반
   const critV=m26.map(m=>critMonMap[m]||0);
   const normV=m26.map((m,i)=>Math.max(0,(s.byReceiptMonth[m]||0)-critV[i]));
-
   mkChart('cMonthLine','bar',{labels:mL,datasets:[
     {type:'bar',label:'일반 불량',data:normV,backgroundColor:'rgba(37,99,235,0.65)',borderRadius:0,yAxisID:'y',order:2,stack:'s',
       datalabels:{display:false}},
@@ -947,16 +946,47 @@ function renderOverview(s){
   });
   document.getElementById('mfgCards').innerHTML=mfgK.map((k,i)=>{
     const critCnt=mfgCritMap[k]||0;
+    const normCnt=Math.max(0,mfgV[i]-critCnt);
     const critRate=mfgV[i]>0?(critCnt/mfgV[i]*100).toFixed(1):'0.0';
-    return`<div class="mfg-card">
-      <div class="mfg-name">${k}</div>
-      <div class="mfg-cnt" style="color:${mfgColors[i]||P.blue}">${fmt(mfgV[i])}</div>
-      <div class="mfg-rate" style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
-        <span style="color:var(--red);font-weight:700;font-size:12px;">크리티컬 ${fmt(critCnt)}건</span>
-        <span style="color:var(--text4);font-size:11px;">전체의 ${critRate}%</span>
-      </div>
-    </div>`;
+    const col=mfgColors[i]||P.blue;
+    return '<div class="mfg-card">'+
+      '<div class="mfg-name">'+k+'</div>'+
+      '<div class="mfg-donut-wrap">'+
+        '<canvas id="mfgDonut'+i+'"></canvas>'+
+        '<div class="mfg-donut-center">'+
+          '<div class="mfg-donut-cnt" style="color:'+col+'">'+fmt(mfgV[i])+'</div>'+
+          '<div class="mfg-donut-label">건</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="mfg-rate-row">'+
+        '<div class="mfg-rate-item"><span class="mfg-ri-label" style="color:var(--red);">크리티컬</span><span class="mfg-ri-val" style="color:var(--red);">'+fmt(critCnt)+'건</span></div>'+
+        '<div class="mfg-rate-item"><span class="mfg-ri-label">비율</span><span class="mfg-ri-val">'+critRate+'%</span></div>'+
+      '</div>'+
+    '</div>';
   }).join('');
+  // 도넛 차트 렌더
+  mfgK.forEach((k,i)=>{
+    const critCnt2=mfgCritMap[k]||0;
+    const normCnt2=Math.max(0,mfgV[i]-critCnt2);
+    const col=mfgColors[i]||P.blue;
+    setTimeout(()=>{
+      const ctx=document.getElementById('mfgDonut'+i);
+      if(!ctx) return;
+      new Chart(ctx,{type:'doughnut',data:{
+        datasets:[{
+          data:[normCnt2,critCnt2||0.001],
+          backgroundColor:[col+'CC','rgba(192,57,43,0.85)'],
+          borderWidth:0,
+          hoverBorderWidth:0
+        }]
+      },options:{
+        responsive:false,
+        cutout:'68%',
+        animation:{duration:400},
+        plugins:{legend:{display:false},tooltip:{display:false},datalabels:{display:false}}
+      }});
+    },10);
+  });
 
   // 채널별 수평바
   const chK=Object.keys(s.byChannel), chV=Object.values(s.byChannel), chTotal=chV.reduce((a,b)=>a+b,0);
@@ -1308,20 +1338,65 @@ function renderSKU(s){
 function renderDefect(s){
   if(!s) return;
   dpg(['cDefectBar','cDefectTiming','cDefectChannel']);
-  renderPareto('ptFull',s,999,true);
-
-  // 불량률 TOP10 유형 — 버그 수정: renderDefect()에서 렌더링
-  const totalSalesAll=Object.values(s.monthlySalesTotals||{}).reduce((a,b)=>a+b,0);
-  const rateByType=Object.entries(s.byDefectDetail||{}).map(([t,cnt])=>({
-    t,cnt,rate:totalSalesAll>0?(cnt/totalSalesAll*100):0
-  })).sort((a,b)=>b.rate-a.rate).slice(0,10);
-  document.getElementById('ptByRate').innerHTML=rateByType.map((r,i)=>`
-    <div style="display:flex;align-items:center;gap:8px;padding:8px 4px;border-bottom:1px solid var(--border2);">
-      <span class="rank ${i===0?'r1':i===1?'r2':i===2?'r3':'rn'}">${i+1}</span>
-      <span style="flex:1;font-size:12px;font-weight:600;color:var(--text2)">${r.t}</span>
-      <span class="mono" style="font-size:12px;color:${i<3?'var(--red)':'var(--amber)'}">${r.rate.toFixed(3)}%</span>
-      <span style="font-size:10px;color:var(--text3)">${fmt(r.cnt)}건</span>
-    </div>`).join('');
+  // 불량유형 월별 미니차트 초기화
+  const dtw=document.getElementById('defectTypeMonthWrap');
+  if(dtw){ Array.from(dtw.querySelectorAll('canvas')).forEach(c=>{if(charts[c.id]){try{charts[c.id].destroy();}catch(e){} delete charts[c.id];}}); }
+  // 불량유형 전체 · 월별 라인차트 (월별트렌드 Top10 스타일)
+  const defMonths=Object.keys(s.byReceiptMonth||{}).sort();
+  const defML=defMonths.map(m=>m.slice(0,4)===new Date().getFullYear().toString()?m.slice(4)+'월':m.slice(2,4)+'.'+m.slice(4)+'월');
+  const allDefTypes=Object.keys(s.byDefectDetail||{}); // 건수 내림차순 전체
+  const defWrap=document.getElementById('defectTypeMonthWrap');
+  if(defWrap){
+    defWrap.innerHTML='';
+    allDefTypes.forEach((t,i)=>{
+      const typeMon={}; defMonths.forEach(m=>{typeMon[m]=0;});
+      if(G.rawDefects) G.rawDefects.forEach(d=>{
+        if(d.defectDetail!==t||!d.receiptDate) return;
+        const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
+        if(typeMon[ym]!==undefined) typeMon[ym]+=d.qty;
+      });
+      const data=defMonths.map(m=>typeMon[m]||0);
+      const totalT=data.reduce((a,b)=>a+b,0);
+      const totalAll=s.totalDefects||1;
+      const col=PAL[i%PAL.length];
+      const isCrit=CRITICAL_TYPES.includes(t);
+      const row=document.createElement('div');
+      row.style.cssText='display:grid;grid-template-columns:200px 1fr;gap:12px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border2);';
+      row.innerHTML=
+        '<div style="display:flex;align-items:center;gap:8px;">'+
+          '<span style="font-family:JetBrains Mono;font-size:11px;font-weight:800;color:var(--text4);min-width:18px;">'+(i+1)+'</span>'+
+          '<div>'+
+            '<div style="font-size:12px;font-weight:700;color:'+(isCrit?'var(--red)':col)+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;">'+(isCrit?'⚡ ':'')+t+'</div>'+
+            '<div style="display:flex;align-items:center;gap:8px;margin-top:2px;">'+
+              '<span style="font-size:11px;font-weight:800;color:'+(isCrit?'var(--red)':col)+';">'+fmt(totalT)+'건</span>'+
+              '<span style="font-size:10px;color:var(--text4);">'+pct(totalT,totalAll)+'%</span>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<div style="position:relative;height:56px;"><canvas id="defTypeC'+i+'"></canvas></div>';
+      defWrap.appendChild(row);
+      setTimeout((idx,d,c2,lbl)=>{
+        const cv=document.getElementById('defTypeC'+idx); if(!cv) return;
+        new Chart(cv,{type:'line',data:{labels:lbl,datasets:[{
+          data:d,
+          borderColor:c2,backgroundColor:c2+'18',
+          pointRadius:3,pointBackgroundColor:'#fff',pointBorderColor:c2,pointBorderWidth:1.5,
+          borderWidth:2,tension:0.3,fill:true,
+          datalabels:{anchor:'top',align:'top',clamp:true,offset:1,color:c2,
+            font:{family:'JetBrains Mono',weight:'700',size:9},
+            formatter:v=>v>0?String(v):''}
+        }]},options:{
+          responsive:true,maintainAspectRatio:false,animation:{duration:150},
+          plugins:{legend:{display:false},datalabels:{}},
+          scales:{
+            x:{grid:{display:false},ticks:{font:{size:8},maxRotation:0,color:'#94A3B8'}},
+            y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{size:8},color:'#94A3B8'},
+               suggestedMax:Math.max(...d,1)*1.6}
+          },layout:{padding:{top:16,right:4,bottom:2,left:2}}
+        }});
+      },10,i,data,col,defML);
+    });
+  }
 
   // 불량유형 분포 수평바 (동적 높이)
   const types=Object.keys(s.byDefectDetail), counts=Object.values(s.byDefectDetail);
@@ -1400,7 +1475,10 @@ function renderCritical(s){
   const typeKeys=Object.keys(byType).sort((a,b)=>byType[b]-byType[a]);
   const typeVals=typeKeys.map(k=>byType[k]);
   const dw=document.getElementById('critTypeWrap');
-  dw.style.height=Math.max(120,typeKeys.length*38+20)+'px';
+  const critChartH=Math.max(160,typeKeys.length*44+20);
+  dw.style.height=critChartH+'px';
+  const mw=document.getElementById('cCritMonthlyWrap');
+  if(mw) mw.style.height=critChartH+'px';
   const critColors=['rgba(220,38,38,0.85)','rgba(234,88,12,0.8)','rgba(217,119,6,0.8)','rgba(124,58,237,0.8)','rgba(13,148,136,0.8)','rgba(37,99,235,0.7)'];
   const critTextColors=[P.red,P.orange,P.amber,P.purple,P.teal,P.blue];
   mkChart('cCritType','bar',{labels:typeKeys,datasets:[{data:typeVals,
@@ -1417,13 +1495,35 @@ function renderCritical(s){
   const mL=months.map(m=>m.slice(0,4)+'.'+m.slice(4));
   const critMon={}; months.forEach(m=>{ critMon[m]=0; });
   critD.forEach(d=>{ if(!d.receiptDate) return; const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7); if(critMon[ym]!==undefined) critMon[ym]+=d.qty; });
-  mkChart('cCritMonthly','bar',{labels:mL,datasets:[{data:months.map(m=>critMon[m]||0),
-    backgroundColor:'rgba(220,38,38,0.75)',borderRadius:5,
-    datalabels:{anchor:'end',align:'end',clamp:true,offset:3,color:P.red,font:{family:'JetBrains Mono',weight:'700',size:11},formatter:v=>v>0?fmt(v):''}}]
-  },{plugins:{legend:{display:false},datalabels:{}},
-    scales:{x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}},
-            y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}}}},
-    layout:{padding:{top:24}}});
+    const critVals=months.map(m=>critMon[m]||0);
+  const critMax=Math.max(...critVals,1);
+  // 추세선 계산
+  const cn=critVals.length;
+  const csx=critVals.reduce((_,__,i)=>_+i,0),csy=critVals.reduce((a,v)=>a+v,0);
+  const csxy=critVals.reduce((a,v,i)=>a+i*v,0),csx2=critVals.reduce((a,_,i)=>a+i*i,0);
+  const cslope=(cn*csxy-csx*csy)/(cn*csx2-csx*csx||1);
+  const csint=(csy-cslope*csx)/cn;
+  const critTrend=critVals.map((_,i)=>Math.max(0,+(csint+cslope*i).toFixed(1)));
+  // 색상 차등 — 건수 많을수록 진하게
+  const critBgColors=critVals.map(v=>{
+    const ratio=critMax>0?v/critMax:0;
+    const alpha=0.25+ratio*0.65;
+    return 'rgba(192,57,43,'+alpha.toFixed(2)+')';
+  });
+  mkChart('cCritMonthly','bar',{labels:mL,datasets:[
+    {type:'bar',label:'크리티컬',data:critVals,backgroundColor:critBgColors,borderRadius:5,order:2,
+      datalabels:{anchor:'end',align:'end',clamp:true,offset:3,color:P.red,
+        font:{family:'JetBrains Mono',weight:'700',size:11},formatter:v=>v>0?fmt(v):''}},
+    {type:'line',label:'추세선',data:critTrend,
+      borderColor:'rgba(192,57,43,0.5)',borderWidth:2,borderDash:[5,4],
+      pointRadius:0,backgroundColor:'transparent',order:1,datalabels:{display:false}}
+  ]},{plugins:{legend:{display:false},datalabels:{}},
+    scales:{
+      x:{grid:{display:false},ticks:{font:{family:'Pretendard',size:10}}},
+      y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}},
+         suggestedMax:critMax*1.4}
+    },
+    layout:{padding:{top:28,right:8}}});
 
   // 이상 급증
   const monthsSorted=Object.keys(s.byReceiptMonth||{}).sort();
@@ -1847,7 +1947,8 @@ const PERIOD_LABELS={q1:'Q1 (1~3월)',q2:'Q2 (4~6월)',q3:'Q3 (7~9월)',q4:'Q4 (
 function buildMonthSelect(){
   const sel=document.getElementById('monthSelect');
   if(!sel||!G) return;
-  const allMs=Object.keys(G.summary.byReceiptMonth||{}).sort();
+  const allMs=Object.keys(G.summary.byReceiptMonth||{}).sort()
+    .filter(ym=>ym>=MIN_MONTH); // 2026년 3월 이후만
   // 기존 옵션 제거 후 재생성
   sel.innerHTML='<option value="all">전체 월</option>';
   allMs.forEach(ym=>{
@@ -1882,9 +1983,12 @@ function setPeriod(p,btn){
   applyFilter();
 }
 
+const MIN_MONTH='202603'; // 2026년 3월 이전 데이터 제외
+
 function getIncludedMonths(){
   if(!G) return[];
-  const allM=Object.keys(G.summary.byReceiptMonth||{}).sort();
+  const allM=Object.keys(G.summary.byReceiptMonth||{}).sort()
+    .filter(ym=>ym>=MIN_MONTH); // 2026년 3월 이후만
   if(FILTER.month!=='all'){
     return allM.filter(ym=>ym===FILTER.month);
   }
@@ -1900,7 +2004,8 @@ function getFiltered(){
   if(!G) return{fD:[],fs:G?.summary};
   const included=getIncludedMonths();
   const fD=(G.rawDefects||[]).filter(d=>{ if(!d.receiptDate) return false;
-    const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7); return included.includes(ym); });
+    const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
+    return ym>=MIN_MONTH && included.includes(ym); });
   const fs=buildFilteredSummary(fD,G.summary.monthlySalesTotals||{},included);
   return{fD,fs,included};
 }
