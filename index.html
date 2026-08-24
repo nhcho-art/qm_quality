@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v5.7</title>
+<title>JMW Quality Dashboard v5.8</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -278,7 +278,7 @@ tbody tr:hover td{background:#FDFCFE;}
   <span class="flabel" id="periodLabel">연간</span>
   <div class="ver-dropdown-wrap">
     <div class="ver-chip" onclick="toggleVerDropdown(this)" id="verChip">
-      <span>v5.7</span>
+      <span>v5.8</span>
       <span class="ver-arrow">▼</span>
     </div>
     <div class="ver-dropdown" id="verDropdown">
@@ -287,12 +287,12 @@ tbody tr:hover td{background:#FDFCFE;}
         <div class="ver-dropdown-hd-sub">JMW Quality Dashboard</div>
       </div>
       <div class="ver-dropdown-item">
-        <div><span class="ver-dropdown-item-tag">v5.5</span><span class="ver-dropdown-item-new">NEW</span></div>
-        <div class="ver-dropdown-item-desc">불량유형 전체 월별 라인차트</div>
+        <div><span class="ver-dropdown-item-tag">v5.8</span><span class="ver-dropdown-item-new">NEW</span></div>
+        <div class="ver-dropdown-item-desc">필터 완전 재설계 · 전기능 정상화</div>
         <div class="ver-dropdown-item-list">
-          <div>· 불량유형 전체 라인차트 (C 레이아웃)</div>
-          <div>· 순위+건수+비율+월별 추이 한줄</div>
-          <div>· 크리티컬 유형 ⚡ 강조 표시</div>
+          <div>· 2026.03 이후 데이터만 집계</div>
+          <div>· 생산분류별 도넛 차트 적용</div>
+          <div>· 네비 박스탭 · 기간필터 수정</div>
         </div>
       </div>
       <div class="ver-dropdown-item">
@@ -744,7 +744,7 @@ async function loadData(){
       G=getMock();
     }
   }
-  G_ORIGINAL=JSON.parse(JSON.stringify(G)); // 원본 백업
+  G_ORIGINAL = JSON.parse(JSON.stringify(G)); // 원본 백업 — 절대 변경 안함
   initFilter();
   renderAll();
   stopLoadingUI();
@@ -761,12 +761,11 @@ function showPg(i,el){
 }
 
 function renderAll(){
-  // loadData 후 항상 필터 재적용
   applyFilter();
 }
 
 function renderWithFilter(fn){
-  if(!G||!fn) return;
+  if(!G_ORIGINAL||!fn) return;
   const {fD,fs}=getFiltered();
   G.rawDefects=fD; G.summary=fs;
   fn(fs);
@@ -1340,76 +1339,61 @@ function renderSKU(s){
 function renderDefect(s){
   if(!s) return;
   dpg(['cDefectTiming','cDefectChannel']);
-  // 불량유형 월별 미니차트 초기화
-  ['defectTypeMonthWrap1','defectTypeMonthWrap2'].forEach(wid=>{
-    const dtw=document.getElementById(wid);
-    if(dtw) Array.from(dtw.querySelectorAll('canvas')).forEach(c=>{if(charts[c.id]){try{charts[c.id].destroy();}catch(e){} delete charts[c.id];}});
-  });
-  // 불량유형 전체 · 월별 바차트 (좌1~20, 우21~40)
-  const defMonths=Object.keys(s.byReceiptMonth||{}).sort();
-  const defML=defMonths.map(m=>m.slice(0,4)===new Date().getFullYear().toString()?m.slice(4)+'월':m.slice(2,4)+'.'+m.slice(4)+'월');
-  const allDefTypes=Object.keys(s.byDefectDetail||{});
-  const totalAll=s.totalDefects||1;
+  // 불량유형 전체 월별 바차트 (1~20 좌측, 21~40 우측)
+  const _defMonths=Object.keys(s.byReceiptMonth||{}).sort();
+  const _defML=_defMonths.map(m=>m.slice(0,4)===new Date().getFullYear().toString()?m.slice(4)+'월':m.slice(2,4)+'.'+m.slice(4)+'월');
+  const _allDT=Object.keys(s.byDefectDetail||{});
+  const _totalAll=s.totalDefects||1;
 
-  function renderDefectTypeRows(wrapId, types, offset){
-    const wrap=document.getElementById(wrapId);
-    if(!wrap) return;
+  function _renderDTRows(wrapId,types,offset){
+    const wrap=document.getElementById(wrapId); if(!wrap) return;
     wrap.innerHTML='';
+    // 기존 미니차트 destroy
+    Array.from(wrap.querySelectorAll('canvas')).forEach(c=>{if(charts[c.id]){try{charts[c.id].destroy();}catch(e){} delete charts[c.id];}});
     types.forEach((t,i)=>{
-      const globalIdx=i+offset;
-      const typeMon={}; defMonths.forEach(m=>{typeMon[m]=0;});
+      const gi=i+offset;
+      const tm={}; _defMonths.forEach(m=>{tm[m]=0;});
       if(G.rawDefects) G.rawDefects.forEach(d=>{
         if(d.defectDetail!==t||!d.receiptDate) return;
         const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
-        if(typeMon[ym]!==undefined) typeMon[ym]+=d.qty;
+        if(tm[ym]!==undefined) tm[ym]+=d.qty;
       });
-      const data=defMonths.map(m=>typeMon[m]||0);
+      const data=_defMonths.map(m=>tm[m]||0);
       const totalT=data.reduce((a,b)=>a+b,0);
-      const col=PAL[globalIdx%PAL.length];
+      const col=PAL[gi%PAL.length];
       const isCrit=CRITICAL_TYPES.includes(t);
-      const maxD=Math.max(...data,1);
-      const bgColors=data.map(v=>{
-        const ratio=maxD>0?v/maxD:0;
-        const alpha=0.25+ratio*0.65;
-        return col.replace(')',','+alpha.toFixed(2)+')').replace('rgb(','rgba(').replace(/^#([0-9a-f]{6})$/i,
-          (_,h)=>'rgba('+parseInt(h.slice(0,2),16)+','+parseInt(h.slice(2,4),16)+','+parseInt(h.slice(4,6),16)+','+alpha.toFixed(2)+')');
-      });
+      const mx=Math.max(...data,1);
+      const bgs=data.map(v=>{ const a=(0.25+(mx>0?v/mx:0)*0.65).toFixed(2);
+        return col.replace(/^#([0-9a-f]{6})$/i,(_,h)=>'rgba('+parseInt(h.slice(0,2),16)+','+parseInt(h.slice(2,4),16)+','+parseInt(h.slice(4,6),16)+','+a+')'); });
       const row=document.createElement('div');
-      row.style.cssText='display:grid;grid-template-columns:160px 1fr;gap:10px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border2);';
-      row.innerHTML=
-        '<div style="display:flex;align-items:center;gap:6px;">'+
-          '<span style="font-family:JetBrains Mono;font-size:10px;font-weight:800;color:var(--text4);min-width:20px;text-align:right;">'+(globalIdx+1)+'</span>'+
-          '<div>'+
-            '<div style="font-size:11px;font-weight:700;color:'+(isCrit?'var(--red)':col)+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">'+(isCrit?'⚡ ':'')+t+'</div>'+
-            '<div style="display:flex;align-items:center;gap:6px;margin-top:1px;">'+
-              '<span style="font-size:10px;font-weight:800;color:'+(isCrit?'var(--red)':col)+';">'+fmt(totalT)+'건</span>'+
-              '<span style="font-size:9px;color:var(--text4);">'+pct(totalT,totalAll)+'%</span>'+
-            '</div>'+
-          '</div>'+
-        '</div>'+
-        '<div style="position:relative;height:52px;"><canvas id="defTypeC'+globalIdx+'"></canvas></div>';
+      row.style.cssText='display:grid;grid-template-columns:155px 1fr;gap:10px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border2);';
+      row.innerHTML='<div style="display:flex;align-items:center;gap:6px;">'+
+        '<span style="font-family:JetBrains Mono;font-size:10px;font-weight:800;color:var(--text4);min-width:20px;text-align:right;">'+(gi+1)+'</span>'+
+        '<div><div style="font-size:11px;font-weight:700;color:'+(isCrit?'var(--red)':col)+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:115px;">'+(isCrit?'⚡ ':'')+t+'</div>'+
+        '<div style="display:flex;gap:5px;margin-top:1px;">'+
+          '<span style="font-size:10px;font-weight:800;color:'+(isCrit?'var(--red)':col)+';">'+fmt(totalT)+'건</span>'+
+          '<span style="font-size:9px;color:var(--text4);">'+pct(totalT,_totalAll)+'%</span>'+
+        '</div></div></div>'+
+        '<div style="position:relative;height:52px;"><canvas id="dtc'+gi+'"></canvas></div>';
       wrap.appendChild(row);
-      setTimeout((gIdx,d,c,lbl,bgs)=>{
-        const cv=document.getElementById('defTypeC'+gIdx); if(!cv) return;
-        new Chart(cv,{type:'bar',data:{labels:lbl,datasets:[{
-          data:d, backgroundColor:bgs, borderRadius:3, borderSkipped:false,
-          datalabels:{anchor:'end',align:'end',clamp:true,offset:1,
-            color:c, font:{family:'JetBrains Mono',weight:'700',size:9},
-            formatter:v=>v>0?String(v):''}
-        }]},options:{
-          responsive:true,maintainAspectRatio:false,animation:{duration:150},
+      const cid='dtc'+gi, d2=[...data], c2=col, bg2=[...bgs], lbl2=[..._defML];
+      setTimeout(()=>{
+        const cv=document.getElementById(cid); if(!cv) return;
+        if(charts[cid]){try{charts[cid].destroy();}catch(e){} delete charts[cid];}
+        charts[cid]=new Chart(cv,{type:'bar',data:{labels:lbl2,datasets:[{
+          data:d2,backgroundColor:bg2,borderRadius:3,borderSkipped:false,
+          datalabels:{anchor:'end',align:'end',clamp:true,offset:1,color:c2,
+            font:{family:'JetBrains Mono',weight:'700',size:9},formatter:v=>v>0?String(v):''}
+        }]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:150},
           plugins:{legend:{display:false},datalabels:{}},
-          scales:{
-            x:{grid:{display:false},ticks:{font:{size:8},maxRotation:0,color:'#94A3B8'}},
-            y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{size:8},color:'#94A3B8'},
-               suggestedMax:Math.max(...d,1)*1.6}
-          },layout:{padding:{top:16,right:4,bottom:2,left:2}}
-        }});
-      },10,globalIdx,data,col,defML,bgColors);
+          scales:{x:{grid:{display:false},ticks:{font:{size:8},maxRotation:0,color:'#94A3B8'}},
+            y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{size:8},color:'#94A3B8'},suggestedMax:mx*1.6}},
+          layout:{padding:{top:16,right:4,bottom:2,left:2}}}});
+      },10);
     });
   }
-  renderDefectTypeRows('defectTypeMonthWrap1', allDefTypes.slice(0,20), 0);
-  renderDefectTypeRows('defectTypeMonthWrap2', allDefTypes.slice(20,40), 20);
+  _renderDTRows('defectTypeMonthWrap1',_allDT.slice(0,20),0);
+  _renderDTRows('defectTypeMonthWrap2',_allDT.slice(20,40),20);
 
   // 불량유형 분포 수평바 (동적 높이)
 
@@ -1475,10 +1459,10 @@ function renderCritical(s){
   const typeKeys=Object.keys(byType).sort((a,b)=>byType[b]-byType[a]);
   const typeVals=typeKeys.map(k=>byType[k]);
   const dw=document.getElementById('critTypeWrap');
-  const critChartH=Math.max(160,typeKeys.length*44+20);
-  dw.style.height=critChartH+'px';
-  const mw=document.getElementById('cCritMonthlyWrap');
-  if(mw) mw.style.height=critChartH+'px';
+  const _critH=Math.max(160,typeKeys.length*44+20);
+  dw.style.height=_critH+'px';
+  const _mw=document.getElementById('cCritMonthlyWrap');
+  if(_mw) _mw.style.height=_critH+'px';
   const critColors=['rgba(220,38,38,0.85)','rgba(234,88,12,0.8)','rgba(217,119,6,0.8)','rgba(124,58,237,0.8)','rgba(13,148,136,0.8)','rgba(37,99,235,0.7)'];
   const critTextColors=[P.red,P.orange,P.amber,P.purple,P.teal,P.blue];
   mkChart('cCritType','bar',{labels:typeKeys,datasets:[{data:typeVals,
@@ -1497,32 +1481,20 @@ function renderCritical(s){
   critD.forEach(d=>{ if(!d.receiptDate) return; const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7); if(critMon[ym]!==undefined) critMon[ym]+=d.qty; });
     const critVals=months.map(m=>critMon[m]||0);
   const critMax=Math.max(...critVals,1);
-  // 추세선 계산
-  const cn=critVals.length;
-  const csx=critVals.reduce((_,__,i)=>_+i,0),csy=critVals.reduce((a,v)=>a+v,0);
+  const cn2=critVals.length,csx=critVals.reduce((_,__,i)=>_+i,0),csy=critVals.reduce((a,v)=>a+v,0);
   const csxy=critVals.reduce((a,v,i)=>a+i*v,0),csx2=critVals.reduce((a,_,i)=>a+i*i,0);
-  const cslope=(cn*csxy-csx*csy)/(cn*csx2-csx*csx||1);
-  const csint=(csy-cslope*csx)/cn;
+  const cslope=(cn2*csxy-csx*csy)/(cn2*csx2-csx*csx||1);
+  const csint=(csy-cslope*csx)/cn2;
   const critTrend=critVals.map((_,i)=>Math.max(0,+(csint+cslope*i).toFixed(1)));
-  // 색상 차등 — 건수 많을수록 진하게
-  const critBgColors=critVals.map(v=>{
-    const ratio=critMax>0?v/critMax:0;
-    const alpha=0.25+ratio*0.65;
-    return 'rgba(192,57,43,'+alpha.toFixed(2)+')';
-  });
+  const critBg=critVals.map(v=>{ const a=(0.25+(critMax>0?v/critMax:0)*0.65).toFixed(2); return 'rgba(192,57,43,'+a+')'; });
   mkChart('cCritMonthly','bar',{labels:mL,datasets:[
-    {type:'bar',label:'크리티컬',data:critVals,backgroundColor:critBgColors,borderRadius:5,order:2,
-      datalabels:{anchor:'end',align:'end',clamp:true,offset:3,color:P.red,
-        font:{family:'JetBrains Mono',weight:'700',size:11},formatter:v=>v>0?fmt(v):''}},
-    {type:'line',label:'추세선',data:critTrend,
-      borderColor:'rgba(192,57,43,0.5)',borderWidth:2,borderDash:[5,4],
-      pointRadius:0,backgroundColor:'transparent',order:1,datalabels:{display:false}}
+    {type:'bar',label:'크리티컬',data:critVals,backgroundColor:critBg,borderRadius:5,order:2,
+      datalabels:{anchor:'end',align:'end',clamp:true,offset:3,color:P.red,font:{family:'JetBrains Mono',weight:'700',size:11},formatter:v=>v>0?fmt(v):''}},
+    {type:'line',label:'추세선',data:critTrend,borderColor:'rgba(192,57,43,0.45)',borderWidth:2,
+      borderDash:[5,4],pointRadius:0,backgroundColor:'transparent',order:1,datalabels:{display:false}}
   ]},{plugins:{legend:{display:false},datalabels:{}},
-    scales:{
-      x:{grid:{display:false},ticks:{font:{family:'Pretendard',size:10}}},
-      y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}},
-         suggestedMax:critMax*1.4}
-    },
+    scales:{x:{grid:{display:false},ticks:{font:{family:'Pretendard',size:10}}},
+      y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}},suggestedMax:critMax*1.4}},
     layout:{padding:{top:28,right:8}}});
 
   // 이상 급증
@@ -1651,7 +1623,7 @@ function renderCritical(s){
 
 // ── 모델 상세 셀렉트 빌드 ──
 function buildModelSelect(){
-  if(!G_ORIGINAL) return;
+  if(!G) return;
   const mcat=buildModelCat();
   const mmfg=buildModelMfg();
   const groups={};
@@ -2021,17 +1993,17 @@ function initFilter(){
 function setFilter(type,val,btn){} // 호환용 stub
 
 function applyFilter(){
-  if(!G) return;
+  if(!G_ORIGINAL) return;
   const {fD,fs}=getFiltered();
   const label=FILTER.month!=='all'
     ? FILTER.month.slice(0,4)+'년 '+parseInt(FILTER.month.slice(4))+'월'
     : (PERIOD_LABELS[currentPeriod]||'전체');
   document.getElementById('periodLabel').textContent='📅 '+label+' · '+fmt(fD.length)+'건';
+  // G에 필터 결과 세팅 (G_ORIGINAL은 절대 변경 안함)
+  G.rawDefects=fD; G.summary=fs;
   renderKPIs(fs);
   const active=document.querySelector('.pg.on');
   const idx=active?parseInt(active.id.replace('pg-','')):0;
-  // 필터된 데이터를 G에 직접 반영 (복원 없음 — loadData 시 새 G로 덮어씌워짐)
-  G.rawDefects=fD; G.summary=fs;
   getPageRender(idx)(fs);
 }
 
@@ -2042,8 +2014,8 @@ function buildFilteredSummary(defects,monthlySales,includedMonths){
     byReceiptMonth:{},byCategory:{},byModel:{},byDefectDetail:{},byChannel:{},byMfgType:{},
     byTiming:{'1M':0,'2M':0,'3M':0,'4M~12M':0,'1Y이후':0},
     defectRateByModel:{},monthlySalesTotals:{},categoryDefectMatrix:{}};
-  const origSales=(G_ORIGINAL||G).summary.monthlySalesTotals||{};
-  includedMonths.forEach(ym=>{ if(origSales[ym]) s.monthlySalesTotals[ym]=origSales[ym]; });
+  const _origSales=(G_ORIGINAL||G).summary.monthlySalesTotals||{};
+  includedMonths.forEach(ym=>{ if(_origSales[ym]) s.monthlySalesTotals[ym]=_origSales[ym]; });
   defects.forEach(d=>{
     const ym=d.receiptDate?d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7):'';
     if(ym) s.byReceiptMonth[ym]=(s.byReceiptMonth[ym]||0)+d.qty;
@@ -2062,8 +2034,8 @@ function buildFilteredSummary(defects,monthlySales,includedMonths){
   s.byCategory=sO(s.byCategory); s.byModel=sO(s.byModel);
   s.byDefectDetail=sO(s.byDefectDetail); s.byChannel=sO(s.byChannel); s.byMfgType=sO(s.byMfgType);
   Object.keys(s.byModel).forEach(m=>{
-    const orig=G&&G.summary&&G.summary.defectRateByModel[m];
-    const salesQty=orig?orig.sales:0; const dq=s.byModel[m]||0;
+    const _origDr=G_ORIGINAL&&G_ORIGINAL.summary&&G_ORIGINAL.summary.defectRateByModel[m];
+    const salesQty=_origDr?_origDr.sales:0; const dq=s.byModel[m]||0;
     s.defectRateByModel[m]={defects:dq,sales:salesQty,rate:salesQty>0?dq/salesQty*100:null};
   });
   return s;
@@ -2082,8 +2054,8 @@ function toggleVerDropdown(chip){
 }
 
 // ── 유틸 ──
-function buildModelCat(){ const m={}; const src=(G_ORIGINAL||G); if(src.rawDefects) src.rawDefects.forEach(d=>{ if(!m[d.model]) m[d.model]=d.category; }); return m; }
-function buildModelMfg(){ const m={}; const src=(G_ORIGINAL||G); if(src.rawDefects) src.rawDefects.forEach(d=>{ if(!m[d.model]) m[d.model]=d.mfgType; }); return m; }
+function buildModelCat(){ const m={}; const _src=G_ORIGINAL||G; if(_src.rawDefects) _src.rawDefects.forEach(d=>{ if(!m[d.model]) m[d.model]=d.category; }); return m; }
+function buildModelMfg(){ const m={}; const _src=G_ORIGINAL||G; if(_src.rawDefects) _src.rawDefects.forEach(d=>{ if(!m[d.model]) m[d.model]=d.mfgType; }); return m; }
 function setEl(id,v){ const el=document.getElementById(id); if(el) el.textContent=v; }
 function fmt(n){ return Number(n).toLocaleString('ko-KR'); }
 function pct(n,t){ return t>0?(n/t*100).toFixed(1):'0.0'; }
