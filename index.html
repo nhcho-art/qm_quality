@@ -772,7 +772,7 @@ function renderWithFilter(fn){
   const orig=G.rawDefects, origS=G.summary;
   G.rawDefects=fD; G.summary=fs;
   fn(fs);
-  G.rawDefects=orig; G.summary=origS;
+  setTimeout(()=>{ G.rawDefects=orig; G.summary=origS; },500);
 }
 
 // ── 차트 팩토리 ──
@@ -2037,7 +2037,8 @@ function applyFilter(){
   const orig=G.rawDefects,origS=G.summary;
   G.rawDefects=fD; G.summary=fs;
   getPageRender(idx)(fs);
-  G.rawDefects=orig; G.summary=origS;
+  // setTimeout으로 지연된 차트들이 모두 실행된 후 복원
+  setTimeout(()=>{ G.rawDefects=orig; G.summary=origS; },500);
 }
 
 function buildFilteredSummary(defects,monthlySales,includedMonths){
