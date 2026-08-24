@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v5.6</title>
+<title>JMW Quality Dashboard v5.7</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -278,7 +278,7 @@ tbody tr:hover td{background:#FDFCFE;}
   <span class="flabel" id="periodLabel">연간</span>
   <div class="ver-dropdown-wrap">
     <div class="ver-chip" onclick="toggleVerDropdown(this)" id="verChip">
-      <span>v5.6</span>
+      <span>v5.7</span>
       <span class="ver-arrow">▼</span>
     </div>
     <div class="ver-dropdown" id="verDropdown">
@@ -524,16 +524,21 @@ tbody tr:hover td{background:#FDFCFE;}
 <!-- ④ 불량유형 -->
 <div class="pg" id="pg-3">
   <div class="sd"><div class="sd-line"></div><span class="sd-lbl">불량유형 분석</span><div class="sd-line"></div></div>
-  <div class="card mb16">
-    <div class="card-hd">
-      <div class="card-hd-title">불량유형 전체 · 월별 추이</div>
-      <span class="bdg b-red">건수 순 · 전체 유형</span>
+  <div class="g2 mb16">
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-hd-title">불량유형 1~20위 · 월별 추이</div>
+        <span class="bdg b-red">건수 순</span>
+      </div>
+      <div class="card-body" id="defectTypeMonthWrap1" style="display:flex;flex-direction:column;gap:4px;padding-top:8px;"></div>
     </div>
-    <div class="card-body" id="defectTypeMonthWrap" style="display:flex;flex-direction:column;gap:4px;padding-top:12px;"></div>
-  </div>
-  <div class="card mb16">
-    <div class="card-hd"><div class="card-hd-title">불량유형 분포</div><span class="bdg b-blue">Top 12 · 건수 비중</span></div>
-    <div class="card-body"><div id="defectDistWrap" style="position:relative;"><canvas id="cDefectBar"></canvas></div></div>
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-hd-title">불량유형 21~40위 · 월별 추이</div>
+        <span class="bdg b-gray">건수 순</span>
+      </div>
+      <div class="card-body" id="defectTypeMonthWrap2" style="display:flex;flex-direction:column;gap:4px;padding-top:8px;"></div>
+    </div>
   </div>
   <div class="sd"><div class="sd-line"></div><span class="sd-lbl">교차 분석</span><div class="sd-line"></div></div>
   <div class="card mb16">
@@ -1337,18 +1342,24 @@ function renderSKU(s){
 // ── 불량유형 ── (ptByRate 렌더링 버그 수정: 여기서 렌더링)
 function renderDefect(s){
   if(!s) return;
-  dpg(['cDefectBar','cDefectTiming','cDefectChannel']);
+  dpg(['cDefectTiming','cDefectChannel']);
   // 불량유형 월별 미니차트 초기화
-  const dtw=document.getElementById('defectTypeMonthWrap');
-  if(dtw){ Array.from(dtw.querySelectorAll('canvas')).forEach(c=>{if(charts[c.id]){try{charts[c.id].destroy();}catch(e){} delete charts[c.id];}}); }
-  // 불량유형 전체 · 월별 라인차트 (월별트렌드 Top10 스타일)
+  ['defectTypeMonthWrap1','defectTypeMonthWrap2'].forEach(wid=>{
+    const dtw=document.getElementById(wid);
+    if(dtw) Array.from(dtw.querySelectorAll('canvas')).forEach(c=>{if(charts[c.id]){try{charts[c.id].destroy();}catch(e){} delete charts[c.id];}});
+  });
+  // 불량유형 전체 · 월별 바차트 (좌1~20, 우21~40)
   const defMonths=Object.keys(s.byReceiptMonth||{}).sort();
   const defML=defMonths.map(m=>m.slice(0,4)===new Date().getFullYear().toString()?m.slice(4)+'월':m.slice(2,4)+'.'+m.slice(4)+'월');
-  const allDefTypes=Object.keys(s.byDefectDetail||{}); // 건수 내림차순 전체
-  const defWrap=document.getElementById('defectTypeMonthWrap');
-  if(defWrap){
-    defWrap.innerHTML='';
-    allDefTypes.forEach((t,i)=>{
+  const allDefTypes=Object.keys(s.byDefectDetail||{});
+  const totalAll=s.totalDefects||1;
+
+  function renderDefectTypeRows(wrapId, types, offset){
+    const wrap=document.getElementById(wrapId);
+    if(!wrap) return;
+    wrap.innerHTML='';
+    types.forEach((t,i)=>{
+      const globalIdx=i+offset;
       const typeMon={}; defMonths.forEach(m=>{typeMon[m]=0;});
       if(G.rawDefects) G.rawDefects.forEach(d=>{
         if(d.defectDetail!==t||!d.receiptDate) return;
@@ -1357,33 +1368,36 @@ function renderDefect(s){
       });
       const data=defMonths.map(m=>typeMon[m]||0);
       const totalT=data.reduce((a,b)=>a+b,0);
-      const totalAll=s.totalDefects||1;
-      const col=PAL[i%PAL.length];
+      const col=PAL[globalIdx%PAL.length];
       const isCrit=CRITICAL_TYPES.includes(t);
+      const maxD=Math.max(...data,1);
+      const bgColors=data.map(v=>{
+        const ratio=maxD>0?v/maxD:0;
+        const alpha=0.25+ratio*0.65;
+        return col.replace(')',','+alpha.toFixed(2)+')').replace('rgb(','rgba(').replace(/^#([0-9a-f]{6})$/i,
+          (_,h)=>'rgba('+parseInt(h.slice(0,2),16)+','+parseInt(h.slice(2,4),16)+','+parseInt(h.slice(4,6),16)+','+alpha.toFixed(2)+')');
+      });
       const row=document.createElement('div');
-      row.style.cssText='display:grid;grid-template-columns:200px 1fr;gap:12px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border2);';
+      row.style.cssText='display:grid;grid-template-columns:160px 1fr;gap:10px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border2);';
       row.innerHTML=
-        '<div style="display:flex;align-items:center;gap:8px;">'+
-          '<span style="font-family:JetBrains Mono;font-size:11px;font-weight:800;color:var(--text4);min-width:18px;">'+(i+1)+'</span>'+
+        '<div style="display:flex;align-items:center;gap:6px;">'+
+          '<span style="font-family:JetBrains Mono;font-size:10px;font-weight:800;color:var(--text4);min-width:20px;text-align:right;">'+(globalIdx+1)+'</span>'+
           '<div>'+
-            '<div style="font-size:12px;font-weight:700;color:'+(isCrit?'var(--red)':col)+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;">'+(isCrit?'⚡ ':'')+t+'</div>'+
-            '<div style="display:flex;align-items:center;gap:8px;margin-top:2px;">'+
-              '<span style="font-size:11px;font-weight:800;color:'+(isCrit?'var(--red)':col)+';">'+fmt(totalT)+'건</span>'+
-              '<span style="font-size:10px;color:var(--text4);">'+pct(totalT,totalAll)+'%</span>'+
+            '<div style="font-size:11px;font-weight:700;color:'+(isCrit?'var(--red)':col)+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">'+(isCrit?'⚡ ':'')+t+'</div>'+
+            '<div style="display:flex;align-items:center;gap:6px;margin-top:1px;">'+
+              '<span style="font-size:10px;font-weight:800;color:'+(isCrit?'var(--red)':col)+';">'+fmt(totalT)+'건</span>'+
+              '<span style="font-size:9px;color:var(--text4);">'+pct(totalT,totalAll)+'%</span>'+
             '</div>'+
           '</div>'+
         '</div>'+
-        '<div style="position:relative;height:56px;"><canvas id="defTypeC'+i+'"></canvas></div>';
-      defWrap.appendChild(row);
-      setTimeout((idx,d,c2,lbl)=>{
-        const cv=document.getElementById('defTypeC'+idx); if(!cv) return;
-        new Chart(cv,{type:'line',data:{labels:lbl,datasets:[{
-          data:d,
-          borderColor:c2,backgroundColor:c2+'18',
-          pointRadius:3,pointBackgroundColor:'#fff',pointBorderColor:c2,pointBorderWidth:1.5,
-          borderWidth:2,tension:0.3,fill:true,
-          datalabels:{anchor:'top',align:'top',clamp:true,offset:1,color:c2,
-            font:{family:'JetBrains Mono',weight:'700',size:9},
+        '<div style="position:relative;height:52px;"><canvas id="defTypeC'+globalIdx+'"></canvas></div>';
+      wrap.appendChild(row);
+      setTimeout((gIdx,d,c,lbl,bgs)=>{
+        const cv=document.getElementById('defTypeC'+gIdx); if(!cv) return;
+        new Chart(cv,{type:'bar',data:{labels:lbl,datasets:[{
+          data:d, backgroundColor:bgs, borderRadius:3, borderSkipped:false,
+          datalabels:{anchor:'end',align:'end',clamp:true,offset:1,
+            color:c, font:{family:'JetBrains Mono',weight:'700',size:9},
             formatter:v=>v>0?String(v):''}
         }]},options:{
           responsive:true,maintainAspectRatio:false,animation:{duration:150},
@@ -1394,24 +1408,13 @@ function renderDefect(s){
                suggestedMax:Math.max(...d,1)*1.6}
           },layout:{padding:{top:16,right:4,bottom:2,left:2}}
         }});
-      },10,i,data,col,defML);
+      },10,globalIdx,data,col,defML,bgColors);
     });
   }
+  renderDefectTypeRows('defectTypeMonthWrap1', allDefTypes.slice(0,20), 0);
+  renderDefectTypeRows('defectTypeMonthWrap2', allDefTypes.slice(20,40), 20);
 
   // 불량유형 분포 수평바 (동적 높이)
-  const types=Object.keys(s.byDefectDetail), counts=Object.values(s.byDefectDetail);
-  const top12t=types.slice(0,12), top12c=counts.slice(0,12);
-  const defTotal=top12c.reduce((a,b)=>a+b,0);
-  const dw=document.getElementById('defectDistWrap');
-  dw.style.height=Math.max(220,top12t.length*34+30)+'px';
-  mkChart('cDefectBar','bar',{labels:top12t,datasets:[{data:top12c,backgroundColor:PAL,borderRadius:4,borderSkipped:false,
-    datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,
-      color:(ctx)=>PAL[ctx.dataIndex],font:{family:'JetBrains Mono',weight:'700',size:10},
-      formatter:v=>fmt(v)+' ('+pct(v,defTotal)+'%)'}}]
-  },{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
-    scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:9}}},
-            y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}}},
-    layout:{padding:{right:120,top:4}}});
 
   // 매트릭스 히트맵
   const cats=Object.keys(s.categoryDefectMatrix||{}), topT=types.slice(0,10);
