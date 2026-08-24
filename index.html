@@ -1321,7 +1321,7 @@ function renderSKU(s){
     layout:{padding:{top:20,right:8}}});
 
   // 발생시점 스택바
-  if(!G.rawDefects||!G.rawDefects.length) return;
+  if(!G||!G.rawDefects||!G.rawDefects.length) return;
   const top8=allM.slice(0,8), mTD={};
   top8.forEach(m=>{ mTD[m]={1:0,2:0,3:0,12:0,99:0}; });
   G.rawDefects.forEach(d=>{ if(!top8.includes(d.model)) return; const mo=d.monthsToReceipt||0;
@@ -1398,7 +1398,7 @@ function renderDefect(s){
   // 불량유형 분포 수평바 (동적 높이)
 
   // 매트릭스 히트맵
-  const cats=Object.keys(s.categoryDefectMatrix||{}), topT=types.slice(0,10);
+  const cats=Object.keys(s.categoryDefectMatrix||{}), topT=_allDT.slice(0,10);
   const maxC=Math.max(...cats.flatMap(c=>topT.map(t=>s.categoryDefectMatrix[c][t]||0)),1);
   document.getElementById('matrixWrap').innerHTML=`<table>
     <thead><tr><th>품목</th>${topT.map(t=>`<th class="tc" style="min-width:60px;font-size:9px">${t}</th>`).join('')}<th class="tr">합계</th></tr></thead>
@@ -1410,8 +1410,8 @@ function renderDefect(s){
       }).join('')}<td class="tr mono" style="font-weight:800">${rT}</td></tr>`;
     }).join('')}</tbody></table>`;
 
-  if(!G.rawDefects||!G.rawDefects.length) return;
-  const top8t=types.slice(0,8), dtTD={};
+  if(!G||!G.rawDefects||!G.rawDefects.length) return;
+  const top8t=_allDT.slice(0,8), dtTD={};
   top8t.forEach(t=>{ dtTD[t]={1:0,2:0,3:0,12:0,99:0}; });
   G.rawDefects.forEach(d=>{ if(!top8t.includes(d.defectDetail)) return; const mo=d.monthsToReceipt||0;
     if(mo<=1)dtTD[d.defectDetail][1]+=d.qty; else if(mo<=2)dtTD[d.defectDetail][2]+=d.qty;
@@ -1423,7 +1423,7 @@ function renderDefect(s){
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}},
             y:{stacked:true,beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}}}}});
 
-  const chK=Object.keys(s.byChannel||{}), top6t=types.slice(0,6), dtChD={};
+  const chK=Object.keys(s.byChannel||{}), top6t=_allDT.slice(0,6), dtChD={};
   chK.forEach(ch=>{ dtChD[ch]={}; top6t.forEach(t=>{ dtChD[ch][t]=0; }); });
   G.rawDefects.forEach(d=>{ if(dtChD[d.channel]&&top6t.includes(d.defectDetail)) dtChD[d.channel][d.defectDetail]+=d.qty; });
   mkChart('cDefectChannel','bar',{labels:chK,datasets:top6t.map((t,i)=>({label:t,
@@ -1435,7 +1435,7 @@ function renderDefect(s){
 
 // ── 크리티컬 ── (ptByRate 참조 제거)
 function renderCritical(s){
-  if(!s||!G.rawDefects||!G.rawDefects.length) return;
+  if(!s||!G||!G.rawDefects||!G.rawDefects.length) return;
   dpg(['cCritType','cCritMonthly','cCritModel','cCritChannel','cCritModelTiming']);
 
   const critD=G.rawDefects.filter(d=>CRITICAL_TYPES.includes(d.defectDetail));
@@ -1978,7 +1978,7 @@ function getFiltered(){
   const fD=(G_ORIGINAL.rawDefects||[]).filter(d=>{ if(!d.receiptDate) return false;
     const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
     return ym>=MIN_MONTH && included.includes(ym); });
-  const fs=buildFilteredSummary(fD,G.summary.monthlySalesTotals||{},included);
+  const fs=buildFilteredSummary(fD,(G_ORIGINAL||G).summary.monthlySalesTotals||{},included);
   return{fD,fs,included};
 }
 
