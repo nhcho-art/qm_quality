@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v5.8</title>
+<title>JMW Quality Dashboard v5.9</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -278,7 +278,7 @@ tbody tr:hover td{background:#FDFCFE;}
   <span class="flabel" id="periodLabel">연간</span>
   <div class="ver-dropdown-wrap">
     <div class="ver-chip" onclick="toggleVerDropdown(this)" id="verChip">
-      <span>v5.8</span>
+      <span>v5.9</span>
       <span class="ver-arrow">▼</span>
     </div>
     <div class="ver-dropdown" id="verDropdown">
@@ -287,8 +287,8 @@ tbody tr:hover td{background:#FDFCFE;}
         <div class="ver-dropdown-hd-sub">JMW Quality Dashboard</div>
       </div>
       <div class="ver-dropdown-item">
-        <div><span class="ver-dropdown-item-tag">v5.8</span><span class="ver-dropdown-item-new">NEW</span></div>
-        <div class="ver-dropdown-item-desc">필터 완전 재설계 · 전기능 정상화</div>
+        <div><span class="ver-dropdown-item-tag">v5.9</span><span class="ver-dropdown-item-new">NEW</span></div>
+        <div class="ver-dropdown-item-desc">구매년월(L열) 기준 집계로 변경</div>
         <div class="ver-dropdown-item-list">
           <div>· 2026.03 이후 데이터만 집계</div>
           <div>· 생산분류별 도넛 차트 적용</div>
@@ -844,8 +844,8 @@ function renderOverview(s){
   const critMonMap={};
   m26.forEach(m=>{critMonMap[m]=0;});
   if(G.rawDefects) G.rawDefects.forEach(d=>{
-    if(!d.receiptDate||!CRITICAL_TYPES.includes(d.defectDetail)) return;
-    const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
+    if(!d.purchaseYYYYMM||!CRITICAL_TYPES.includes(d.defectDetail)) return;
+    const ym=d.purchaseYYYYMM;
     if(critMonMap[ym]!==undefined) critMonMap[ym]+=d.qty;
   });
   // critV, normV — m26 기반
@@ -1077,7 +1077,7 @@ function renderTrend(s){
     months.forEach(m=>{ catMonthly[m]=0; });
     if(G.rawDefects) G.rawDefects.forEach(d=>{
       if(d.category!==catName||!d.receiptDate) return;
-      const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
+      const ym=d.purchaseYYYYMM;
       if(catMonthly[ym]!==undefined) catMonthly[ym]+=d.qty;
     });
     const catVals=months.map(m=>catMonthly[m]||0);
@@ -1130,7 +1130,7 @@ function renderTrend(s){
     const mData={}; months.forEach(m=>{ mData[m]=0; });
     if(G.rawDefects) G.rawDefects.forEach(d=>{
       if(d.model!==model||!d.receiptDate) return;
-      const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
+      const ym=d.purchaseYYYYMM;
       if(mData[ym]!==undefined) mData[ym]+=d.qty;
     });
     const data=months.map(m=>mData[m]);
@@ -1175,7 +1175,7 @@ function renderTrend(s){
     const mData={}; months.forEach(m=>{ mData[m]=0; });
     if(G.rawDefects) G.rawDefects.forEach(d=>{
       if(d.model!==model||!d.receiptDate) return;
-      const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
+      const ym=d.purchaseYYYYMM;
       if(mData[ym]!==undefined) mData[ym]+=d.qty;
     });
     const salesQty=s.defectRateByModel[model]?.sales||1;
@@ -1221,7 +1221,7 @@ function renderTrend(s){
       const typeMon={}; months.forEach(m=>{ typeMon[m]=0; });
       if(G.rawDefects) G.rawDefects.forEach(d=>{
         if(d.defectDetail!==t||!d.receiptDate) return;
-        const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
+        const ym=d.purchaseYYYYMM;
         if(typeMon[ym]!==undefined) typeMon[ym]+=d.qty;
       });
       const data=months.map(m=>typeMon[m]||0);
@@ -1358,7 +1358,7 @@ function renderDefect(s){
       const tm={}; _defMonths.forEach(m=>{tm[m]=0;});
       if(G.rawDefects) G.rawDefects.forEach(d=>{
         if(d.defectDetail!==t||!d.receiptDate) return;
-        const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
+        const ym=d.purchaseYYYYMM;
         if(tm[ym]!==undefined) tm[ym]+=d.qty;
       });
       const data=_defMonths.map(m=>tm[m]||0);
@@ -1481,7 +1481,7 @@ function renderCritical(s){
   const months=Object.keys(s.byReceiptMonth||{}).sort();
   const mL=months.map(m=>m.slice(0,4)+'.'+m.slice(4));
   const critMon={}; months.forEach(m=>{ critMon[m]=0; });
-  critD.forEach(d=>{ if(!d.receiptDate) return; const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7); if(critMon[ym]!==undefined) critMon[ym]+=d.qty; });
+  critD.forEach(d=>{ if(!d.purchaseYYYYMM) return; const ym=d.purchaseYYYYMM; if(critMon[ym]!==undefined) critMon[ym]+=d.qty; });
     const critVals=months.map(m=>critMon[m]||0);
   const critMax=Math.max(...critVals,1);
   const cn2=critVals.length,csx=critVals.reduce((_,__,i)=>_+i,0),csy=critVals.reduce((a,v)=>a+v,0);
@@ -1505,8 +1505,8 @@ function renderCritical(s){
   const lM=monthsSorted[monthsSorted.length-1]||'', pM=monthsSorted[monthsSorted.length-2]||'';
   const spikes=[];
   Object.keys(s.byModel||{}).forEach(m=>{
-    const curr=G.rawDefects.filter(d=>d.model===m&&d.receiptDate&&d.receiptDate.slice(0,7).replace('-','').slice(0,6)===lM).length;
-    const prev=G.rawDefects.filter(d=>d.model===m&&d.receiptDate&&d.receiptDate.slice(0,7).replace('-','').slice(0,6)===pM).length;
+    const curr=G.rawDefects.filter(d=>d.model===m&&d.purchaseYYYYMM===lM).length;
+    const prev=G.rawDefects.filter(d=>d.model===m&&d.purchaseYYYYMM===pM).length;
     if(prev>0&&curr>=prev*2&&curr>=3) spikes.push({model:m,curr,prev,ratio:Math.round(curr/prev*100)});
   });
   spikes.sort((a,b)=>b.ratio-a.ratio);
@@ -1755,8 +1755,8 @@ function renderModelDetail(s, selectedModel){
   const mL=months.map(m=>m.slice(0,4)+'.'+m.slice(4));
   const mData={}; months.forEach(m=>{mData[m]=0;});
   mDefects.forEach(d=>{
-    if(!d.receiptDate) return;
-    const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
+    if(!d.purchaseYYYYMM) return;
+    const ym=d.purchaseYYYYMM;
     if(mData[ym]!==undefined) mData[ym]+=d.qty;
   });
   const mVals=months.map(m=>mData[m]||0);
@@ -1792,8 +1792,8 @@ function renderModelDetail(s, selectedModel){
   if(ctxTM){ charts['cMdTypeMonth']=new Chart(ctxTM,{type:'bar',data:{labels:mL,datasets:top6Types.map((t,i)=>{
     const tData={}; months.forEach(m=>{tData[m]=0;});
     mDefects.filter(d=>d.defectDetail===t).forEach(d=>{
-      if(!d.receiptDate) return;
-      const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
+      if(!d.purchaseYYYYMM) return;
+      const ym=d.purchaseYYYYMM;
       if(tData[ym]!==undefined) tData[ym]+=d.qty;
     });
     return{label:t,data:months.map(m=>tData[m]||0),backgroundColor:PAL[i],borderRadius:2,
@@ -1851,8 +1851,8 @@ function renderModelDetail(s, selectedModel){
   dpg(['cMdCritMonthly']);
   const critMonData={}; months.forEach(m=>{critMonData[m]=0;});
   mDefects.filter(d=>CRITICAL_TYPES.includes(d.defectDetail)).forEach(d=>{
-    if(!d.receiptDate) return;
-    const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
+    if(!d.purchaseYYYYMM) return;
+    const ym=d.purchaseYYYYMM;
     if(critMonData[ym]!==undefined) critMonData[ym]+=d.qty;
   });
   const critMonVals=months.map(m=>critMonData[m]||0);
@@ -1979,7 +1979,7 @@ function getFiltered(){
   if(!G_ORIGINAL) return{fD:[],fs:G?.summary};
   const included=getIncludedMonths();
   const fD=(G_ORIGINAL.rawDefects||[]).filter(d=>{ if(!d.receiptDate) return false;
-    const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);
+    const ym=d.purchaseYYYYMM;
     return ym>=MIN_MONTH && included.includes(ym); });
   const fs=buildFilteredSummary(fD,(G_ORIGINAL||G).summary.monthlySalesTotals||{},included);
   return{fD,fs,included};
@@ -2020,7 +2020,7 @@ function buildFilteredSummary(defects,monthlySales,includedMonths){
   const _origSales=(G_ORIGINAL||G).summary.monthlySalesTotals||{};
   includedMonths.forEach(ym=>{ if(_origSales[ym]) s.monthlySalesTotals[ym]=_origSales[ym]; });
   defects.forEach(d=>{
-    const ym=d.receiptDate?d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7):'';
+    const ym=d.receiptDate?d.purchaseYYYYMM:'';
     if(ym) s.byReceiptMonth[ym]=(s.byReceiptMonth[ym]||0)+d.qty;
     s.byCategory[d.category]=(s.byCategory[d.category]||0)+d.qty;
     s.byModel[d.model]=(s.byModel[d.model]||0)+d.qty;
@@ -2114,7 +2114,7 @@ function getMock(){
     'SC1500B':10671,'W2010ME-C':2000,'MVF6A01A':1500,'CMF1000A':2000,
     'MCF5A02B':1000,'MG1800 PLUS':800,'SRB3A03C':500,'MCF5A01A':700,'MG1800':400,'MF5001A':300};
   rawDefects.forEach(d=>{
-    if(d.receiptDate){const ym=d.receiptDate.slice(0,4)+d.receiptDate.slice(5,7);summary.byReceiptMonth[ym]=(summary.byReceiptMonth[ym]||0)+d.qty;}
+    if(d.receiptDate){const ym=d.purchaseYYYYMM;summary.byReceiptMonth[ym]=(summary.byReceiptMonth[ym]||0)+d.qty;}
     summary.byCategory[d.category]=(summary.byCategory[d.category]||0)+d.qty;
     summary.byModel[d.model]=(summary.byModel[d.model]||0)+d.qty;
     summary.byDefectDetail[d.defectDetail]=(summary.byDefectDetail[d.defectDetail]||0)+d.qty;
