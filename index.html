@@ -748,21 +748,21 @@ tbody tr:hover td{background:#FDFCFE;}
           <div style="font-size:14px;font-weight:700;color:var(--text);">처리 상태</div>
           <span class="bdg b-gray">종결·진행중·접수</span>
         </div>
-        <div style="position:relative;height:180px;"><canvas id="cCompStatus"></canvas></div>
+        <div id="cCompStatusWrap" style="display:flex;flex-direction:column;gap:0;margin-top:4px;"></div>
       </div>
       <div class="card card-inner">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
           <div style="font-size:14px;font-weight:700;color:var(--text);">구분별</div>
           <span class="bdg b-gray">기화·소싱</span>
         </div>
-        <div style="position:relative;height:180px;"><canvas id="cCompType"></canvas></div>
+        <div id="cCompTypeWrap" style="display:flex;flex-direction:column;gap:0;margin-top:4px;"></div>
       </div>
       <div class="card card-inner">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
           <div style="font-size:14px;font-weight:700;color:var(--text);">보험접수 현황</div>
           <span class="bdg b-gray">Y·N</span>
         </div>
-        <div style="position:relative;height:180px;"><canvas id="cCompInsurance"></canvas></div>
+        <div id="cCompInsuranceWrap" style="display:flex;flex-direction:column;gap:0;margin-top:4px;"></div>
       </div>
     </div>
     <div class="sd"><div class="sd-line"></div><span class="sd-lbl">진행중 케이스</span><div class="sd-line"></div></div>
@@ -858,7 +858,13 @@ function getPageRender(i){ return[renderOverview,renderTrend,renderSKU,renderDef
 function showPg(i,el){
   document.querySelectorAll('.pg').forEach((p,j)=>p.classList.toggle('on',i===j));
   document.querySelectorAll('.nav-tab').forEach((b,j)=>b.classList.toggle('on',i===j));
-  if(i===6){ renderCompensation(); return; }
+  if(i===6){
+    // pg-6 먼저 표시 확인 후 렌더 (canvas가 보여야 Chart.js가 정상 동작)
+    const pg6=document.getElementById('pg-6');
+    if(pg6) pg6.style.display='block';
+    setTimeout(()=>renderCompensation(),50);
+    return;
+  }
   renderWithFilter(getPageRender(i));
 }
 
@@ -2327,28 +2333,88 @@ async function renderCompensation(){
       layout:{padding:{right:55,top:4}}});
   }
 
+  // 처리상태 도넛 + 수치
   const stK=['종결','보상/합의 진행중','접수'];
   const stV=stK.map(k=>D.filter(d=>d.status===k).length);
   const stC=['rgba(22,163,74,0.8)','rgba(220,38,38,0.8)','rgba(217,119,6,0.8)'];
-  mkChart('cCompStatus','doughnut',{labels:stK,datasets:[{data:stV,backgroundColor:stC,borderWidth:0,
-    datalabels:{display:(ctx)=>ctx.raw>0,color:'#fff',font:{weight:'700',size:10},
-      formatter:(v,ctx)=>stK[ctx.dataIndex]+' '+v+'건'}}]},
-    {plugins:{legend:{display:false},datalabels:{}},cutout:'55%',layout:{padding:8}});
+  const stTotal=stV.reduce((a,b)=>a+b,0);
+  if(document.getElementById('cCompStatus')){
+    new Chart(document.getElementById('cCompStatus'),{type:'doughnut',data:{
+      datasets:[{data:stV.map(v=>v||0.001),backgroundColor:stC,borderWidth:2,borderColor:'#fff',hoverBorderWidth:0}]
+    },options:{responsive:false,cutout:'65%',animation:{duration:300},
+      plugins:{legend:{display:false},tooltip:{display:false},datalabels:{display:false}}}});
+  }
+  var stEl=document.getElementById('cCompStatusWrap');
+  if(stEl) stEl.innerHTML=
+    '<div style="position:relative;width:110px;height:110px;margin:0 auto;">'+
+      '<canvas id="cCompStatus" width="110" height="110"></canvas>'+
+      '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">'+
+        '<div style="font-size:20px;font-weight:800;font-family:JetBrains Mono;color:var(--text)">'+stTotal+'</div>'+
+        '<div style="font-size:10px;color:var(--text4)">건</div>'+
+      '</div>'+
+    '</div>'+
+    stK.map((k,i)=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border2);">'+
+      '<div style="display:flex;align-items:center;gap:6px;"><div style="width:8px;height:8px;border-radius:2px;background:'+stC[i]+'"></div>'+
+      '<span style="font-size:11px;color:var(--text2);">'+k+'</span></div>'+
+      '<span style="font-family:JetBrains Mono;font-weight:700;font-size:12px;color:var(--text)">'+stV[i]+'건</span>'+
+    '</div>').join('');
+  // 도넛 다시 그리기
+  setTimeout(function(){
+    if(charts['cCompStatus']){try{charts['cCompStatus'].destroy();}catch(e2){} delete charts['cCompStatus'];}
+    mkChart('cCompStatus','doughnut',{datasets:[{data:stV.map(function(v){return v||0.001;}),backgroundColor:stC,borderWidth:2,borderColor:'#fff',hoverBorderWidth:0}]},
+      {plugins:{legend:{display:false},tooltip:{enabled:false},datalabels:{display:false}},cutout:'65%',animation:{duration:300}});
+  },60);
 
+  // 구분별 도넛 + 수치
   const dvK=['기화','소싱'];
   const dvV=dvK.map(k=>D.filter(d=>(d.div==='외주'?'소싱':d.div)===k).length);
-  mkChart('cCompType','doughnut',{labels:dvK,datasets:[{data:dvV,
-    backgroundColor:['rgba(37,99,235,0.8)','rgba(124,58,237,0.8)'],borderWidth:0,
-    datalabels:{display:(ctx)=>ctx.raw>0,color:'#fff',font:{weight:'700',size:10},
-      formatter:(v,ctx)=>dvK[ctx.dataIndex]+' '+v+'건'}}]},
-    {plugins:{legend:{display:false},datalabels:{}},cutout:'55%',layout:{padding:8}});
+  const dvC=['rgba(37,99,235,0.8)','rgba(124,58,237,0.8)'];
+  const dvTotal=dvV.reduce((a,b)=>a+b,0);
+  var dvEl=document.getElementById('cCompTypeWrap');
+  if(dvEl) dvEl.innerHTML=
+    '<div style="position:relative;width:110px;height:110px;margin:0 auto;">'+
+      '<canvas id="cCompType" width="110" height="110"></canvas>'+
+      '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">'+
+        '<div style="font-size:20px;font-weight:800;font-family:JetBrains Mono;color:var(--text)">'+dvTotal+'</div>'+
+        '<div style="font-size:10px;color:var(--text4)">건</div>'+
+      '</div>'+
+    '</div>'+
+    dvK.map((k,i)=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border2);">'+
+      '<div style="display:flex;align-items:center;gap:6px;"><div style="width:8px;height:8px;border-radius:2px;background:'+dvC[i]+'"></div>'+
+      '<span style="font-size:11px;color:var(--text2);">'+k+'</span></div>'+
+      '<span style="font-family:JetBrains Mono;font-weight:700;font-size:12px;color:var(--text)">'+dvV[i]+'건</span>'+
+    '</div>').join('');
+  setTimeout(function(){
+    if(charts['cCompType']){try{charts['cCompType'].destroy();}catch(e2){} delete charts['cCompType'];}
+    mkChart('cCompType','doughnut',{datasets:[{data:dvV.map(function(v){return v||0.001;}),backgroundColor:dvC,borderWidth:2,borderColor:'#fff',hoverBorderWidth:0}]},
+      {plugins:{legend:{display:false},tooltip:{enabled:false},datalabels:{display:false}},cutout:'65%',animation:{duration:300}});
+  },60);
 
+  // 보험접수 도넛 + 수치
   const insY=D.filter(d=>d.insurance==='Y').length, insN=D.filter(d=>d.insurance==='N').length;
-  mkChart('cCompInsurance','doughnut',{labels:['보험접수','미접수'],datasets:[{data:[insY,insN],
-    backgroundColor:['rgba(13,148,136,0.8)','rgba(100,116,139,0.6)'],borderWidth:0,
-    datalabels:{display:(ctx)=>ctx.raw>0,color:'#fff',font:{weight:'700',size:10},
-      formatter:(v,ctx)=>['보험접수','미접수'][ctx.dataIndex]+' '+v+'건'}}]},
-    {plugins:{legend:{display:false},datalabels:{}},cutout:'55%',layout:{padding:8}});
+  const insC=['rgba(13,148,136,0.8)','rgba(100,116,139,0.6)'];
+  const insK=['보험접수','미접수'];
+  const insV=[insY,insN];
+  const insTotal=insY+insN;
+  var insEl=document.getElementById('cCompInsuranceWrap');
+  if(insEl) insEl.innerHTML=
+    '<div style="position:relative;width:110px;height:110px;margin:0 auto;">'+
+      '<canvas id="cCompInsurance" width="110" height="110"></canvas>'+
+      '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">'+
+        '<div style="font-size:20px;font-weight:800;font-family:JetBrains Mono;color:var(--text)">'+insTotal+'</div>'+
+        '<div style="font-size:10px;color:var(--text4)">건</div>'+
+      '</div>'+
+    '</div>'+
+    insK.map((k,i)=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border2);">'+
+      '<div style="display:flex;align-items:center;gap:6px;"><div style="width:8px;height:8px;border-radius:2px;background:'+insC[i]+'"></div>'+
+      '<span style="font-size:11px;color:var(--text2);">'+k+'</span></div>'+
+      '<span style="font-family:JetBrains Mono;font-weight:700;font-size:12px;color:var(--text)">'+insV[i]+'건</span>'+
+    '</div>').join('');
+  setTimeout(function(){
+    if(charts['cCompInsurance']){try{charts['cCompInsurance'].destroy();}catch(e2){} delete charts['cCompInsurance'];}
+    mkChart('cCompInsurance','doughnut',{datasets:[{data:insV.map(function(v){return v||0.001;}),backgroundColor:insC,borderWidth:2,borderColor:'#fff',hoverBorderWidth:0}]},
+      {plugins:{legend:{display:false},tooltip:{enabled:false},datalabels:{display:false}},cutout:'65%',animation:{duration:300}});
+  },60);
 
   const pending2=D.filter(d=>d.status==='보상/합의 진행중'||d.status==='접수')
     .sort((a,b)=>(b.date||'').localeCompare(a.date||''));
