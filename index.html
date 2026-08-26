@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0} body{-webkit-user-select:none;user-select:none;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --purple:#7B2D8B;--purple2:#9B4DB0;--purple3:#F5EEF8;--purple4:#EDE0F5;
   --red:#C0392B;--red2:#E74C3C;--blue:#2563EB;--teal:#0D9488;
@@ -23,7 +23,7 @@
   --r:14px;
   --nav-h:68px;--filter-h:48px;
 }
-body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;}
+body{-webkit-user-select:none;user-select:none;font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;}
 
 /* ── 상단 네비 ── */
 .topnav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 32px;gap:0;box-shadow:0 1px 10px rgba(123,45,139,.08);}
@@ -2193,21 +2193,20 @@ function classifyEnv(text){
 
 function getCompMock(){
   return [
-    {date:'2026-03-01',name:'정예린',model:'WS5002RB',div:'기화',risk:'A급 (모발손상)',damage:'사용중 탄냄새가 나면서 앞머리카락 탐',env:'1년 이상 사용',status:'종결',payout:324000,insurance:'N'},
-    {date:'2026-04-28',name:'박경혁',model:'MS6401A',div:'기화',risk:'S급 (신체상해)',damage:'배우자가 사용중 스파크 튀어서 화상입음',env:'배우자가 사용중 스파크튀어 화상',status:'종결',payout:263144,insurance:'N'},
-    {date:'2026-05-01',name:'한규만',model:'M5001A PLUS',div:'기화',risk:'S급 (신체상해)',damage:'드라이기로 인하여 와이프 손목화상',env:'',status:'종결',payout:169100,insurance:'N'},
-    {date:'2026-05-29',name:'최혜완',model:'MS6301A',div:'기화',risk:'S급 (신체상해)',damage:'아이가 사용중 터짐. 무릎다침',env:'',status:'보상/합의 진행중',payout:0,insurance:'N'},
-    {date:'2026-06-10',name:'지윤희',model:'W8001MA',div:'기화',risk:'S급 (신체상해)',damage:'펑 하고 터지면서 화상입음',env:'방에서 사용',status:'종결',payout:152100,insurance:'N'},
-    {date:'2026-07-07',name:'위다혜',model:'MG1800-18',div:'기화',risk:'S급 (신체상해)',damage:'방에서 사용하다가 터진 후 전기가 차단됨',env:'방에서 주로 사용',status:'보상/합의 진행중',payout:0,insurance:'Y'},
-    {date:'2026-01-12',name:'김우종',model:'MC4B03C',div:'기화',risk:'S+급 (화재)',damage:'자택 화장실에서 전선꼽은상태에서 화재발생',env:'화장실에서 전원코드 꽂은채 보관 및 사용',status:'보상/합의 진행중',payout:0,insurance:'Y'},
-    {date:'2026-02-24',name:'김희정',model:'MC4A01A',div:'기화',risk:'S+급 (화재)',damage:'손잡이 부분에서 불이 붙어 심하게 녹아내림',env:'콘센트에 항상 연결해놓고 사용함',status:'보상/합의 진행중',payout:0,insurance:'Y'},
-    {date:'2026-07-20',name:'김영찬',model:'MS6031E',div:'기화',risk:'S급 (신체상해)',damage:'전원선 연결 부위에서 불꽃과 폭발 발생, 화상',env:'화장실 보관',status:'접수',payout:0,insurance:'N'},
-    {date:'2026-08-18',name:'홍서진',model:'MS6001A',div:'기화',risk:'S+급 (화재)',damage:'처음 사용한 지 2~3분 만에 실제 불길이 발생',env:'개봉하자마자 사용',status:'접수',payout:0,insurance:'N'},
-    {date:'2026-08-25',name:'이준호',model:'MF50애터미',div:'기화',risk:'S+급 (화재)',damage:'안방 화장실에 보관중 화재',env:'안방화장실 코드선 꽂아 보관',status:'접수',payout:0,insurance:'N'},
+    {date:'2026-03-01',name:'정예린',model:'WS5002RB',div:'기화',risk:'A급 (모발손상)',damage:'사용중 탄냄새 앞머리카락 탐',env:'1년 이상 사용',status:'종결',payout:324000,insurance:'N'},
+    {date:'2026-04-28',name:'박경혁',model:'MS6401A',div:'기화',risk:'S급 (신체상해)',damage:'스파크 튀어서 화상',env:'배우자가 사용중',status:'종결',payout:263144,insurance:'N'},
+    {date:'2026-05-01',name:'한규만',model:'M5001A PLUS',div:'기화',risk:'S급 (신체상해)',damage:'드라이기 손목화상',env:'',status:'종결',payout:169100,insurance:'N'},
+    {date:'2026-05-29',name:'최혜완',model:'MS6301A',div:'기화',risk:'S급 (신체상해)',damage:'아이가 사용중 터짐',env:'',status:'보상/합의 진행중',payout:0,insurance:'N'},
+    {date:'2026-06-10',name:'지윤희',model:'W8001MA',div:'기화',risk:'S급 (신체상해)',damage:'펑 하고 터지면서 화상',env:'방에서 사용',status:'종결',payout:152100,insurance:'N'},
+    {date:'2026-07-07',name:'위다혜',model:'MG1800-18',div:'기화',risk:'S급 (신체상해)',damage:'방에서 터진 후 전기 차단',env:'방에서 주로 사용',status:'보상/합의 진행중',payout:0,insurance:'Y'},
+    {date:'2026-01-12',name:'김우종',model:'MC4B03C',div:'기화',risk:'S+급 (화재)',damage:'화장실 전선꼽은 상태 화재발생',env:'화장실에서 전원코드 꽂은채 보관',status:'보상/합의 진행중',payout:0,insurance:'Y'},
+    {date:'2026-02-24',name:'김희정',model:'MC4A01A',div:'기화',risk:'S+급 (화재)',damage:'손잡이에서 불이 붙어 녹아내림',env:'콘센트에 항상 연결해놓고 사용',status:'보상/합의 진행중',payout:0,insurance:'Y'},
+    {date:'2026-07-20',name:'김영찬',model:'MS6031E',div:'기화',risk:'S급 (신체상해)',damage:'전원선 불꽃과 폭발 화상',env:'화장실 보관',status:'접수',payout:0,insurance:'N'},
+    {date:'2026-08-18',name:'홍서진',model:'MS6001A',div:'기화',risk:'S+급 (화재)',damage:'2~3분 만에 불길 발화',env:'개봉하자마자 사용',status:'접수',payout:0,insurance:'N'},
+    {date:'2026-08-25',name:'이준호',model:'MF50애터미',div:'기화',risk:'S+급 (화재)',damage:'안방 화장실 보관중 화재',env:'안방화장실 코드선 꽂아 보관',status:'접수',payout:0,insurance:'N'},
     {date:'2026-04-29',name:'장수빈',model:'SW3A01MA',div:'소싱',risk:'C급 (제품환불/교환)',damage:'펑소리나며 터지고 정전',env:'펑소리나며 터지고 정전',status:'보상/합의 진행중',payout:0,insurance:'N'},
-    {date:'2026-08-07',name:'이종현',model:'M3150R',div:'기화',risk:'C급 (제품환불/교환)',damage:'파편이 귀에 튀어서 맞음',env:'드라이기 걸이에 걸어서 사용',status:'종결',payout:0,insurance:'N'},
-    {date:'2026-06-10',name:'이상미',model:'M3060F',div:'기화',risk:'S급 (신체상해)',damage:'자녀가 사용하다가 펑소리나면서 불꽃터짐/2도화상',env:'자녀가 사용하다가 펑소리나며 불꽃터짐',status:'종결',payout:246980,insurance:'N'},
-    {date:'2026-05-07',name:'박상하',model:'MS6001A',div:'기화',risk:'C급 (제품환불/교환)',damage:'드라이기에 불꽃이 터짐',env:'드라이거치대에 보관',status:'종결',payout:0,insurance:'N'},
+    {date:'2026-06-10',name:'이상미',model:'M3060F',div:'기화',risk:'S급 (신체상해)',damage:'불꽃터짐 2도화상',env:'자녀가 사용',status:'종결',payout:246980,insurance:'N'},
+    {date:'2026-05-07',name:'박상하',model:'MS6001A',div:'기화',risk:'C급 (제품환불/교환)',damage:'드라이기에 불꽃이 터짐',env:'드라이거치대에 보관',status:'종결',payout:0,insurance:'N'}
   ];
 }
 
@@ -2220,8 +2219,8 @@ async function loadCompData(){
     const d=await res.json();
     if(d&&d.criticalData) G_COMP=d.criticalData;
     else throw new Error('no data');
-  }catch(e){
-    console.warn('피해보상 API 실패, 목업 사용:', e.message);
+  }catch(err){
+    console.warn('피해보상 API 실패, 목업 사용:', err.message);
     G_COMP=getCompMock();
   }
 }
@@ -2242,132 +2241,122 @@ async function renderCompensation(){
   const thisMonth=new Date().toISOString().slice(0,7);
   const thisMonthCnt=D.filter(d=>d.date&&d.date.startsWith(thisMonth)).length;
 
-  // KPI
   document.getElementById('compKpiGrid').innerHTML=
     '<div class="kpi-card"><div class="kpi-accent acc-red"></div><div class="kpi-lbl">총 접수 건수</div><div class="kpi-val">'+fmt(total)+'</div><div class="kpi-sub">월 평균 <b>'+avgCnt+'</b>건</div></div>'+
     '<div class="kpi-card"><div class="kpi-accent acc-red"></div><div class="kpi-lbl">진행중</div><div class="kpi-val" style="color:var(--red)">'+fmt(pending)+'</div><div class="kpi-sub">미종결 케이스</div></div>'+
     '<div class="kpi-card"><div class="kpi-accent acc-amber"></div><div class="kpi-lbl">총 지급액</div><div class="kpi-val sm">'+Math.round(totalPayout/10000)+'만원</div><div class="kpi-sub">월 평균 <b>'+Math.round(avgPayout/10000)+'</b>만원</div></div>'+
-    '<div class="kpi-card"><div class="kpi-accent acc-red"></div><div class="kpi-lbl">S급 이상 (신체·화재)</div><div class="kpi-val">'+fmt(sAbove)+'</div><div class="kpi-sub">전체의 '+pct(sAbove,total)+'%</div></div>'+
+    '<div class="kpi-card"><div class="kpi-accent acc-red"></div><div class="kpi-lbl">S급 이상</div><div class="kpi-val">'+fmt(sAbove)+'</div><div class="kpi-sub">전체의 '+pct(sAbove,total)+'%</div></div>'+
     '<div class="kpi-card"><div class="kpi-accent acc-blue"></div><div class="kpi-lbl">당월 신규 접수</div><div class="kpi-val">'+fmt(thisMonthCnt)+'</div><div class="kpi-sub">'+thisMonth.replace('-','년 ')+'월</div></div>';
 
-  // 등급별 바차트
   const gradeOrder=['S+급','S급','A급','B급','C급'];
-  const gradeLabel=['S+급 (화재)','S급 (신체상해)','A급 (모발손상)','B급 (대물보상)','C급 (제품환불)'];
+  const gradeLabel=['S+급(화재)','S급(신체)','A급(모발)','B급(대물)','C급(교환)'];
   const gradeCols=['rgba(139,0,0,0.9)','rgba(220,38,38,0.85)','rgba(217,119,6,0.8)','rgba(37,99,235,0.75)','rgba(100,116,139,0.7)'];
   const gradeCnt=gradeOrder.map(g=>D.filter(d=>(d.risk||'').startsWith(g)).length);
+
   mkChart('cCompGrade','bar',{labels:gradeLabel,datasets:[{
     data:gradeCnt,backgroundColor:gradeCols,borderRadius:5,borderSkipped:false,
     datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,
-      color:(ctx)=>gradeCols[ctx.dataIndex].replace(/[d.]+)$/,'1)'),
+      color:(ctx)=>gradeCols[ctx.dataIndex].split(',').slice(0,3).join(',')+',1)',
       font:{family:'JetBrains Mono',weight:'700',size:11},formatter:v=>v+'건'}
   }]},{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
     scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}}},
-            y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}}},
+            y:{grid:{display:false},ticks:{font:{family:'Pretendard',size:10}}}},
     layout:{padding:{right:55,top:4}}});
 
-  // 월별 스택바
   const mL2=allMs.map(m=>m.slice(2).replace('-','.'));
   mkChart('cCompMonthly','bar',{labels:mL2,datasets:gradeOrder.map((g,gi)=>({
     label:g,
     data:allMs.map(m=>D.filter(d=>d.date&&d.date.startsWith(m)&&(d.risk||'').startsWith(g)).length),
     backgroundColor:gradeCols[gi],borderRadius:2,
     datalabels:{display:(ctx)=>ctx.raw>0,anchor:'center',align:'center',color:'#fff',font:{weight:'700',size:9},formatter:v=>v}
-  }))},{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:10},padding:8,boxWidth:8}},datalabels:{}},
+  }))},{plugins:{legend:{position:'top',labels:{font:{family:'Pretendard',size:10},padding:8,boxWidth:8}},datalabels:{}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'JetBrains Mono',size:9}}},
             y:{stacked:true,beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}}}},
     layout:{padding:{top:4}}});
 
-  // 피해 원인별
   const dmgMap={};
   D.forEach(d=>{ const k=classifyDamage(d.damage); dmgMap[k]=(dmgMap[k]||0)+1; });
   const dmgSorted=Object.entries(dmgMap).sort((a,b)=>b[1]-a[1]);
-  mkChart('cCompDamage','bar',{labels:dmgSorted.map(([k])=>k),datasets:[{
-    data:dmgSorted.map(([,v])=>v),
+  mkChart('cCompDamage','bar',{labels:dmgSorted.map(e=>e[0]),datasets:[{
+    data:dmgSorted.map(e=>e[1]),
     backgroundColor:PAL.slice(0,dmgSorted.length),borderRadius:5,borderSkipped:false,
     datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,
       color:(ctx)=>PAL[ctx.dataIndex],font:{family:'JetBrains Mono',weight:'700',size:11},formatter:v=>v+'건'}
   }]},{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
     scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}}},
-            y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}}},
+            y:{grid:{display:false},ticks:{font:{family:'Pretendard',size:10}}}},
     layout:{padding:{right:55,top:4}}});
 
-  // 사용환경별
   const envMap={};
   D.forEach(d=>{ const k=classifyEnv(d.env); envMap[k]=(envMap[k]||0)+1; });
   const envSorted=Object.entries(envMap).sort((a,b)=>b[1]-a[1]);
-  mkChart('cCompEnv','bar',{labels:envSorted.map(([k])=>k),datasets:[{
-    data:envSorted.map(([,v])=>v),
-    backgroundColor:[P.red,P.orange,P.amber,P.blue,P.teal].slice(0,envSorted.length),borderRadius:5,borderSkipped:false,
+  const envCols=[P.red,P.orange,P.amber,P.blue,P.teal];
+  mkChart('cCompEnv','bar',{labels:envSorted.map(e=>e[0]),datasets:[{
+    data:envSorted.map(e=>e[1]),
+    backgroundColor:envCols.slice(0,envSorted.length),borderRadius:5,borderSkipped:false,
     datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,
-      color:(ctx)=>[P.red,P.orange,P.amber,P.blue,P.teal][ctx.dataIndex]||P.blue,
-      font:{family:'JetBrains Mono',weight:'700',size:11},formatter:v=>v+'건'}
+      color:(ctx)=>envCols[ctx.dataIndex]||P.blue,font:{family:'JetBrains Mono',weight:'700',size:11},formatter:v=>v+'건'}
   }]},{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
     scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}}},
-            y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10}}}},
+            y:{grid:{display:false},ticks:{font:{family:'Pretendard',size:10}}}},
     layout:{padding:{right:55,top:4}}});
 
-  // 모델별 건수 Top10
   const modelCnt={};
   D.forEach(d=>{ modelCnt[d.model]=(modelCnt[d.model]||0)+1; });
   const top10M=Object.entries(modelCnt).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  mkChart('cCompModel','bar',{labels:top10M.map(([m])=>m),datasets:[{
-    data:top10M.map(([,v])=>v),
+  mkChart('cCompModel','bar',{labels:top10M.map(e=>e[0]),datasets:[{
+    data:top10M.map(e=>e[1]),
     backgroundColor:top10M.map((_,i)=>i<3?'rgba(220,38,38,0.82)':'rgba(37,99,235,0.68)'),borderRadius:4,borderSkipped:false,
     datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,
       color:(ctx)=>ctx.dataIndex<3?P.red:P.blue,font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v+'건'}
   }]},{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
     scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:9}}},
-            y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}}},
+            y:{grid:{display:false},ticks:{font:{family:'Pretendard',size:9}}}},
     layout:{padding:{right:50,top:4}}});
 
-  // 모델별 지급액 Top10
   const modelPay={};
   D.forEach(d=>{ modelPay[d.model]=(modelPay[d.model]||0)+(d.payout||0); });
-  const top10P=Object.entries(modelPay).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  if(top10P.length>0){
-    mkChart('cCompPayout','bar',{labels:top10P.map(([m])=>m),datasets:[{
-      data:top10P.map(([,v])=>Math.round(v/10000)),
+  const top10P=Object.entries(modelPay).filter(e=>e[1]>0).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  if(top10P.length){
+    mkChart('cCompPayout','bar',{labels:top10P.map(e=>e[0]),datasets:[{
+      data:top10P.map(e=>Math.round(e[1]/10000)),
       backgroundColor:'rgba(217,119,6,0.75)',borderRadius:4,borderSkipped:false,
       datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,
         color:P.amber,font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v+'만'}
     }]},{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
       scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:9}}},
-              y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}}},
+              y:{grid:{display:false},ticks:{font:{family:'Pretendard',size:9}}}},
       layout:{padding:{right:55,top:4}}});
   }
 
-  // 처리상태 도넛
-  const statusKeys=['종결','보상/합의 진행중','접수'];
-  const statusVals=statusKeys.map(k=>D.filter(d=>d.status===k).length);
-  const statusCols=['rgba(22,163,74,0.8)','rgba(220,38,38,0.8)','rgba(217,119,6,0.8)'];
-  mkChart('cCompStatus','doughnut',{labels:statusKeys,datasets:[{data:statusVals,backgroundColor:statusCols,borderWidth:0,
-    datalabels:{display:(ctx)=>ctx.raw>0,color:'#fff',font:{weight:'700',size:10},formatter:(v,ctx)=>statusKeys[ctx.dataIndex]+'
-'+v+'건'}}]},
+  const stK=['종결','보상/합의 진행중','접수'];
+  const stV=stK.map(k=>D.filter(d=>d.status===k).length);
+  const stC=['rgba(22,163,74,0.8)','rgba(220,38,38,0.8)','rgba(217,119,6,0.8)'];
+  mkChart('cCompStatus','doughnut',{labels:stK,datasets:[{data:stV,backgroundColor:stC,borderWidth:0,
+    datalabels:{display:(ctx)=>ctx.raw>0,color:'#fff',font:{weight:'700',size:10},
+      formatter:(v,ctx)=>stK[ctx.dataIndex]+' '+v+'건'}}]},
     {plugins:{legend:{display:false},datalabels:{}},cutout:'55%',layout:{padding:8}});
 
-  // 구분별(기화/소싱)
-  const divKeys=['기화','소싱'];
-  const divVals=divKeys.map(k=>D.filter(d=>(d.div==='외주'?'소싱':d.div)===k).length);
-  mkChart('cCompType','doughnut',{labels:divKeys,datasets:[{data:divVals,
+  const dvK=['기화','소싱'];
+  const dvV=dvK.map(k=>D.filter(d=>(d.div==='외주'?'소싱':d.div)===k).length);
+  mkChart('cCompType','doughnut',{labels:dvK,datasets:[{data:dvV,
     backgroundColor:['rgba(37,99,235,0.8)','rgba(124,58,237,0.8)'],borderWidth:0,
-    datalabels:{display:(ctx)=>ctx.raw>0,color:'#fff',font:{weight:'700',size:10},formatter:(v,ctx)=>divKeys[ctx.dataIndex]+'
-'+v+'건'}}]},
+    datalabels:{display:(ctx)=>ctx.raw>0,color:'#fff',font:{weight:'700',size:10},
+      formatter:(v,ctx)=>dvK[ctx.dataIndex]+' '+v+'건'}}]},
     {plugins:{legend:{display:false},datalabels:{}},cutout:'55%',layout:{padding:8}});
 
-  // 보험접수
   const insY=D.filter(d=>d.insurance==='Y').length, insN=D.filter(d=>d.insurance==='N').length;
   mkChart('cCompInsurance','doughnut',{labels:['보험접수','미접수'],datasets:[{data:[insY,insN],
     backgroundColor:['rgba(13,148,136,0.8)','rgba(100,116,139,0.6)'],borderWidth:0,
-    datalabels:{display:(ctx)=>ctx.raw>0,color:'#fff',font:{weight:'700',size:10},formatter:(v,ctx)=>['보험접수','미접수'][ctx.dataIndex]+'
-'+v+'건'}}]},
+    datalabels:{display:(ctx)=>ctx.raw>0,color:'#fff',font:{weight:'700',size:10},
+      formatter:(v,ctx)=>['보험접수','미접수'][ctx.dataIndex]+' '+v+'건'}}]},
     {plugins:{legend:{display:false},datalabels:{}},cutout:'55%',layout:{padding:8}});
 
-  // 진행중 케이스 테이블
   const pending2=D.filter(d=>d.status==='보상/합의 진행중'||d.status==='접수')
     .sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-  const rCol=(r)=>/S+/.test(r)?'var(--red)':/S급/.test(r)?'#DC2626':/A급/.test(r)?'var(--amber)':/B급/.test(r)?'var(--blue)':'var(--text3)';
-  document.getElementById('compPendingBody').innerHTML=pending2.map(d=>{
-    const divLabel=(d.div==='외주'?'소싱':d.div)||'기화';
+  const rCol=function(r){ return /S+/.test(r)?'var(--red)':/S급/.test(r)?'#DC2626':/A급/.test(r)?'var(--amber)':/B급/.test(r)?'var(--blue)':'var(--text3)'; };
+  document.getElementById('compPendingBody').innerHTML=pending2.map(function(d){
+    var divLabel=(d.div==='외주'?'소싱':d.div)||'기화';
     return '<tr>'+
       '<td style="font-family:JetBrains Mono;font-size:11px;white-space:nowrap">'+(d.date||'-')+'</td>'+
       '<td><strong>'+(d.model||'-')+'</strong></td>'+
