@@ -871,11 +871,13 @@ async function loadData(){
 }
 
 // ── 탭 전환 ──
-function getPageRender(i){ return[renderOverview,renderTrend,renderSKU,renderDefect,renderCritical][i]; }
+function getPageRender(i){ return[renderOverview,renderTrend,renderSKU,renderDefect,renderCritical,renderModelDetail][i]; }
 
 function showPg(i,el){
   document.querySelectorAll('.pg').forEach((p,j)=>p.classList.toggle('on',i===j));
   document.querySelectorAll('.nav-tab').forEach((b,j)=>b.classList.toggle('on',i===j));
+  document.getElementById('topTitle').innerHTML=(PG_TITLES[i]||'')+' <span id="topSub"></span>';
+  if(i===6){ renderCompensation(); return; }
   renderWithFilter(getPageRender(i));
 }
 
