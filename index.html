@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v5.9</title>
+<title>JMW Quality Dashboard v6.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -233,6 +233,32 @@ tbody tr:hover td{background:#FDFCFE;}
 @media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(3,1fr);}}
 @media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.g2,.g3,.g3b,.g4{grid-template-columns:1fr;}}
 </style>
+
+<style>
+body { -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none; }
+</style>
+<script>
+(function(){
+  // 우클릭 차단
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); return false; });
+  // 키보드 단축키 차단 (F12, Ctrl+U, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C)
+  document.addEventListener('keydown', function(e){
+    if(e.key==='F12') { e.preventDefault(); return false; }
+    if(e.ctrlKey && e.shiftKey && ['I','J','C','K'].includes(e.key.toUpperCase())) { e.preventDefault(); return false; }
+    if(e.ctrlKey && e.key.toUpperCase()==='U') { e.preventDefault(); return false; }
+    if(e.ctrlKey && e.key.toUpperCase()==='S') { e.preventDefault(); return false; }
+  });
+  // 개발자도구 감지
+  const devCheck = setInterval(function(){
+    const w = window.outerWidth - window.innerWidth;
+    const h = window.outerHeight - window.innerHeight;
+    if(w > 200 || h > 200) {
+      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;font-size:24px;color:#999;">⚠️ 접근이 제한되었습니다.</div>';
+      clearInterval(devCheck);
+    }
+  }, 1000);
+})();
+</script>
 </head>
 <body>
 
@@ -254,6 +280,7 @@ tbody tr:hover td{background:#FDFCFE;}
     <button class="nav-tab" onclick="showPg(3,this)">불량유형</button>
     <button class="nav-tab" onclick="showPg(4,this)">긴급·크리티컬</button>
     <button class="nav-tab" onclick="showPg(5,this)">모델 상세</button>
+    <button class="nav-tab" onclick="showPg(6,this)">피해보상 현황</button>
   </div>
   <div class="nav-right">
     <span class="nav-time" id="sb-updated">로딩 중...</span>
@@ -278,7 +305,7 @@ tbody tr:hover td{background:#FDFCFE;}
   <span class="flabel" id="periodLabel">연간</span>
   <div class="ver-dropdown-wrap">
     <div class="ver-chip" onclick="toggleVerDropdown(this)" id="verChip">
-      <span>v5.9</span>
+      <span>v6.0</span>
       <span class="ver-arrow">▼</span>
     </div>
     <div class="ver-dropdown" id="verDropdown">
@@ -287,8 +314,8 @@ tbody tr:hover td{background:#FDFCFE;}
         <div class="ver-dropdown-hd-sub">JMW Quality Dashboard</div>
       </div>
       <div class="ver-dropdown-item">
-        <div><span class="ver-dropdown-item-tag">v5.9</span><span class="ver-dropdown-item-new">NEW</span></div>
-        <div class="ver-dropdown-item-desc">구매년월(L열) 기준 집계로 변경</div>
+        <div><span class="ver-dropdown-item-tag">v6.0</span><span class="ver-dropdown-item-new">NEW</span></div>
+        <div class="ver-dropdown-item-desc">피해보상 현황 탭 · 코드 보호</div>
         <div class="ver-dropdown-item-list">
           <div>· 2026.03 이후 데이터만 집계</div>
           <div>· 생산분류별 도넛 차트 적용</div>
@@ -685,6 +712,96 @@ tbody tr:hover td{background:#FDFCFE;}
   </div>
 </div>
 
+
+  <!-- ⑦ 피해보상 현황 -->
+  <div class="pg" id="pg-6">
+    <!-- KPI -->
+    <div class="kpi-grid" id="compKpiGrid"></div>
+
+    <!-- 리스크 등급별 현황 -->
+    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">리스크 등급별 현황</span><div class="sd-line"></div></div>
+    <div class="g2 mb16">
+      <div class="card card-inner">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);">등급별 접수 건수</div>
+          <span class="bdg b-red">S+·S·A·B·C</span>
+        </div>
+        <div style="position:relative;height:220px;"><canvas id="cCompGrade"></canvas></div>
+      </div>
+      <div class="card card-inner">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);">월별 접수 추이</div>
+          <span class="bdg b-gray">등급별 스택</span>
+        </div>
+        <div style="position:relative;height:220px;"><canvas id="cCompMonthly"></canvas></div>
+      </div>
+    </div>
+
+    <!-- 지급액 현황 -->
+    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">지급액 현황</span><div class="sd-line"></div></div>
+    <div class="g2 mb16">
+      <div class="card card-inner">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);">모델별 접수 건수 Top 10</div>
+          <span class="bdg b-red">건수 기준</span>
+        </div>
+        <div style="position:relative;height:280px;"><canvas id="cCompModel"></canvas></div>
+      </div>
+      <div class="card card-inner">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);">모델별 지급액 Top 10</div>
+          <span class="bdg b-amber">지급액 기준</span>
+        </div>
+        <div style="position:relative;height:280px;"><canvas id="cCompPayout"></canvas></div>
+      </div>
+    </div>
+
+    <!-- 처리 현황 -->
+    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">처리 현황</span><div class="sd-line"></div></div>
+    <div class="g3b mb16">
+      <div class="card card-inner">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);">처리 상태</div>
+          <span class="bdg b-gray">종결·진행중·접수</span>
+        </div>
+        <div style="position:relative;height:180px;"><canvas id="cCompStatus"></canvas></div>
+      </div>
+      <div class="card card-inner">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);">구분별 현황</div>
+          <span class="bdg b-gray">기화·소싱</span>
+        </div>
+        <div style="position:relative;height:180px;"><canvas id="cCompType"></canvas></div>
+      </div>
+      <div class="card card-inner">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);">보험접수 현황</div>
+          <span class="bdg b-gray">Y·N</span>
+        </div>
+        <div style="position:relative;height:180px;"><canvas id="cCompInsurance"></canvas></div>
+      </div>
+    </div>
+
+    <!-- 진행중 케이스 -->
+    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">진행중 케이스</span><div class="sd-line"></div></div>
+    <div class="card mb16">
+      <div class="card-hd">
+        <div class="card-hd-title">⚠️ 미종결 케이스 목록</div>
+        <span class="bdg b-red">보상합의 진행중 + 접수</span>
+      </div>
+      <div class="card-body" style="padding:0;">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>접수일</th><th>모델명</th><th>구분</th><th>등급</th>
+              <th>피해 내용</th><th>피해 원인</th><th>사용환경</th><th>보험</th><th class="tr">지급액</th>
+            </tr></thead>
+            <tbody id="compPendingBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div><!-- /main -->
 
 <!-- 로딩 카운트다운 (숨김 - 상단바로 대체) -->
@@ -707,7 +824,7 @@ const PAL=['#2563EB','#DC2626','#D97706','#16A34A','#7C3AED','#0D9488','#EA580C'
 const TK=['1M','2M','3M','4M~12M','1Y이후'];
 const TC=[P.blue,P.teal,P.amber,P.red,'#64748B'];
 const CRITICAL_TYPES=['터짐 불량','타는 냄새','발열 현상','전원코드 파손','열변형','제품 파손','누설 전류','전원 스파크','제품 스파크'];
-const PG_TITLES=['종합 현황','월별 트렌드','SKU 분석','불량유형 분석','긴급·크리티컬','모델 상세'];
+const PG_TITLES=['종합 현황','월별 트렌드','SKU 분析','불량유형 분석','긴급·크리티컬','모델 상세','피해보상 현황'];
 
 let G=null, G_ORIGINAL=null, charts={};
 const FILTER={year:'all',quarter:'all',month:'all'};
@@ -2064,6 +2181,219 @@ function buildModelMfg(){ const m={}; const _src=G_ORIGINAL||G; if(_src.rawDefec
 function setEl(id,v){ const el=document.getElementById(id); if(el) el.textContent=v; }
 function fmt(n){ return Number(n).toLocaleString('ko-KR'); }
 function pct(n,t){ return t>0?(n/t*100).toFixed(1):'0.0'; }
+
+
+// ── 피해보상 현황 ──
+const COMP_SS_ID='1_nLjKUIYBuY7Uk5BbLOSnUa6y_bXUHnx28mZpDv6K9I';
+let G_COMP=null; // 피해보상 데이터
+
+function classifyDamage(text){
+  const t=String(text||'').toLowerCase();
+  if(/전선단선|코드러버|전선.단선|코드선|플러그.*단선|전선.*단선/.test(t)) return '전선단선';
+  if(/쇼트터짐|pcb|납땜|쇼트/.test(t)) return 'PCB 쇼트';
+  if(/온도퓨즈|온도휴즈/.test(t)) return '온도퓨즈';
+  if(/히터|세라믹히터|열선/.test(t)) return '히터불량';
+  if(/터짐|불남|폭발|화재|발화|펑|불꽃|불이/.test(t)) return '화재/발화';
+  return '기타';
+}
+
+function classifyEnv(text){
+  const t=String(text||'').toLowerCase();
+  if(/화장실|욕실|습기/.test(t)) return '화장실/욕실';
+  if(/코드꽂|연결해놓|꽂은채|보관중|코드.*보관|보관/.test(t)) return '보관중(전원연결)';
+  if(/미용실|헤어|업소|살롱/.test(t)) return '미용실/업소';
+  if(/사용중|사용하다|방에서|가정/.test(t)) return '정상 사용중';
+  return '기타/미입력';
+}
+
+async function loadCompData(){
+  if(G_COMP) return; // 이미 로드됨
+  try{
+    const url=APPS_URL+'?sheet=critical&ssId='+COMP_SS_ID+'&t='+Date.now();
+    const res=await fetch(url);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const d=await res.json();
+    if(d&&d.criticalData) G_COMP=d.criticalData;
+    else throw new Error('no data');
+  }catch(e){
+    console.warn('피해보상 API 실패, 목업 사용:', e.message);
+    G_COMP=getCompMock();
+  }
+}
+
+function getCompMock(){
+  return [
+    {date:'2026-03-01',name:'정예린',model:'WS5002RB',div:'기화',risk:'A급 (모발손상)',damage:'사용중 탄냄새가 나면서 앞머리카락 탐',env:'1년 이상 사용',status:'종결',payout:324000,insurance:'N'},
+    {date:'2026-04-28',name:'박경혁',model:'MS6401A',div:'기화',risk:'S급 (신체상해)',damage:'배우자가 사용중 스파크 튀어서 화상입음',env:'배우자가 사용중 스파크튀어 화상',status:'종결',payout:263144,insurance:'N'},
+    {date:'2026-05-01',name:'한규만',model:'M5001A PLUS',div:'기화',risk:'S급 (신체상해)',damage:'드라이기로 인하여 와이프 손목화상',env:'',status:'종결',payout:169100,insurance:'N'},
+    {date:'2026-05-29',name:'최혜완',model:'MS6301A',div:'기화',risk:'S급 (신체상해)',damage:'아이가 사용중 터짐. 무릎다침',env:'',status:'보상/합의 진행중',payout:0,insurance:'N'},
+    {date:'2026-06-10',name:'지윤희',model:'W8001MA',div:'기화',risk:'S급 (신체상해)',damage:'펑 하고 터지면서 화상입음',env:'방에서 사용',status:'종결',payout:152100,insurance:'N'},
+    {date:'2026-07-07',name:'위다혜',model:'MG1800-18',div:'기화',risk:'S급 (신체상해)',damage:'방에서 사용하다가 터진 후 전기가 차단됨',env:'방에서 주로 사용',status:'보상/합의 진행중',payout:0,insurance:'Y'},
+    {date:'2026-01-12',name:'김우종',model:'MC4B03C',div:'기화',risk:'S+급 (화재)',damage:'자택 화장실에서 전선꼽은상태에서 화재발생',env:'화장실에서 전원코드 꽂은채 보관 및 사용',status:'보상/합의 진행중',payout:0,insurance:'Y'},
+    {date:'2026-02-24',name:'김희정',model:'MC4A01A',div:'기화',risk:'S+급 (화재)',damage:'손잡이 부분에서 불이 붙어 심하게 녹아내림',env:'콘센트에 항상 연결해놓고 사용함',status:'보상/합의 진행중',payout:0,insurance:'Y'},
+    {date:'2026-07-20',name:'김영찬',model:'MS6031E',div:'기화',risk:'S급 (신체상해)',damage:'전원선 연결 부위에서 불꽃과 폭발 발생, 화상',env:'화장실 보관',status:'접수',payout:0,insurance:'N'},
+    {date:'2026-08-18',name:'홍서진',model:'MS6001A',div:'기화',risk:'S+급 (화재)',damage:'처음 사용한 지 2~3분 만에 실제 불길이 발생',env:'개봉하자마자 사용',status:'접수',payout:0,insurance:'N'},
+    {date:'2026-08-25',name:'이준호',model:'MF50애터미',div:'기화',risk:'S+급 (화재)',damage:'안방 화장실에 보관중 화재',env:'안방화장실 코드선 꽂아 보관',status:'접수',payout:0,insurance:'N'},
+    {date:'2026-04-29',name:'장수빈',model:'SW3A01MA',div:'소싱',risk:'C급 (제품환불/교환)',damage:'펑소리나며 터지고 정전',env:'펑소리나며 터지고 정전',status:'보상/합의 진행중',payout:0,insurance:'N'},
+  ];
+}
+
+async function renderCompensation(){
+  await loadCompData();
+  const D=G_COMP||[];
+  dpg(['cCompGrade','cCompMonthly','cCompModel','cCompPayout','cCompStatus','cCompType','cCompInsurance']);
+
+  const total=D.length;
+  const pending=D.filter(d=>d.status==='보상/합의 진행중'||d.status==='접수').length;
+  const totalPayout=D.reduce((s,d)=>s+(d.payout||0),0);
+  const months=[...new Set(D.map(d=>d.date?d.date.slice(0,7):null).filter(Boolean))];
+  const monthCount=Math.max(months.length,1);
+  const avgPayout=Math.round(totalPayout/monthCount);
+  const avgCnt=(total/monthCount).toFixed(1);
+  const sAbove=D.filter(d=>/S+급|S급/.test(d.risk)).length;
+  const thisMonth=new Date().toISOString().slice(0,7);
+  const thisMonthCnt=D.filter(d=>d.date&&d.date.startsWith(thisMonth)).length;
+
+  // KPI
+  document.getElementById('compKpiGrid').innerHTML=`
+    <div class="kpi-card"><div class="kpi-accent acc-red"></div>
+      <div class="kpi-lbl">총 접수 건수</div>
+      <div class="kpi-val">${fmt(total)}</div>
+      <div class="kpi-sub">월 평균 <b>${avgCnt}</b>건</div></div>
+    <div class="kpi-card"><div class="kpi-accent acc-red"></div>
+      <div class="kpi-lbl">진행중</div>
+      <div class="kpi-val" style="color:var(--red)">${fmt(pending)}</div>
+      <div class="kpi-sub">미종결 케이스</div></div>
+    <div class="kpi-card"><div class="kpi-accent acc-amber"></div>
+      <div class="kpi-lbl">총 지급액</div>
+      <div class="kpi-val sm">${(totalPayout/10000).toFixed(0)}만원</div>
+      <div class="kpi-sub">월 평균 <b>${(avgPayout/10000).toFixed(0)}</b>만원</div></div>
+    <div class="kpi-card"><div class="kpi-accent acc-red"></div>
+      <div class="kpi-lbl">S급 이상 (신체·화재)</div>
+      <div class="kpi-val">${fmt(sAbove)}</div>
+      <div class="kpi-sub">전체의 ${pct(sAbove,total)}%</div></div>
+    <div class="kpi-card"><div class="kpi-accent acc-blue"></div>
+      <div class="kpi-lbl">당월 신규 접수</div>
+      <div class="kpi-val">${fmt(thisMonthCnt)}</div>
+      <div class="kpi-sub">${thisMonth.replace('-','년 ')}월</div></div>
+  `;
+
+  // 등급 색상
+  const gradeColor={'S+급 (화재)':'rgba(139,0,0,0.9)','S급 (신체상해)':'rgba(220,38,38,0.85)',
+    'A급 (모발손상)':'rgba(217,119,6,0.8)','B급 (대물보상)':'rgba(37,99,235,0.75)','C급 (제품환불/교환)':'rgba(100,116,139,0.7)'};
+  const gradeOrder=['S+급 (화재)','S급 (신체상해)','A급 (모발손상)','B급 (대물보상)','C급 (제품환불/교환)'];
+  const gradeCnt={}; gradeOrder.forEach(g=>{gradeCnt[g]=0;});
+  D.forEach(d=>{ const g=gradeOrder.find(g=>d.risk&&d.risk.startsWith(g.split(' ')[0]))||'C급 (제품환불/교환)'; gradeCnt[g]=(gradeCnt[g]||0)+1; });
+  const gradeLabels=gradeOrder.map(g=>g.replace(' (신체상해)','').replace(' (화재)','').replace(' (모발손상)','').replace(' (대물보상)','').replace(' (제품환불/교환)',''));
+
+  mkChart('cCompGrade','bar',{labels:gradeLabels,datasets:[{
+    data:gradeOrder.map(g=>gradeCnt[g]),
+    backgroundColor:gradeOrder.map(g=>gradeColor[g]),borderRadius:5,borderSkipped:false,
+    datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,
+      color:(ctx)=>{ const _gc=gradeColor[gradeOrder[ctx.dataIndex]]||'rgba(100,116,139,0.8)'; return _gc.slice(0,_gc.lastIndexOf(',')+1)+'1)'; },
+      font:{family:'JetBrains Mono',weight:'700',size:11},formatter:v=>v+'건'}
+  }]},{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
+    scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}}},
+            y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:11}}}},
+    layout:{padding:{right:60,top:4}}});
+
+  // 월별 스택바
+  const allMonths=[...new Set(D.map(d=>d.date?d.date.slice(0,7):null).filter(Boolean))].sort();
+  const mL2=allMonths.map(m=>m.slice(2).replace('-','.'));
+  mkChart('cCompMonthly','bar',{labels:mL2,datasets:gradeOrder.map(g=>({
+    label:g.split(' ')[0],
+    data:allMonths.map(m=>D.filter(d=>d.date&&d.date.startsWith(m)&&(d.risk||'').startsWith(g.split(' ')[0])).length),
+    backgroundColor:gradeColor[g],borderRadius:2,
+    datalabels:{display:(ctx)=>ctx.raw>0,anchor:'center',align:'center',color:'#fff',font:{weight:'700',size:9},formatter:v=>v}
+  }))},{plugins:{legend:{position:'top',labels:{font:{family:'Noto Sans KR',size:10},padding:8,boxWidth:8}},datalabels:{}},
+    scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'JetBrains Mono',size:9}}},
+            y:{stacked:true,beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}}}},
+    layout:{padding:{top:4}}});
+
+  // 모델별 건수 Top10
+  const modelCnt={};
+  D.forEach(d=>{ modelCnt[d.model]=(modelCnt[d.model]||0)+1; });
+  const top10M=Object.entries(modelCnt).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  mkChart('cCompModel','bar',{labels:top10M.map(([m])=>m),datasets:[{
+    data:top10M.map(([,v])=>v),
+    backgroundColor:top10M.map((_,i)=>i<3?'rgba(220,38,38,0.82)':'rgba(37,99,235,0.68)'),borderRadius:4,borderSkipped:false,
+    datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,
+      color:(ctx)=>ctx.dataIndex<3?P.red:P.blue,font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v+'건'}
+  }]},{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
+    scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:9}}},
+            y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}}},
+    layout:{padding:{right:50,top:4}}});
+
+  // 모델별 지급액 Top10
+  const modelPay={};
+  D.forEach(d=>{ modelPay[d.model]=(modelPay[d.model]||0)+(d.payout||0); });
+  const top10P=Object.entries(modelPay).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  mkChart('cCompPayout','bar',{labels:top10P.map(([m])=>m),datasets:[{
+    data:top10P.map(([,v])=>Math.round(v/10000)),
+    backgroundColor:'rgba(217,119,6,0.75)',borderRadius:4,borderSkipped:false,
+    datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:4,
+      color:P.amber,font:{family:'JetBrains Mono',weight:'700',size:10},formatter:v=>v+'만'}
+  }]},{indexAxis:'y',plugins:{legend:{display:false},datalabels:{}},
+    scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:9},callback:v=>v+'만'}},
+            y:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:9}}}},
+    layout:{padding:{right:60,top:4}}});
+
+  // 처리 상태 도넛
+  const statusMap={종결:0,'보상/합의 진행중':0,접수:0,기타:0};
+  D.forEach(d=>{ if(statusMap[d.status]!==undefined) statusMap[d.status]++; else statusMap['기타']++; });
+  const sK=Object.keys(statusMap), sV=Object.values(statusMap);
+  const sCols=['rgba(22,163,74,0.8)','rgba(220,38,38,0.8)','rgba(217,119,6,0.8)','rgba(100,116,139,0.7)'];
+  mkChart('cCompStatus','doughnut',{datasets:[{data:sV,backgroundColor:sCols,borderWidth:0,
+    datalabels:{display:(ctx)=>ctx.raw>0,color:'#fff',font:{weight:'700',size:11},
+      formatter:(v,ctx)=>sK[ctx.dataIndex]+'\n'+v+'건'}}],labels:sK},
+    {plugins:{legend:{display:false},datalabels:{}},cutout:'55%',layout:{padding:8}});
+
+  // 구분별(기화/소싱)
+  const divMap={기화:0,소싱:0};
+  D.forEach(d=>{ const k=d.div==='외주'?'소싱':(d.div||'기화'); divMap[k]=(divMap[k]||0)+1; });
+  mkChart('cCompType','doughnut',{datasets:[{data:Object.values(divMap),
+    backgroundColor:['rgba(37,99,235,0.8)','rgba(124,58,237,0.8)'],borderWidth:0,
+    datalabels:{display:(ctx)=>ctx.raw>0,color:'#fff',font:{weight:'700',size:11},
+      formatter:(v,ctx)=>Object.keys(divMap)[ctx.dataIndex]+'\n'+v+'건'}}],labels:Object.keys(divMap)},
+    {plugins:{legend:{display:false},datalabels:{}},cutout:'55%',layout:{padding:8}});
+
+  // 보험접수 현황
+  const insY=D.filter(d=>d.insurance==='Y').length, insN=D.filter(d=>d.insurance==='N').length;
+  mkChart('cCompInsurance','doughnut',{datasets:[{data:[insY,insN],
+    backgroundColor:['rgba(13,148,136,0.8)','rgba(100,116,139,0.6)'],borderWidth:0,
+    datalabels:{display:(ctx)=>ctx.raw>0,color:'#fff',font:{weight:'700',size:11},
+      formatter:(v,ctx)=>['보험접수','미접수'][ctx.dataIndex]+'\n'+v+'건'}}],labels:['보험접수','미접수']},
+    {plugins:{legend:{display:false},datalabels:{}},cutout:'55%',layout:{padding:8}});
+
+  // 피해원인 / 사용환경 분석
+  const dmgMap={}, envMap={};
+  D.forEach(d=>{
+    const dc=classifyDamage(d.damage); dmgMap[dc]=(dmgMap[dc]||0)+1;
+    const ec=classifyEnv(d.env); envMap[ec]=(envMap[ec]||0)+1;
+  });
+
+  // 진행중 케이스 테이블
+  const pending2=D.filter(d=>d.status==='보상/합의 진행중'||d.status==='접수')
+    .sort((a,b)=>b.date.localeCompare(a.date));
+  const riskColor=(r)=>/S+/.test(r)?'var(--red)':/S급/.test(r)?'#DC2626':/A급/.test(r)?'var(--amber)':/B급/.test(r)?'var(--blue)':'var(--text3)';
+  document.getElementById('compPendingBody').innerHTML=pending2.map(d=>{
+    const rC=riskColor(d.risk||'');
+    const divLabel=(d.div==='외주'?'소싱':d.div)||'기화';
+    const dmgClass=classifyDamage(d.damage);
+    const envClass=classifyEnv(d.env);
+    return `<tr>
+      <td style="font-family:JetBrains Mono;font-size:11px;white-space:nowrap">${d.date||'-'}</td>
+      <td><strong>${d.model||'-'}</strong></td>
+      <td><span class="bdg b-gray">${divLabel}</span></td>
+      <td><span style="font-size:11px;font-weight:700;color:${rC}">${(d.risk||'').split(' ')[0]}</span></td>
+      <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.damage||''}">${d.damage||'-'}</td>
+      <td><span class="bdg b-gray" style="font-size:10px">${dmgClass}</span></td>
+      <td><span class="bdg b-gray" style="font-size:10px">${envClass}</span></td>
+      <td style="text-align:center">${d.insurance==='Y'?'<span class="bdg b-teal">Y</span>':'<span class="bdg b-gray">N</span>'}</td>
+      <td class="tr mono" style="color:var(--amber)">${d.payout>0?(d.payout/10000).toFixed(1)+'만':'—'}</td>
+    </tr>`;
+  }).join('');
+}
 
 // ── 목업 데이터 ──
 function getMock(){
