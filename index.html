@@ -343,7 +343,7 @@ tbody tr:hover td{background:#FDFCFE;}
         <div style="font-size:14px;font-weight:700;color:var(--text);">월별 불량 접수 추이 <span style="font-size:12px;color:var(--text3);font-weight:500;" id="bdgMonths"></span></div>
         <span class="bdg b-red">건수 + 불량률</span>
       </div>
-      <div class="h340"><canvas id="cMonthLine"></canvas></div>
+      <div class="h360"><canvas id="cMonthLine"></canvas></div>
     </div>
     <div class="card card-inner" style="display:flex;flex-direction:column;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0;">
@@ -858,7 +858,7 @@ function renderOverview(s){
       datalabels:{display:false}},
     {type:'bar',label:'크리티컬',data:critV,backgroundColor:'rgba(192,57,43,0.85)',borderRadius:6,yAxisID:'y',order:2,stack:'s',
       datalabels:{
-        anchor:'end',align:'end',clamp:true,offset:3,
+        anchor:'end',align:'end',clamp:true,offset:4,
         color:P.red,font:{family:'JetBrains Mono',weight:'700',size:11},
         formatter:(v,ctx)=>{
           const total=(normV[ctx.dataIndex]||0)+(critV[ctx.dataIndex]||0);
@@ -878,11 +878,11 @@ function renderOverview(s){
     },
     scales:{
       y:{beginAtZero:true,position:'left',grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}},
-         suggestedMax:maxV*1.5},
+         suggestedMax:maxV*1.35},
       y2:{beginAtZero:true,position:'right',grid:{display:false},ticks:{font:{family:'JetBrains Mono',size:10},callback:v=>v.toFixed(2)+'%'}},
       x:{grid:{display:false},ticks:{font:{family:'JetBrains Mono',size:11}}}
     },
-    layout:{padding:{top:52,right:8}}
+    layout:{padding:{top:36,right:8}}
   });
 
   // 품목별 수직 바
