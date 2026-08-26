@@ -858,10 +858,8 @@ function getPageRender(i){ return[renderOverview,renderTrend,renderSKU,renderDef
 function showPg(i,el){
   document.querySelectorAll('.pg').forEach((p,j)=>p.classList.toggle('on',i===j));
   document.querySelectorAll('.nav-tab').forEach((b,j)=>b.classList.toggle('on',i===j));
-  document.getElementById('topTitle').innerHTML=(PG_TITLES[i]||'')+' <span id="topSub"></span>';
   if(i===6){ renderCompensation(); return; }
-  const fn=getPageRender(i);
-  if(fn) renderWithFilter(fn);
+  renderWithFilter(getPageRender(i));
 }
 
 function renderAll(){
