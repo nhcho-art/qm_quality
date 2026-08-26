@@ -345,12 +345,14 @@ tbody tr:hover td{background:#FDFCFE;}
       </div>
       <div class="h280"><canvas id="cMonthLine"></canvas></div>
     </div>
-    <div class="card card-inner" style="align-self:start;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+    <div class="card card-inner" style="display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0;">
         <div style="font-size:14px;font-weight:700;color:var(--text);">품목별 불량</div>
         <span class="bdg b-gray">건수 · 비중 · 불량률</span>
       </div>
-      <div id="cCategoryWrap" style="position:relative;"><canvas id="cCategory"></canvas></div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;">
+        <div id="cCategoryWrap" style="position:relative;"><canvas id="cCategory"></canvas></div>
+      </div>
     </div>
   </div>
 
@@ -1498,7 +1500,7 @@ function renderCritical(s){
   ]},{plugins:{legend:{display:false},datalabels:{}},
     scales:{x:{grid:{display:false},ticks:{font:{family:'Pretendard',size:10}}},
       y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}},suggestedMax:critMax*1.4}},
-    layout:{padding:{top:28,right:8}}});
+    layout:{padding:{top:52,right:8}}});
 
   // 이상 급증
   const monthsSorted=Object.keys(s.byReceiptMonth||{}).sort();
