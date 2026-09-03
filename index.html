@@ -754,7 +754,8 @@ async function loadData(){
 }
 
 // ── 탭 전환 ──
-function getPageRender(i){ return[renderOverview,renderTrend,renderSKU,renderDefect,renderCritical][i]; }
+function getPageRender(i){ return[renderOverview,renderTrend,renderSKU,renderDefect,renderCritical,renderModelDetailWrapper][i]; }
+function renderModelDetailWrapper(s){ const model=document.getElementById('modelSelect')?.value; if(model) renderModelDetail(s,model); }
 
 function showPg(i,el){
   document.querySelectorAll('.pg').forEach((p,j)=>p.classList.toggle('on',i===j));
@@ -2016,7 +2017,7 @@ function applyFilter(){
   renderKPIs(fs);
   const active=document.querySelector('.pg.on');
   const idx=active?parseInt(active.id.replace('pg-','')):0;
-  getPageRender(idx)(fs);
+  const _fn=getPageRender(idx); if(_fn) _fn(fs);
 }
 
 function buildFilteredSummary(defects,monthlySales,includedMonths){
