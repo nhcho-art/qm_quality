@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v5.9</title>
+<title>JMW Quality Dashboard v6.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -278,7 +278,7 @@ tbody tr:hover td{background:#FDFCFE;}
   <span class="flabel" id="periodLabel">연간</span>
   <div class="ver-dropdown-wrap">
     <div class="ver-chip" onclick="toggleVerDropdown(this)" id="verChip">
-      <span>v5.9</span>
+      <span>v6.0</span>
       <span class="ver-arrow">▼</span>
     </div>
     <div class="ver-dropdown" id="verDropdown">
@@ -287,7 +287,7 @@ tbody tr:hover td{background:#FDFCFE;}
         <div class="ver-dropdown-hd-sub">JMW Quality Dashboard</div>
       </div>
       <div class="ver-dropdown-item">
-        <div><span class="ver-dropdown-item-tag">v5.9</span><span class="ver-dropdown-item-new">NEW</span></div>
+        <div><span class="ver-dropdown-item-tag">v6.0</span><span class="ver-dropdown-item-new">NEW</span></div>
         <div class="ver-dropdown-item-desc">구매년월(L열) 기준 집계로 변경</div>
         <div class="ver-dropdown-item-list">
           <div>· 2026.03 이후 데이터만 집계</div>
@@ -1814,17 +1814,24 @@ function renderModelDetail(s, selectedModel){
   });
   const tVals=[tTiming[1],tTiming[2],tTiming[3],tTiming[12],tTiming[99]];
   const tTotal2=tVals.reduce((a,b)=>a+b,0);
+  // 구매 시점 기준 레이블
+  const tLabels=['구매 후 1개월 이내','구매 후 2개월','구매 후 3개월','구매 후 4~12개월','구매 후 1년 초과'];
+  const tMaxV=Math.max(...tVals,1);
+  const tBgs=tVals.map(v=>{ const a=(0.3+v/tMaxV*0.6).toFixed(2); return 'rgba(37,99,235,'+a+')'; });
   const ctxMT=document.getElementById('cMdTiming');
-  if(ctxMT){ charts['cMdTiming']=new Chart(ctxMT,{type:'bar',data:{labels:TK,datasets:[{
-    data:tVals,backgroundColor:TC,borderRadius:6,borderSkipped:false,
-    datalabels:{display:true,anchor:'end',align:'end',clamp:true,offset:4,
+  if(ctxMT){ charts['cMdTiming']=new Chart(ctxMT,{type:'bar',data:{labels:tLabels,datasets:[{
+    data:tVals,backgroundColor:tBgs,borderRadius:6,borderSkipped:false,
+    datalabels:{anchor:'end',align:'right',clamp:true,clip:false,offset:6,
       color:(ctx)=>TC[ctx.dataIndex],font:{family:'JetBrains Mono',weight:'700',size:11},
-      formatter:(v,ctx)=>v>0?v+'건\n'+pct(v,tTotal2)+'%':''}
+      formatter:(v)=>v>0?v+'건':''}
   }]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},
-    plugins:{legend:{display:false},datalabels:{}},
-    scales:{x:{grid:{display:false},ticks:{font:{family:'Pretendard',size:11}}},
-      y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}},suggestedMax:Math.max(...tVals)*1.5}},
-    layout:{padding:{top:48,right:8}}}}); }
+    indexAxis:'y',
+    plugins:{legend:{display:false},datalabels:{},
+      tooltip:{callbacks:{label:(ctx)=>' '+ctx.raw+'건 ('+pct(ctx.raw,tTotal2)+'%)'}}},
+    scales:{
+      x:{beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}}},
+      y:{grid:{display:false},ticks:{font:{family:'Pretendard',size:11}}}},
+    layout:{padding:{right:60,top:4}}}}); }
 
   const chMap={};
   mDefects.forEach(d=>{chMap[d.channel]=(chMap[d.channel]||0)+d.qty;});
