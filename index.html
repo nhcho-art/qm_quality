@@ -979,7 +979,8 @@ function renderOverview(s){
     setTimeout(()=>{
       const ctx=document.getElementById('mfgDonut'+i);
       if(!ctx) return;
-      new Chart(ctx,{type:'doughnut',data:{
+      if(charts['mfgDonut'+i]){try{charts['mfgDonut'+i].destroy();}catch(e){} delete charts['mfgDonut'+i];}
+      charts['mfgDonut'+i]=new Chart(ctx,{type:'doughnut',data:{
         datasets:[{
           data:[normCnt2,critCnt2||0.001],
           backgroundColor:[col+'CC','rgba(192,57,43,0.85)'],
