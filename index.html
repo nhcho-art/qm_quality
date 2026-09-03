@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v6.0</title>
+<title>JMW Quality Dashboard v6.1</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -278,7 +278,7 @@ tbody tr:hover td{background:#FDFCFE;}
   <span class="flabel" id="periodLabel">연간</span>
   <div class="ver-dropdown-wrap">
     <div class="ver-chip" onclick="toggleVerDropdown(this)" id="verChip">
-      <span>v6.0</span>
+      <span>v6.1</span>
       <span class="ver-arrow">▼</span>
     </div>
     <div class="ver-dropdown" id="verDropdown">
@@ -287,7 +287,15 @@ tbody tr:hover td{background:#FDFCFE;}
         <div class="ver-dropdown-hd-sub">JMW Quality Dashboard</div>
       </div>
       <div class="ver-dropdown-item">
-        <div><span class="ver-dropdown-item-tag">v6.0</span><span class="ver-dropdown-item-new">NEW</span></div>
+        <div><span class="ver-dropdown-item-tag">v6.1</span><span class="ver-dropdown-item-new">NEW</span></div>
+        <div class="ver-dropdown-item-desc">모델 상세 탭 기간필터 연동 버그 수정</div>
+        <div class="ver-dropdown-item-list">
+          <div>· 기간 변경 시 모델상세 미반영 문제 해결</div>
+          <div>· 선택 모델을 전역 상태로 추적하도록 수정</div>
+        </div>
+      </div>
+      <div class="ver-dropdown-item">
+        <div><span class="ver-dropdown-item-tag">v6.0</span></div>
         <div class="ver-dropdown-item-desc">구매년월(L열) 기준 집계로 변경</div>
         <div class="ver-dropdown-item-list">
           <div>· 2026.03 이후 데이터만 집계</div>
@@ -709,7 +717,7 @@ const TC=[P.blue,P.teal,P.amber,P.red,'#64748B'];
 const CRITICAL_TYPES=['터짐 불량','타는 냄새','발열 현상','전원코드 파손','열변형','제품 파손','누설 전류','전원 스파크','제품 스파크'];
 const PG_TITLES=['종합 현황','월별 트렌드','SKU 분석','불량유형 분석','긴급·크리티컬','모델 상세'];
 
-let G=null, G_ORIGINAL=null, charts={};
+let G=null, G_ORIGINAL=null, charts={}, selectedModelName=null;
 const FILTER={year:'all',quarter:'all',month:'all'};
 
 // ── 로딩 카운트다운 ──
@@ -755,7 +763,7 @@ async function loadData(){
 
 // ── 탭 전환 ──
 function getPageRender(i){ return[renderOverview,renderTrend,renderSKU,renderDefect,renderCritical,renderModelDetailWrapper][i]; }
-function renderModelDetailWrapper(s){ const model=document.getElementById('modelSelect')?.value; if(model) renderModelDetail(s,model); }
+function renderModelDetailWrapper(s){ const model=selectedModelName||document.getElementById('modelSearchInput')?.value; if(model) renderModelDetail(s,model); }
 
 function showPg(i,el){
   document.querySelectorAll('.pg').forEach((p,j)=>p.classList.toggle('on',i===j));
@@ -1718,6 +1726,7 @@ function selectModelAC(modelOrEl){
 function filterModelOptions(q){}
 
 function onModelSelect(model){
+  selectedModelName=model||null;
   if(!model){
     document.getElementById('modelDetailContent').style.display='none';
     document.getElementById('modelDetailEmpty').style.display='block';
@@ -1731,7 +1740,7 @@ function onModelSelect(model){
 // ── 모델 상세 렌더 ──
 function renderModelDetail(s, selectedModel){
   if(!G||!G.rawDefects) return;
-  const model=selectedModel||document.getElementById('modelSelect')?.value;
+  const model=selectedModel||selectedModelName||document.getElementById('modelSearchInput')?.value;
   if(!model) return;
   dpg(['cMdMonthly','cMdTypeMonth','cMdTiming','cMdChannel']);
   const mDefects=G.rawDefects.filter(d=>d.model===model);
