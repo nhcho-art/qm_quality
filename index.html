@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v6.1</title>
+<title>JMW Quality Dashboard v6.2</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -278,7 +278,7 @@ tbody tr:hover td{background:#FDFCFE;}
   <span class="flabel" id="periodLabel">연간</span>
   <div class="ver-dropdown-wrap">
     <div class="ver-chip" onclick="toggleVerDropdown(this)" id="verChip">
-      <span>v6.1</span>
+      <span>v6.2</span>
       <span class="ver-arrow">▼</span>
     </div>
     <div class="ver-dropdown" id="verDropdown">
@@ -287,7 +287,17 @@ tbody tr:hover td{background:#FDFCFE;}
         <div class="ver-dropdown-hd-sub">JMW Quality Dashboard</div>
       </div>
       <div class="ver-dropdown-item">
-        <div><span class="ver-dropdown-item-tag">v6.1</span><span class="ver-dropdown-item-new">NEW</span></div>
+        <div><span class="ver-dropdown-item-tag">v6.2</span><span class="ver-dropdown-item-new">NEW</span></div>
+        <div class="ver-dropdown-item-desc">모델 상세 탭 레이아웃 재구성</div>
+        <div class="ver-dropdown-item-list">
+          <div>· 크리티컬 불량 현황 → 월별 불량 추이 옆으로 이동</div>
+          <div>· 크리티컬 월별 접수 추이 → 상단으로 이동</div>
+          <div>· 불량유형 분포 리스트 + 불량유형×월별추이(Top6) → 전체 유형 스택차트로 병합</div>
+          <div>· 채널별 분포 · 발생시점 분포 재배치</div>
+        </div>
+      </div>
+      <div class="ver-dropdown-item">
+        <div><span class="ver-dropdown-item-tag">v6.1</span></div>
         <div class="ver-dropdown-item-desc">모델 상세 탭 기간필터 연동 버그 수정</div>
         <div class="ver-dropdown-item-list">
           <div>· 기간 변경 시 모델상세 미반영 문제 해결</div>
@@ -645,36 +655,6 @@ tbody tr:hover td{background:#FDFCFE;}
       </div>
       <div class="card card-inner">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-          <div style="font-size:14px;font-weight:700;color:var(--text);">불량유형 분포</div><span class="bdg b-red">건수 순</span>
-        </div>
-        <div id="mdPareto"></div>
-      </div>
-    </div>
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">상세 분석</span><div class="sd-line"></div></div>
-    <div class="g2 mb16">
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:700;color:var(--text);">불량유형 × 월별 추이</div><span class="bdg b-gray">Top 6 유형</span>
-        </div>
-        <div class="h260"><canvas id="cMdTypeMonth"></canvas></div>
-      </div>
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:700;color:var(--text);">발생시점 분포</div><span class="bdg b-amber">구매 후 경과월</span>
-        </div>
-        <div class="h260"><canvas id="cMdTiming"></canvas></div>
-      </div>
-    </div>
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">채널 · 크리티컬</span><div class="sd-line"></div></div>
-    <div class="g2 mb16">
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-size:14px;font-weight:700;color:var(--text);">채널별 불량 분포</div><span class="bdg b-gray">건수 · 비중</span>
-        </div>
-        <div class="h220"><canvas id="cMdChannel"></canvas></div>
-      </div>
-      <div class="card card-inner">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div style="font-size:14px;font-weight:700;color:var(--text);">크리티컬 불량 현황</div><span class="bdg b-red">위험 유형</span>
         </div>
         <div id="mdCritical"></div>
@@ -684,6 +664,28 @@ tbody tr:hover td{background:#FDFCFE;}
     <div class="card mb16">
       <div class="card-hd"><div class="card-hd-title">크리티컬 불량 월별 접수 추이</div><span class="bdg b-red">위험 유형 합산</span></div>
       <div class="card-body"><div class="h220"><canvas id="cMdCritMonthly"></canvas></div></div>
+    </div>
+    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">채널 · 발생시점</span><div class="sd-line"></div></div>
+    <div class="g2 mb16">
+      <div class="card card-inner">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);">채널별 불량 분포</div><span class="bdg b-gray">건수 · 비중</span>
+        </div>
+        <div class="h220"><canvas id="cMdChannel"></canvas></div>
+      </div>
+      <div class="card card-inner">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);">발생시점 분포</div><span class="bdg b-amber">구매 후 경과월</span>
+        </div>
+        <div class="h220"><canvas id="cMdTiming"></canvas></div>
+      </div>
+    </div>
+    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">불량유형 분석</span><div class="sd-line"></div></div>
+    <div class="card card-inner mb16">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">불량유형 분포 · 월별 추이</div><span class="bdg b-gray">전체 유형</span>
+      </div>
+      <div class="h320"><canvas id="cMdTypeMonth"></canvas></div>
     </div>
   </div>
   <div id="modelDetailEmpty" style="text-align:center;padding:80px 0;color:var(--text4);">
@@ -1792,27 +1794,21 @@ function renderModelDetail(s, selectedModel){
   const typeMap={};
   mDefects.forEach(d=>{typeMap[d.defectDetail]=(typeMap[d.defectDetail]||0)+d.qty;});
   const typeSorted=Object.entries(typeMap).sort(([,a],[,b])=>b-a);
-  const maxT=typeSorted[0]?typeSorted[0][1]:1;
-  let cum=0;
-  document.getElementById('mdPareto').innerHTML=typeSorted.map(([t,v],i)=>{
-    cum+=v;
-    const rC=i===0?'r1':i===1?'r2':i===2?'r3':'rn';
-    return '<div class="pt-item"><span class="rank '+rC+'">'+(i+1)+'</span><span class="pt-name">'+t+'</span><div class="pt-bar"><div class="pt-fill" style="width:'+(v/maxT*100).toFixed(1)+'%"></div></div><span class="pt-cnt">'+v+'</span><span class="pt-pct">'+pct(v,total)+'%</span><span class="pt-cum">▲'+(cum/total*100).toFixed(0)+'%</span></div>';
-  }).join('');
 
-  const top6Types=typeSorted.slice(0,6).map(([t])=>t);
+  const allTypesSorted=typeSorted.map(([t])=>t);
   const ctxTM=document.getElementById('cMdTypeMonth');
-  if(ctxTM){ charts['cMdTypeMonth']=new Chart(ctxTM,{type:'bar',data:{labels:mL,datasets:top6Types.map((t,i)=>{
+  if(ctxTM){ charts['cMdTypeMonth']=new Chart(ctxTM,{type:'bar',data:{labels:mL,datasets:allTypesSorted.map((t,i)=>{
     const tData={}; months.forEach(m=>{tData[m]=0;});
     mDefects.filter(d=>d.defectDetail===t).forEach(d=>{
       if(!d.purchaseYYYYMM) return;
       const ym=d.purchaseYYYYMM;
       if(tData[ym]!==undefined) tData[ym]+=d.qty;
     });
-    return{label:t,data:months.map(m=>tData[m]||0),backgroundColor:PAL[i],borderRadius:2,
+    return{label:t,data:months.map(m=>tData[m]||0),backgroundColor:PAL[i%PAL.length],borderRadius:2,
       datalabels:{display:(ctx)=>ctx.raw>0,anchor:'center',align:'center',color:'#fff',font:{weight:'700',size:9},formatter:v=>v}};
   })},options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},
-    plugins:{legend:{position:'top',labels:{font:{family:'Pretendard',size:10},padding:8,boxWidth:8}},datalabels:{}},
+    plugins:{legend:{position:'top',labels:{font:{family:'Pretendard',size:10},padding:8,boxWidth:8}},datalabels:{},
+      tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': '+fmt(ctx.raw)+'건'}}},
     scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Pretendard',size:10}}},
       y:{stacked:true,beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}}}},
     layout:{padding:{top:4}}}}); }
