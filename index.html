@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v6.2</title>
+<title>JMW Quality Dashboard v6.3</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -278,7 +278,7 @@ tbody tr:hover td{background:#FDFCFE;}
   <span class="flabel" id="periodLabel">연간</span>
   <div class="ver-dropdown-wrap">
     <div class="ver-chip" onclick="toggleVerDropdown(this)" id="verChip">
-      <span>v6.2</span>
+      <span>v6.3</span>
       <span class="ver-arrow">▼</span>
     </div>
     <div class="ver-dropdown" id="verDropdown">
@@ -287,7 +287,16 @@ tbody tr:hover td{background:#FDFCFE;}
         <div class="ver-dropdown-hd-sub">JMW Quality Dashboard</div>
       </div>
       <div class="ver-dropdown-item">
-        <div><span class="ver-dropdown-item-tag">v6.2</span><span class="ver-dropdown-item-new">NEW</span></div>
+        <div><span class="ver-dropdown-item-tag">v6.3</span><span class="ver-dropdown-item-new">NEW</span></div>
+        <div class="ver-dropdown-item-desc">모델 상세 탭 레이아웃 재조정</div>
+        <div class="ver-dropdown-item-list">
+          <div>· 월별 불량 추이 옆에 크리티컬 월별 접수 추이 배치</div>
+          <div>· 크리티컬 불량 현황 옆에 불량유형 월별 추이 배치</div>
+          <div>· 불량유형 월별 추이: 전체 유형 개별 미니 라인차트로 변경 (좌우 칸 자동 동일 높이)</div>
+        </div>
+      </div>
+      <div class="ver-dropdown-item">
+        <div><span class="ver-dropdown-item-tag">v6.2</span></div>
         <div class="ver-dropdown-item-desc">모델 상세 탭 레이아웃 재구성</div>
         <div class="ver-dropdown-item-list">
           <div>· 크리티컬 불량 현황 → 월별 불량 추이 옆으로 이동</div>
@@ -654,16 +663,26 @@ tbody tr:hover td{background:#FDFCFE;}
         <div class="h260"><canvas id="cMdMonthly"></canvas></div>
       </div>
       <div class="card card-inner">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);">크리티컬 불량 월별 접수 추이</div><span class="bdg b-red">위험 유형 합산</span>
+        </div>
+        <div class="h260"><canvas id="cMdCritMonthly"></canvas></div>
+      </div>
+    </div>
+    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">크리티컬 · 불량유형 추이</span><div class="sd-line"></div></div>
+    <div class="g2 mb16">
+      <div class="card card-inner">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <div style="font-size:14px;font-weight:700;color:var(--text);">크리티컬 불량 현황</div><span class="bdg b-red">위험 유형</span>
         </div>
         <div id="mdCritical"></div>
       </div>
-    </div>
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">크리티컬 월별 추이</span><div class="sd-line"></div></div>
-    <div class="card mb16">
-      <div class="card-hd"><div class="card-hd-title">크리티컬 불량 월별 접수 추이</div><span class="bdg b-red">위험 유형 합산</span></div>
-      <div class="card-body"><div class="h220"><canvas id="cMdCritMonthly"></canvas></div></div>
+      <div class="card card-inner">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text);">불량유형 월별 추이</div><span class="bdg b-gray">전체 유형 · 개별</span>
+        </div>
+        <div id="mdTypeMonthList" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
     </div>
     <div class="sd"><div class="sd-line"></div><span class="sd-lbl">채널 · 발생시점</span><div class="sd-line"></div></div>
     <div class="g2 mb16">
@@ -679,13 +698,6 @@ tbody tr:hover td{background:#FDFCFE;}
         </div>
         <div class="h220"><canvas id="cMdTiming"></canvas></div>
       </div>
-    </div>
-    <div class="sd"><div class="sd-line"></div><span class="sd-lbl">불량유형 분석</span><div class="sd-line"></div></div>
-    <div class="card card-inner mb16">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-        <div style="font-size:14px;font-weight:700;color:var(--text);">불량유형 분포 · 월별 추이</div><span class="bdg b-gray">전체 유형</span>
-      </div>
-      <div class="h320"><canvas id="cMdTypeMonth"></canvas></div>
     </div>
   </div>
   <div id="modelDetailEmpty" style="text-align:center;padding:80px 0;color:var(--text4);">
@@ -1744,7 +1756,7 @@ function renderModelDetail(s, selectedModel){
   if(!G||!G.rawDefects) return;
   const model=selectedModel||selectedModelName||document.getElementById('modelSearchInput')?.value;
   if(!model) return;
-  dpg(['cMdMonthly','cMdTypeMonth','cMdTiming','cMdChannel']);
+  dpg(['cMdMonthly','cMdTiming','cMdChannel']);
   const mDefects=G.rawDefects.filter(d=>d.model===model);
   const total=mDefects.reduce((a,d)=>a+d.qty,0);
   const mcat=buildModelCat(), mmfg=buildModelMfg();
@@ -1796,22 +1808,46 @@ function renderModelDetail(s, selectedModel){
   const typeSorted=Object.entries(typeMap).sort(([,a],[,b])=>b-a);
 
   const allTypesSorted=typeSorted.map(([t])=>t);
-  const ctxTM=document.getElementById('cMdTypeMonth');
-  if(ctxTM){ charts['cMdTypeMonth']=new Chart(ctxTM,{type:'bar',data:{labels:mL,datasets:allTypesSorted.map((t,i)=>{
-    const tData={}; months.forEach(m=>{tData[m]=0;});
-    mDefects.filter(d=>d.defectDetail===t).forEach(d=>{
-      if(!d.purchaseYYYYMM) return;
-      const ym=d.purchaseYYYYMM;
-      if(tData[ym]!==undefined) tData[ym]+=d.qty;
+  const typeWrap=document.getElementById('mdTypeMonthList');
+  if(typeWrap){
+    typeWrap.innerHTML='';
+    allTypesSorted.forEach((t,i)=>{
+      const tData={}; months.forEach(m=>{tData[m]=0;});
+      mDefects.filter(d=>d.defectDetail===t).forEach(d=>{
+        if(!d.purchaseYYYYMM) return;
+        const ym=d.purchaseYYYYMM;
+        if(tData[ym]!==undefined) tData[ym]+=d.qty;
+      });
+      const data=months.map(m=>tData[m]||0);
+      const totalT=data.reduce((a,b)=>a+b,0);
+      const col=PAL[i%PAL.length];
+      const row=document.createElement('div');
+      row.style.cssText='display:grid;grid-template-columns:110px 1fr;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border2);';
+      row.innerHTML='<div><div style="font-size:10px;font-weight:700;color:'+col+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+t+'</div>'+
+        '<div style="font-size:9px;color:var(--text3);margin-top:2px;">총 <b style="color:'+col+'">'+fmt(totalT)+'</b>건</div></div>'+
+        '<div style="position:relative;height:52px;"><canvas id="mdTypeRow'+i+'"></canvas></div>';
+      typeWrap.appendChild(row);
+      setTimeout(()=>{
+        const c=document.getElementById('mdTypeRow'+i); if(!c) return;
+        new Chart(c,{type:'line',data:{labels:mL,datasets:[{
+          data,borderColor:col,backgroundColor:col+'18',
+          pointRadius:3,pointBackgroundColor:'#fff',pointBorderColor:col,pointBorderWidth:1.5,
+          borderWidth:2,tension:0.3,fill:true,
+          datalabels:{anchor:'top',align:'top',clamp:true,offset:2,color:col,
+            font:{family:'JetBrains Mono',weight:'700',size:9},formatter:v=>v>0?String(v):''}
+        }]},options:{
+          responsive:true,maintainAspectRatio:false,animation:{duration:200},
+          plugins:{legend:{display:false},datalabels:{},
+            tooltip:{callbacks:{label:ctx=>' '+t+': '+fmt(ctx.raw)+'건'}}},
+          scales:{
+            x:{grid:{display:false},ticks:{font:{size:8},maxRotation:0,color:'#94A3B8'}},
+            y:{beginAtZero:true,grid:{color:'#F1F5F9'},ticks:{font:{size:7},color:'#94A3B8'},
+               suggestedMax:Math.max(...data)*1.5}
+          },layout:{padding:{top:16,right:4,bottom:2,left:2}}
+        }});
+      },10);
     });
-    return{label:t,data:months.map(m=>tData[m]||0),backgroundColor:PAL[i%PAL.length],borderRadius:2,
-      datalabels:{display:(ctx)=>ctx.raw>0,anchor:'center',align:'center',color:'#fff',font:{weight:'700',size:9},formatter:v=>v}};
-  })},options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},
-    plugins:{legend:{position:'top',labels:{font:{family:'Pretendard',size:10},padding:8,boxWidth:8}},datalabels:{},
-      tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': '+fmt(ctx.raw)+'건'}}},
-    scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'Pretendard',size:10}}},
-      y:{stacked:true,beginAtZero:true,grid:{color:'rgba(0,0,0,0)'},ticks:{font:{family:'JetBrains Mono',size:10}}}},
-    layout:{padding:{top:4}}}}); }
+  }
 
   const tTiming={1:0,2:0,3:0,12:0,99:0};
   mDefects.forEach(d=>{
