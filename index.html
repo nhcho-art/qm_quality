@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JMW Quality Dashboard v6.3</title>
+<title>JMW Quality Dashboard v6.4</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -278,7 +278,7 @@ tbody tr:hover td{background:#FDFCFE;}
   <span class="flabel" id="periodLabel">연간</span>
   <div class="ver-dropdown-wrap">
     <div class="ver-chip" onclick="toggleVerDropdown(this)" id="verChip">
-      <span>v6.3</span>
+      <span>v6.4</span>
       <span class="ver-arrow">▼</span>
     </div>
     <div class="ver-dropdown" id="verDropdown">
@@ -287,7 +287,16 @@ tbody tr:hover td{background:#FDFCFE;}
         <div class="ver-dropdown-hd-sub">JMW Quality Dashboard</div>
       </div>
       <div class="ver-dropdown-item">
-        <div><span class="ver-dropdown-item-tag">v6.3</span><span class="ver-dropdown-item-new">NEW</span></div>
+        <div><span class="ver-dropdown-item-tag">v6.4</span><span class="ver-dropdown-item-new">NEW</span></div>
+        <div class="ver-dropdown-item-desc">집계 기준 통일 (2026.03~ · 선택 기간)</div>
+        <div class="ver-dropdown-item-list">
+          <div>· 모델 선택 드롭다운 건수 기간필터 반영</div>
+          <div>· 모델별 불량률 판매수량을 선택 기간만 합산</div>
+          <div>· 발생시점 분포 수량(qty) 기준 집계</div>
+        </div>
+      </div>
+      <div class="ver-dropdown-item">
+        <div><span class="ver-dropdown-item-tag">v6.3</span></div>
         <div class="ver-dropdown-item-desc">모델 상세 탭 레이아웃 재조정</div>
         <div class="ver-dropdown-item-list">
           <div>· 월별 불량 추이 옆에 크리티컬 월별 접수 추이 배치</div>
@@ -1696,6 +1705,7 @@ function buildModelSelect(){
       if(inp) inp.value=this.value;
       document.querySelectorAll('.model-cat-sel').forEach(function(s2){ if(s2!==sel) s2.value=''; });
     };
+    if(selectedModelName&&g.models.includes(selectedModelName)) sel.value=selectedModelName;
     w.appendChild(lbl);
     w.appendChild(sel);
     wrap.appendChild(w);
@@ -2041,7 +2051,6 @@ function getFilteredSummary(){ const {fs}=getFiltered(); return fs; }
 
 function initFilter(){
   buildMonthSelect();
-  buildModelSelect();
   applyFilter();
 }
 
@@ -2056,6 +2065,7 @@ function applyFilter(){
   document.getElementById('periodLabel').textContent='📅 '+label+' · '+fmt(fD.length)+'건';
   // G에 필터 결과 세팅 (G_ORIGINAL은 절대 변경 안함)
   G.rawDefects=fD; G.summary=fs;
+  buildModelSelect();
   renderKPIs(fs);
   const active=document.querySelector('.pg.on');
   const idx=active?parseInt(active.id.replace('pg-','')):0;
@@ -2080,8 +2090,8 @@ function buildFilteredSummary(defects,monthlySales,includedMonths){
     s.byChannel[d.channel]=(s.byChannel[d.channel]||0)+d.qty;
     s.byMfgType[d.mfgType]=(s.byMfgType[d.mfgType]||0)+d.qty;
     const mo=d.monthsToReceipt||0;
-    if(mo<=1)s.byTiming['1M']++; else if(mo<=2)s.byTiming['2M']++;
-    else if(mo<=3)s.byTiming['3M']++; else if(mo<=12)s.byTiming['4M~12M']++; else s.byTiming['1Y이후']++;
+    if(mo<=1)s.byTiming['1M']+=d.qty; else if(mo<=2)s.byTiming['2M']+=d.qty;
+    else if(mo<=3)s.byTiming['3M']+=d.qty; else if(mo<=12)s.byTiming['4M~12M']+=d.qty; else s.byTiming['1Y이후']+=d.qty;
     if(!s.categoryDefectMatrix[d.category]) s.categoryDefectMatrix[d.category]={};
     s.categoryDefectMatrix[d.category][d.defectDetail]=(s.categoryDefectMatrix[d.category][d.defectDetail]||0)+d.qty;
   });
@@ -2090,7 +2100,11 @@ function buildFilteredSummary(defects,monthlySales,includedMonths){
   s.byDefectDetail=sO(s.byDefectDetail); s.byChannel=sO(s.byChannel); s.byMfgType=sO(s.byMfgType);
   Object.keys(s.byModel).forEach(m=>{
     const _origDr=G_ORIGINAL&&G_ORIGINAL.summary&&G_ORIGINAL.summary.defectRateByModel[m];
-    const salesQty=_origDr?_origDr.sales:0; const dq=s.byModel[m]||0;
+    const _rs=G_ORIGINAL&&G_ORIGINAL.rawSales&&G_ORIGINAL.rawSales.byModel;
+    let salesQty;
+    if(_rs&&_rs[m]){ salesQty=includedMonths.reduce(function(a,ym){ const v=Number(_rs[m][ym])||0; return a+(v>0?v:0); },0); }
+    else { salesQty=_origDr?_origDr.sales:0; }
+    const dq=s.byModel[m]||0;
     s.defectRateByModel[m]={defects:dq,sales:salesQty,rate:salesQty>0?dq/salesQty*100:null};
   });
   return s;
